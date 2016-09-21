@@ -1,35 +1,41 @@
-use costkeeper_main;
+USE costkeeper_main;
 
-create table shops(
-	id int unique
+CREATE TABLE user(
+	id INT UNIQUE,
+  shop_name VARCHAR(20)
 );
 
-create table regions(
-	id int unique,
-    region_name char(20)
+CREATE TABLE shops(
+	id INT UNIQUE,
+  shop_name VARCHAR(20)
 );
 
-create table cities(
-	id int unique,
-    city_name char(20),
-    zip_code int,
-    region_id int
+CREATE TABLE regions(
+	id INT UNIQUE,
+  region_name VARCHAR(20)
 );
 
-create table goods(
-	id int unique,
-	barcode int
+CREATE TABLE cities(
+	id INT UNIQUE,
+  city_name VARCHAR(20),
+  zip_code MEDIUMINT UNSIGNED,
+  region_id INT
 );
 
-create table baskets(
-	id int unique,
-	user int
+CREATE TABLE goods(
+	id INT UNSIGNED UNIQUE,
+	barcode INT UNSIGNED
 );
 
-create table baskets_contain(
-	id int unique
+CREATE TABLE baskets(
+	id INT UNIQUE,
+	user INT
 );
 
-create table good_costs(
-	id int unique
+CREATE TABLE basket(
+	id INT UNIQUE
+);
+
+CREATE TABLE costs(
+	id INT UNIQUE
 );

@@ -1,25 +1,39 @@
 import sys
 import string
-from datetime import datetime
-from xml.dom.minidom import parse
-from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Table, MetaData, Column, Integer, String, ForeignKey
+from sqlalchemy.orm import mapper, relationship
 from sqlalchemy.ext.declarative import declarative_base
-Base = declarative_base()
+metadata = MetaData()
 
-class Good(Base):
+class Good():
     def __init__(self):
         print("init done")
 
-class Basket(Base):
+class Basket():
     def __init__(self):
         print("init done")
 
-class User(Base):
+class User():
     def __init__(self):
         print("init done")
 
-class Shops(Base):
+class Shop():
     def __init__(self):
         print("init done")
 
+
+class City():
+    def __init__(self):
+        print("init done")
+
+class Region():
+    def __init__(self):
+        print("init done")
+
+class Baskets():
+    def __init__(self):
+        print("init done")
+
+class Costs():
+    def __init__(self):
+        print("init done")

@@ -1,9 +1,10 @@
 #database config
-db_engine   = ""
-db_host     = "localhost"
-db_port     = 1
-db_user     = ""
-db_password = ""
+db_dialect      = "mysql+pymysql"
+db_host         = "localhost"
+db_port         = "3306"
+db_name         = "costkeeper"
+db_user         = "costkeeper"
+db_password     = "passwordd"
 
 #tornado config
 NumNodes = 1

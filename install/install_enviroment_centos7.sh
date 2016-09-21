@@ -24,6 +24,7 @@ make altinstall
 
 pip install pip3.5 --upgrade pip
 pip3.5 install sqlalchemy
+pip3.5 install pymysql
 pip3.5 install tornado
 
 adduser costkeeper
