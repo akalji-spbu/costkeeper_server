@@ -39,3 +39,11 @@ CREATE TABLE users(
 	password VARCHAR(20)
 );
 
+CREATE TABLE shops(
+	id INT UNSIGNED UNIQUE PRIMARY KEY,
+	name VARCHAR(20),
+	city_id INT UNSIGNED,
+	street_id INT UNSIGNED,
+	building VARCHAR(5)
+);
+
