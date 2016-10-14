@@ -47,3 +47,32 @@ CREATE TABLE shops(
 	building VARCHAR(5)
 );
 
+CREATE TABLE goods(
+	id INT UNSIGNED UNIQUE PRIMARY KEY,
+	barcode INT UNSIGNED UNIQUE,
+	name VARCHAR(20),
+	life VARCHAR(10),
+	description TEXT,
+	prod_country_id INT UNSIGNED,
+	type_id INT UNSIGNED
+);
+
+CREATE TABLE costs(
+	id INT UNSIGNED UNIQUE PRIMARY KEY,
+	good_id INT UNSIGNED,
+	shop_id INT UNSIGNED,
+	currency_id INT UNSIGNED,
+	cost_value FLOAT UNSIGNED
+);
+
+CREATE TABLE types_of_goods(
+	id INT UNSIGNED UNIQUE PRIMARY KEY,
+	name VARCHAR(20)
+);
+
+CREATE TABLE currency(
+	id INT UNSIGNED UNIQUE PRIMARY KEY,
+	name VARCHAR(20),
+	code VARCHAR(5) UNIQUE
+);
+
