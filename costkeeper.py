@@ -7,11 +7,91 @@ from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, cre
 
 Base = declarative_base()
 
+
 def clrscr():
     try:
         os.system('clear')
     except:
         os.system('cls')
+
+
+class Good(Base):
+    __tablename__ = 'goods'
+    Good_ID = Column (Integer, primary_key = True)
+    Barcode = Column (Integer)
+    Name = Column (String(20))
+    Life = Column (String(20))
+    Description = Column (String)
+    Prod_county_ID = Column(Integer)
+    Type_ID = Column (Integer)
+    def __init__(self, Goog_ID, Name, Life, Description, Prod_country_ID, Type_ID):
+        self.Good_ID = Goog_ID
+        self.Name = Name
+        self.Life = Life
+        self.Description = Description
+        self.Prod_county_ID = Prod_country_ID
+        self.Type_ID = Type_ID
+
+
+class Cost(Base):
+    __tablename__ = 'costs'
+    Cost_ID = Column (Integer,primary_key = True)
+    Good_ID = Column (Integer)
+    Shop_ID = Column (Integer)
+    Currency_ID = Column (Integer)
+    Cost_value = Column (Integer)
+    def __init__(self, Cost_ID, Good_ID, Shop_ID, Currency_ID, Cost_value):
+        self.Cost_ID = Cost_ID
+        self.Good_ID = Good_ID
+        self.Shop_ID = Shop_ID
+        self.Currency_ID = Currency_ID
+        self.Cost_value = Cost_value
+
+
+class Type_of_good(Base):
+    __tablename__ = 'types_of_goods'
+    Type_ID = Column (Integer, primary_key = True)
+    Name = Column (String(20))
+    def __init__(self, Type_ID, Name):
+        self.Type_ID = Type_ID
+        self.Name = Name
+
+
+class Currency(Base):
+    __tablename__ = 'currency'
+    Currency_ID = Column (Integer, primary_key = True)
+    Name = Column (String(20))
+    Code = Column (String(5))
+    def __init__(self, Currency_ID, Name, Code):
+        self.Currency_ID = Currency_ID
+        self.Name = Name
+        self.Code = Code
+
+
+class Basket(Base):
+    __tablename__ = 'basket'
+    Basket_ID  = Column (Integer, primary_key = True)
+    User_ID = Column (Integer)
+    Creation_date = Column (Integer)
+    Modify_date = Column (Integer)
+    Name = Column (String(20))
+    def __init__(self, Basket_ID, User_ID, Creation_date, Modify_date, Name):
+        self.Basket_ID = Basket_ID
+        self.User_ID = User_ID
+        self.Creation_date = Creation_date
+        self.Modify_date = Modify_date
+        self.Name = Name
+
+
+class Good_in_basket(Base):
+    __tablename__ = 'Goods_in_baskets'
+    Basket_ID = Column (Integer, primary_key = True)
+    Good_ID = Column (Integer)
+    Number_of_goods = Column(Integer)
+    def __init__(self, Basket_ID, Good_ID, Number_of_goods):
+        self.Basket_ID = Basket_ID
+        self.Good_ID = Good_ID
+        self.Number_of_goods = Number_of_goods
 
 
 class Country(Base):
