@@ -1,25 +1,29 @@
-import costkeeper
-
-from tornado import httpserver
-from tornado import gen
-from tornado.ioloop import IOLoop
+import api
 import tornado.web
+import tornado.httpserver
 
-class MainHandler(tornado.web.RequestHandler):
+class PageOneHandler(tornado.web.RequestHandler):
     def get(self):
-        self.write('Hello, world')
+        vari = self.get_argument('vari', True)
+        if(vari=="1"):
+            self.write("hello  world")
+        if (vari == "2"):
+            self.write("hello cruel world")
+
+class PageTwoHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.write("take some beer")
+
 
 class Application(tornado.web.Application):
     def __init__(self):
-        handlers = [
-            (r"/?", MainHandler)
-        ]
+        handlers = [('/pageone', PageOneHandler),
+                ('/pagetwo', PageTwoHandler)]
+
         tornado.web.Application.__init__(self, handlers)
 
-def main():
-    app = Application()
-    app.listen(14001)
-    IOLoop.instance().start()
-
-if __name__ == '__main__':
-    main()
+# Run the instance
+application = Application()
+http_server = tornado.httpserver.HTTPServer(application)
+http_server.listen(14001)
+tornado.ioloop.IOLoop.current().start()
