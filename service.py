@@ -15,10 +15,15 @@ class PageOneHandler(tornado.web.RequestHandler):
 class UserHandler(tornado.web.RequestHandler):
     def get(self):
         method = self.get_argument('method', True)
+        if(method=="reg"):
+            login       = self.get_argument('login', True)
+            email       = self.get_argument('email', True)
+            password    = self.get_argument('password', True)
+
         if(method=="auth"):
             login       = self.get_argument('login', True)
             password    = self.get_argument('password', True)
-            token=api.user_auth(login,password)
+            token       = api.user_auth(login,password)
             self.write(token)
         else:
             token = self.get_argument('token', True)

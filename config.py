@@ -6,5 +6,11 @@ db_name         = "costkeeper"
 db_user         = "costkeeper"
 db_password     = "passwordd"
 
+
+
 #tornado config
 NumNodes = 1
+
+#system config
+NumNodes = 1
+salt = "d9KQM4RBsY"
