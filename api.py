@@ -20,6 +20,11 @@ def BasketsMethods(method,req):
 
 
 #users methods
+def user_check_token(token):
+    userid = 1234
+    return(userid)
+
+
 def user_auth():
     return("Hello World")
 

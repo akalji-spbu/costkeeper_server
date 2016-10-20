@@ -22,6 +22,7 @@ class UserHandler(tornado.web.RequestHandler):
             self.write(token)
         else:
             token = self.get_argument('token', True)
+            UID = api.user_check_token(token)
             if (token == "Qwerty12345"):
                 answer = api.UsersMethods(self.get_argument('method', True), self.get_argument('req', True))
 
