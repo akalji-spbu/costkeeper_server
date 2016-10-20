@@ -3,7 +3,7 @@ import string
 import os
 import config
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, create_engine
+from sqlalchemy import Table, Column, Integer, String, TEXT, MetaData, ForeignKey, create_engine
 
 Base = declarative_base()
 

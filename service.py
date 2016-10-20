@@ -7,7 +7,7 @@ class PageOneHandler(tornado.web.RequestHandler):
         vari = self.get_argument('vari', True)
         if(vari=="1"):
             self.write("hello  world")
-        if (vari == "2"):
+        if(vari == "2"):
             self.write("hello cruel world")
 
 class PageTwoHandler(tornado.web.RequestHandler):
@@ -18,7 +18,7 @@ class PageTwoHandler(tornado.web.RequestHandler):
 class Application(tornado.web.Application):
     def __init__(self):
         handlers = [('/pageone', PageOneHandler),
-                ('/pagetwo', PageTwoHandler)]
+                    ('/pagetwo', PageTwoHandler)]
 
         tornado.web.Application.__init__(self, handlers)
 
