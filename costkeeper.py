@@ -3,7 +3,7 @@ import string
 import os
 import config
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Table, Column, Integer, String, TEXT, MetaData, ForeignKey, create_engine
+from sqlalchemy import Table, Column, Integer, String, TEXT, MetaData, ForeignKey, create_engine, Float
 
 Base = declarative_base()
 
@@ -19,11 +19,12 @@ class Good(Base):
     __tablename__ = 'goods'
     Good_ID = Column (Integer, primary_key = True)
     Barcode = Column (Integer)
-    Name = Column (String(20))
-    Life = Column (String(20))
-    Description = Column (String)
+    Name = Column (String(45))
+    Life = Column (String(45))
+    Description = Column (TEXT)
     Prod_county_ID = Column(Integer)
     Type_ID = Column (Integer)
+    Picture = Column (String(15))
     def __init__(self, Goog_ID, Name, Life, Description, Prod_country_ID, Type_ID):
         self.Good_ID = Goog_ID
         self.Name = Name
@@ -39,7 +40,7 @@ class Cost(Base):
     Good_ID = Column (Integer)
     Shop_ID = Column (Integer)
     Currency_ID = Column (Integer)
-    Cost_value = Column (Integer)
+    Cost_value = Column (Float)
     def __init__(self, Cost_ID, Good_ID, Shop_ID, Currency_ID, Cost_value):
         self.Cost_ID = Cost_ID
         self.Good_ID = Good_ID
