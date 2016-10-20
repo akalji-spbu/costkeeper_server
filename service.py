@@ -14,11 +14,14 @@ class PageOneHandler(tornado.web.RequestHandler):
 
 class UserHandler(tornado.web.RequestHandler):
     def get(self):
+        self.write("Bye")
         method = self.get_argument('method', True)
         if(method=="reg"):
             login       = self.get_argument('login', True)
             email       = self.get_argument('email', True)
             password    = self.get_argument('password', True)
+            api.user_reg(login,email,password)
+
 
         if(method=="auth"):
             login       = self.get_argument('login', True)
@@ -44,7 +47,6 @@ class GoodHandler(tornado.web.RequestHandler):
         token = self.get_argument('token', True)
     def post(self):
         token = self.get_argument('token', True)
-
 
 
 class CostHandler(tornado.web.RequestHandler):
