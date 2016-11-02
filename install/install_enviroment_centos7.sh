@@ -1,7 +1,8 @@
 rpm -Uvh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
+yum clean all
 yum -y update
 yum -y upgrade
-yum install -y nano mc gcc make nginx mariadb openssl-devel mariadb-server
+yum install -y nano mc make gcc nginx openssl-devel MariaDB-server MariaDB-client
 
 cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.back
 cp /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.back
@@ -22,7 +23,7 @@ cd Python-3.5.2
 ./configure --prefix=/usr/local
 make altinstall
 
-pip install pip3.5 --upgrade pip
+pip3.5 install --upgrade pip
 pip3.5 install sqlalchemy
 pip3.5 install pymysql
 pip3.5 install tornado

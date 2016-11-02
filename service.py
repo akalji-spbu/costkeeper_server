@@ -1,7 +1,6 @@
 import api
 import tornado.web
 import tornado.httpserver
-import json
 
 class PageOneHandler(tornado.web.RequestHandler):
     def get(self):
@@ -16,12 +15,6 @@ class UserHandler(tornado.web.RequestHandler):
     def get(self):
         self.write("Bye")
         method = self.get_argument('method', True)
-        if(method=="reg"):
-            login       = self.get_argument('login', True)
-            email       = self.get_argument('email', True)
-            password    = self.get_argument('password', True)
-            api.user_reg(login,email,password)
-
 
         if(method=="auth"):
             login       = self.get_argument('login', True)
@@ -33,6 +26,14 @@ class UserHandler(tornado.web.RequestHandler):
             UID = api.user_check_token(token)
             if (token == "Qwerty12345"):
                 answer = api.UsersMethods(self.get_argument('method', True), self.get_argument('req', True))
+    def post(self):
+        method = self.get_argument('method', True)
+        if (method == "reg"):
+            login = self.get_argument('login', True)
+            email = self.get_argument('email', True)
+            password = self.get_argument('password', True)
+            api.user_reg(login, email, password)
+
 
 
 class ShopHandler(tornado.web.RequestHandler):
