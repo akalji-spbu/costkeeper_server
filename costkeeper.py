@@ -1,9 +1,6 @@
-import sys
-import string
 import os
-import config
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Table, Column, Integer, String, TEXT, MetaData, ForeignKey, create_engine, Float, DateTime
+from sqlalchemy import Table, Column, Integer, String, TEXT, MetaData, ForeignKey, Float, DateTime
 
 Base = declarative_base()
 

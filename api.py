@@ -10,32 +10,23 @@ from sqlalchemy import TEXT, INTEGER, String
 dburi = config.db_dialect + '://' + config.db_user + ':' + config.db_password + '@' + config.db_host + ':' +config.db_port+ '/'+ config.db_name
 
 
-def UsersMethods(method,req):
-    if (method=="auth"):
-        token=user_auth()
-
-
-def ShopsMethods(method,req):
-    return("Hello World")
-
-def GoodsMethods(method,req):
-    return("Hello World")
-
-def CostsMethods(method,req):
-    return("Hello World")
-
-def BasketsMethods(method,req):
-    return("Hello World")
-
-
-
 #users methods
 def user_check_token(token):
+    # Creating database session
+    engine = create_engine(dburi)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
     userid = 1234
     return(userid)
 
 
 def user_auth(login,password,email):
+    # Creating database session
+    engine = create_engine(dburi)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
 
     hasher = md5()
     key = config.salt+":"+password
@@ -76,11 +67,42 @@ def user_reg(login=None,email=None,password=None):
 
 
 def user_alter():
+    # Creating database session
+    engine = create_engine(dburi)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
     return("Hello World")
 
 
 def user_delete():
+    # Creating database session
+    engine = create_engine(dburi)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
     return("Hello World")
+
+def user_alter_password():
+    # Creating database session
+    engine = create_engine(dburi)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
+    return ("Hello World")
+
+def user_get():
+    # Creating database session
+    engine = create_engine(dburi)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
+    return ("Hello World")
 
 
 #end users methods
+
+
+#shops methods
+
+#end shops methods

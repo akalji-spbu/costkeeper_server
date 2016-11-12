@@ -12,5 +12,4 @@ db_password     = "CKPASS"
 NumNodes = 1
 
 #system config
-NumNodes = 1
 salt = "d9KQM4RBsY"
