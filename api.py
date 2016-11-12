@@ -20,6 +20,14 @@ def user_check_token(token):
     userid = 1234
     return(userid)
 
+def check_username_and_email(username, email):
+    usename_exist   = True
+    email_exists    = True
+    if(usename_exist and email_exists):
+        return False
+    else:
+        return False
+
 
 def user_auth(login,password,email):
     # Creating database session
@@ -34,7 +42,7 @@ def user_auth(login,password,email):
     passkey = hasher.hexdigest()
     token = ""
 
-def user_reg(login=None,email=None,password=None):
+def user_reg(nickname="", password="", email="", firstname="", lastname="", avatar=""):
     # Creating database session
     engine = create_engine(dburi)
     Session = sessionmaker(bind=engine)
@@ -45,12 +53,12 @@ def user_reg(login=None,email=None,password=None):
     passkey = md5(key.encode('utf-8')).hexdigest()
     token = ""
 
-    User_Nickname   = login
+    User_Nickname   = nickname
     User_Email      = email
-    User_Firstname  = ""
-    User_Lastname   = ""
+    User_Firstname  = firstname
+    User_Lastname   = lastname
     Role_ID         = 1
-    avatar          = ""
+    avatar          = avatar
     password        = passkey
     token           = ""
     token_lifetime  = 0
@@ -64,6 +72,7 @@ def user_reg(login=None,email=None,password=None):
         print("Error adding")
 
     session.commit()
+    return True
 
 
 def user_alter():

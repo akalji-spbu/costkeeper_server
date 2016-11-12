@@ -10,32 +10,29 @@ define("port", default=14001, help="run on the given port", type=int)
 class UserHandler(tornado.web.RequestHandler):
     def get(self):
         method = self.get_argument('method', True)
-
-
-        if(method=="auth"):
-            login       = self.get_argument('login', True)
-            password    = self.get_argument('password', True)
-            token       = api.user_auth(login,password)
-            self.write(token)
-
-
-        else:
-            token = self.get_argument('token', True)
-            UID = api.user_check_token(token)
-            if (token == "Qwerty12345"):
-                answer = api.UsersMethods(self.get_argument('method', True), self.get_argument('req', True))
-
+        if (method == "user_get"):
+            print()
 
     def post(self):
         json_sting = self.request.body
         data_json = tornado.escape.json_decode(json_sting)
         method = str(data_json['type'])
         token  = str(data_json['token'])
+        secret = str(data_json['secret'])
+        object = data_json['object']
 
 
         if (method == "user_reg"):
-            text = data_json['object']['id']
-            print(int(text))
+            nickname    = str(object['nickname'])
+            password    = str(object['password'])
+            email       = str(object['email'])
+            firstname   = str(object['firstname'])
+            lastname    = str(object['lastname'])
+            avatar      = str(object['avatar'])
+            if(api.check_username_and_email(nickname, email) != True):
+                reg = api.user_reg(nickname, password, email, firstname, lastname, avatar)
+                if(reg == True):
+                    self.write("Success")
 
         if (method == "user_auth"):
             login = self.get_argument('login', True)
@@ -61,6 +58,8 @@ class ShopHandler(tornado.web.RequestHandler):
         json_sting = self.request.body
         data_json = tornado.escape.json_decode(json_sting)
         method = str(data_json['type'])
+        token = str(data_json['token'])
+        secret = str(data_json['secret'])
         if (method == "shop_add"):
             print()
 
@@ -79,6 +78,8 @@ class GoodHandler(tornado.web.RequestHandler):
         json_sting = self.request.body
         data_json = tornado.escape.json_decode(json_sting)
         method = str(data_json['type'])
+        token = str(data_json['token'])
+        secret = str(data_json['secret'])
         if (method == "good_add"):
             print()
 
@@ -93,6 +94,8 @@ class CostHandler(tornado.web.RequestHandler):
         json_sting = self.request.body
         data_json = tornado.escape.json_decode(json_sting)
         method = str(data_json['type'])
+        token = str(data_json['token'])
+        secret = str(data_json['secret'])
 
         if (method == "cost_add"):
             print()
@@ -105,6 +108,9 @@ class BasketHandler(tornado.web.RequestHandler):
         json_sting = self.request.body
         data_json = tornado.escape.json_decode(json_sting)
         method = str(data_json['type'])
+        token = str(data_json['token'])
+        secret = str(data_json['secret'])
+
         if (method == "basket_add"):
             print()
 
