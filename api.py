@@ -109,13 +109,38 @@ def user_reg(nickname="", password="", email="", firstname="", lastname="", avat
     return True
 
 
-def user_alter():
+def user_alter(token="",nickname="",email="",firstname="",lastname="",avatar=""):
     # Creating database session
     engine = create_engine(dburi)
+    conn = engine.connect()
     Session = sessionmaker(bind=engine)
     session = Session()
     # /Creating database session
-    return("Hello World")
+    if(len(token) == 0):
+        return "TOKEN_DOES_NOT_EXIST"
+    else:
+        select_stmt = select([costkeeper.User.token_lifetime]).where(costkeeper.User.token == token)
+        result = conn.execute(select_stmt)
+        rows = result.fetchall()
+        result.close()
+        if not rows:
+            return "TOKEN_DOES_NOT_EXIST"
+        if(rows[0].token_lifetime < datetime.today()):
+            return "TOKEN_EXSPIRED"
+        else:
+            ourUser = session.query(costkeeper.User).filter_by(token=token).first()
+            if (len(nickname) != 0):
+                ourUser.User_Nickname = nickname
+            if (len(email) != 0):
+                ourUser.User_Email = email
+            if (len(firstname) != 0):
+                ourUser.User_Firstname = firstname
+            if (len(lastname) != 0):
+                ourUser.User_Lastname = lastname
+            if (len(avatar) != 0):
+                ourUser.avatar = avatar
+            session.commit()
+    return "Success"
 
 
 def user_delete():
@@ -126,21 +151,66 @@ def user_delete():
     # /Creating database session
     return("Hello World")
 
-def user_alter_password():
+def user_alter_password(token="",password="",newpassword=""):
     # Creating database session
     engine = create_engine(dburi)
+    conn = engine.connect()
     Session = sessionmaker(bind=engine)
     session = Session()
     # /Creating database session
-    return ("Hello World")
+    if(len(token) == 0):
+        return "TOKEN_DOES_NOT_EXIST"
+    else:
+        key = config.salt + ":" + password
+        passkey = md5(key.encode('utf-8')).hexdigest()
+        select_stmt = select([costkeeper.User.token_lifetime,costkeeper.User.password]).where(costkeeper.User.token == token)
+        result = conn.execute(select_stmt)
+        rows = result.fetchall()
+        result.close()
+        if not rows:
+            return "TOKEN_DOES_NOT_EXIST"
+        if(rows[0].token_lifetime < datetime.today()):
+            return "TOKEN_EXSPIRED"
+        if(rows[0].password !=passkey):
+            return "WRONG_PASSWORD"
+        key = config.salt + ":" + newpassword
+        passkey = md5(key.encode('utf-8')).hexdigest()
+        ourUser = session.query(costkeeper.User).filter_by(token=token).first()
+        ourUser.password = passkey
+        a = string.ascii_lowercase + string.digits
+        token = ''.join([random.choice(a) for i in range(20)])
+        ourUser.token = token
+        ourUser.token_lifetime = datetime.today()+timedelta(days=1)
+        session.commit()
+        return token
 
-def user_get():
+
+def user_get(token="",ID="",secret=""):
     # Creating database session
     engine = create_engine(dburi)
+    conn = engine.connect()
     Session = sessionmaker(bind=engine)
     session = Session()
     # /Creating database session
-    return ("Hello World")
+    if (len(token) == 0):
+        return "TOKEN_DOES_NOT_EXIST"
+    else:
+        select_stmt = select([costkeeper.User.token_lifetime]).where(costkeeper.User.token == token)
+        result = conn.execute(select_stmt)
+        rows = result.fetchall()
+        result.close()
+        if not rows:
+            return "TOKEN_DOES_NOT_EXIST"
+        if (rows[0].token_lifetime < datetime.today()):
+            return "TOKEN_EXSPIRED"
+        select_stmt = select([costkeeper.User.User_ID,costkeeper.User.User_Nickname,costkeeper.User.User_Firstname,costkeeper.User.User_Lastname,costkeeper.User.avatar ]).where(costkeeper.User.User_ID == ID)
+        result = conn.execute(select_stmt)
+        rows = result.fetchall()
+        result.close()
+        if not rows:
+            return "USER_DOES_NOT_EXIST"
+        json_data = '{"user_id":"'+str(rows[0].User_ID) +'","nickname": "'+rows[0].User_Nickname +'","firstname":"'+ rows[0].User_Firstname+'","lastname":"'+rows[0].User_Lastname +'","avatar": "'+rows[0].avatar +'"}'
+        return json_data
 
 
 #end users methods

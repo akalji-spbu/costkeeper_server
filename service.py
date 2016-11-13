@@ -11,7 +11,10 @@ class UserHandler(tornado.web.RequestHandler):
     def get(self):
         method = self.get_argument('method', True)
         if (method == "user_get"):
-            print()
+            token = self.get_argument('token', True)
+            ID = self.get_argument('user_id', True)
+            secret = self.get_argument('secret', True)
+            self.write(api.user_get(token, ID, secret))
 
     def post(self):
         json_sting = self.request.body
@@ -52,15 +55,17 @@ class UserHandler(tornado.web.RequestHandler):
 
         if (method == "user_alter"):
             nickname    = str(object['nickname'])
-            password    = str(object['password'])
             email       = str(object['email'])
             firstname   = str(object['firstname'])
             lastname    = str(object['lastname'])
             avatar      = str(object['avatar'])
+            self.write(api.user_alter(token,nickname,email,firstname,lastname,avatar))
 
 
         if (method == "user_alter_password"):
-            print()
+            password    = str(object['password'])
+            newpassword = str(object['new_password'])
+            self.write(api.user_alter_password(token,password,newpassword))
 
         if (method == "user_delete"):
             print()
