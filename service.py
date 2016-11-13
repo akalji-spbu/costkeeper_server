@@ -29,19 +29,35 @@ class UserHandler(tornado.web.RequestHandler):
             firstname   = str(object['firstname'])
             lastname    = str(object['lastname'])
             avatar      = str(object['avatar'])
-            if(api.check_username_and_email(nickname, email) != True):
+            nickname_exist,email_exist = api.check_username_and_email(nickname, email)
+            if(nickname_exist == False and email_exist == False):
                 reg = api.user_reg(nickname, password, email, firstname, lastname, avatar)
-                if(reg == True):
+                if (reg == True):
                     self.write("Success")
+            else:
+                if(nickname_exist == True):
+                    self.write("NICKNAME_IS_USED\n")
+                if (email_exist == True):
+                    self.write("EMAIL_IS_USED\n")
 
         if (method == "user_auth"):
-            login = self.get_argument('login', True)
-            password = self.get_argument('password', True)
-            token = api.user_auth(login, password)
-            self.write(token)
+            email    = str(object['email'])
+            password = str(object['password'])
+            status, token = api.user_auth(email, password)
+            if (status == True):
+                self.write(token)
+            else:
+                self.write("UserDoesNotExist")
+
 
         if (method == "user_alter"):
-            print()
+            nickname    = str(object['nickname'])
+            password    = str(object['password'])
+            email       = str(object['email'])
+            firstname   = str(object['firstname'])
+            lastname    = str(object['lastname'])
+            avatar      = str(object['avatar'])
+
 
         if (method == "user_alter_password"):
             print()
@@ -60,6 +76,7 @@ class ShopHandler(tornado.web.RequestHandler):
         method = str(data_json['type'])
         token = str(data_json['token'])
         secret = str(data_json['secret'])
+        object = data_json['object']
         if (method == "shop_add"):
             print()
 
@@ -80,6 +97,7 @@ class GoodHandler(tornado.web.RequestHandler):
         method = str(data_json['type'])
         token = str(data_json['token'])
         secret = str(data_json['secret'])
+        object = data_json['object']
         if (method == "good_add"):
             print()
 
@@ -96,6 +114,7 @@ class CostHandler(tornado.web.RequestHandler):
         method = str(data_json['type'])
         token = str(data_json['token'])
         secret = str(data_json['secret'])
+        object = data_json['object']
 
         if (method == "cost_add"):
             print()
@@ -110,6 +129,7 @@ class BasketHandler(tornado.web.RequestHandler):
         method = str(data_json['type'])
         token = str(data_json['token'])
         secret = str(data_json['secret'])
+        object = data_json['object']
 
         if (method == "basket_add"):
             print()
