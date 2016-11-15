@@ -28,11 +28,11 @@ class UserHandler(tornado.web.RequestHandler):
 
 
         if (method == "user_reg"):
-            nickname    = str(object['nickname'])
+            nickname    = str(object['nickname']).encode('utf-8')
             password    = str(object['password'])
             email       = str(object['email'])
-            firstname   = str(object['firstname'])
-            lastname    = str(object['lastname'])
+            firstname   = str(object['firstname']).encode('utf-8')
+            lastname    = str(object['lastname']).encode('utf-8')
             avatar      = str(object['avatar'])
             nickname_exist,email_exist = api.check_username_and_email(nickname, email)
             if(nickname_exist == False and email_exist == False):
@@ -56,10 +56,10 @@ class UserHandler(tornado.web.RequestHandler):
 
 
         if (method == "user_alter"):
-            nickname    = str(object['nickname'])
+            nickname    = str(object['nickname']).encode('utf-8')
             email       = str(object['email'])
-            firstname   = str(object['firstname'])
-            lastname    = str(object['lastname'])
+            firstname   = str(object['firstname']).encode('utf-8')
+            lastname    = str(object['lastname']).encode('utf-8')
             avatar      = str(object['avatar'])
             self.write(api.user_alter(token,nickname,email,firstname,lastname,avatar))
 
@@ -89,18 +89,18 @@ class ShopHandler(tornado.web.RequestHandler):
         allowed, userID, response = api.user_check_token(token)
         if(allowed == True):
             if (method == "shop_add"):
-                name        = str(object['name'])
+                name        = str(object['name']).encode('utf-8')
                 city        = str(object['city'])
                 street      = str(object['street'])
-                building    = str(object['building'])
+                building    = str(object['building']).encode('utf-8')
                 status,response = api.shop_add(name,city, street, building)
 
             if (method == "shop_alter"):
                 id          = str(object['id'])
-                name        = str(object['name'])
+                name        = str(object['name']).encode('utf-8')
                 city        = str(object['city'])
                 street      = str(object['street'])
-                building    = str(object['building'])
+                building    = str(object['building']).encode('utf-8')
                 status, response = api.shop_alter(id, name, city, street, building)
 
         self.write(response)
@@ -112,32 +112,28 @@ class GoodHandler(tornado.web.RequestHandler):
         token = self.get_argument('token', True)
         method = self.get_argument('method', True)
         allowed,userID,response = api.user_check_token(token)
+        secret = self.get_argument('secret', True)
         if allowed == True :
             if (method == "good_get"):
-                secret = self.get_argument('secret', True)
                 good_id = self.get_argument('good_id',True)
                 status, response = api.good_get(secret, good_id)
 
             if (method == "good_get_cost"):
-                secret = self.get_argument('secret', True)
                 good_id = self.get_argument('good_id',True)
                 shop_id = self.get_argument('shop_id',True)
                 status, response = api.good_get_cost(secret, good_id, shop_id)
 
             if (method == "good_get_costs_in_all_shops"):
-                secret = self.get_argument('secret', True)
                 good_id = self.get_argument('good_id',True)
                 status, response = api.good_get_costs_in_all_shops(secret, good_id)
 
             if (method == "good_get_cost_history_in_shop"):
-                secret = self.get_argument('secret', True)
                 good_id = self.get_argument('good_id',True)
                 shop_id = self.get_argument('shop_id',True)
                 status, response = api.good_get_cost_history_in_shop(secret, good_id, shop_id)
 
             if (method == "good_find"):
-                secret = self.get_argument('secret', True)
-                good_name = self.get_argument('good_name',True)
+                good_name = self.get_argument('good_name',True).encode('utf-8')
                 status, response = api.good_find(secret, good_id, shop_id)
         self.write(response)
 
@@ -153,9 +149,9 @@ class GoodHandler(tornado.web.RequestHandler):
             object = data_json['object']
             if (method == "good_add"):
                 barcode = str(object['barcode'])
-                name = str(object['name'])
+                name = str(object['name']).encode('utf-8')
                 life = str(object['life'])
-                description = str(object['description'])
+                description = str(object['description']).encode('utf-8')
                 prod_country_id = str(object['prod_country_id'])
                 type_id = str(object['type_id'])
                 picture = str(object['picture'])
@@ -165,7 +161,7 @@ class GoodHandler(tornado.web.RequestHandler):
                 id = str(object['id'])
                 name = str(object['name']).encode('utf-8')
                 life = str(object['life'])
-                description = str(object['description'])
+                description = str(object['description']).encode('utf-8')
                 prod_country_id = str(object['prod_country_id'])
                 type_id = str(object['type_id'])
                 picture = str(object['picture'])
@@ -183,9 +179,13 @@ class CostHandler(tornado.web.RequestHandler):
         token = str(data_json['token'])
         secret = str(data_json['secret'])
         object = data_json['object']
-
-        if (method == "cost_add"):
-            print()
+        allowed, userID, response = api.user_check_token(token)
+        if (allowed == True):
+            if (method == "cost_add"):
+                good_id         = int(object['good_id'])
+                shop_id         = int(object['shop_id'])
+                currency_id     = int(object['currency_id'])
+                value           = float(object['value'])
 
 
 class BasketHandler(tornado.web.RequestHandler):

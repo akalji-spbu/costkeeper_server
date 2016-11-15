@@ -425,8 +425,15 @@ def good_get(secret="", good_id=""):
     status = True
     response = "SUCCESS"
 
-    status = good_exist(good_id)
-    if status == True:
+    select_stmt = select([costkeeper.Good.Good_ID]).where(costkeeper.Good.Good_ID == id)
+    result = conn.execute(select_stmt)
+    rows = result.fetchall()
+    result.close()
+
+    if not rows:
+        status = False
+        response = "GOOD_DOES_NOT_EXIST"
+    else:
         select_stmt = select([costkeeper.Good.Good_ID, costkeeper.Good.Barcode, costkeeper.Good.Life, costkeeper.Good.Description,
                               costkeeper.Good.Name, costkeeper.Good.Picture, costkeeper.Good.Prod_county_ID ]).where(costkeeper.Good.Good_ID == good_id)
         result = conn.execute(select_stmt)
@@ -434,8 +441,7 @@ def good_get(secret="", good_id=""):
         result.close()
         response = '{"good_id":"'+str(rows[0].Good_ID) +'","barecode": "'+rows[0].Barecode +'","life": "'+rows[0].Life +'","description": "'+rows[0].Description \
                    +'","name": "'+rows[0].Name +'","picture": "'+rows[0].Picture +'","prod_country_id": "'+rows[0].Prod_country_ID +'","type_id": "'+rows[0].Type+'"}'
-    else:
-        response = "GOOD_DOES_NOT_EXIST"
+
     return status, response
 
 def good_get_cost(secret="", good_id="", shop_id=""):
@@ -482,3 +488,6 @@ def good_find(secret="", good_id=""):
     response = "SUCCESS"
     return status, response
 #end good methods
+
+#Cost methods
+#End cost methods
