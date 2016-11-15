@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import config
 import costkeeper
 import sqlalchemy.exc
@@ -346,21 +348,6 @@ def shop_get(id):
 #end shops methods
 
 #good methods
-def good_exist(good_id=""):
-    status = True
-    # Creating database session
-    engine = create_engine(dburi)
-    conn = engine.connect()
-    # /Creating database session
-
-    select_stmt = select([costkeeper.Good.Good_ID]).where(costkeeper.Good.Good_ID == id)
-    result = conn.execute(select_stmt)
-    rows = result.fetchall()
-    result.close()
-
-    if not rows:
-        status = False
-    return status
 
 def good_add(barcode=0, name="", life="", description="", prod_country_id="", type_id="", picture=""):
     # Creating database session
@@ -378,7 +365,7 @@ def good_add(barcode=0, name="", life="", description="", prod_country_id="", ty
     result.close()
 
     if not rows:
-        newGood = costkeeper.Good(barcode, name, life, description, prod_country_id, type_id, picture)
+        newGood = costkeeper.Good(name, barcode, life, description, prod_country_id, type_id, picture)
         try:
             session.add(newGood)
         except sqlalchemy.exc.OperationalError:
@@ -402,8 +389,15 @@ def good_alter(id="", name="", life="", description="", prod_country_id="", type
     status = True
     response = "SUCCESS"
 
-    check_good = good_exist(id)
-    if check_good == True:
+    select_stmt = select([costkeeper.Good.Good_ID]).where(costkeeper.Good.Good_ID == id)
+    result = conn.execute(select_stmt)
+    rows = result.fetchall()
+    result.close()
+
+    if not rows:
+        status = False
+        response = "GOOD_DOES_NOT_EXIST"
+    else:
         ourGood = session.query(costkeeper.Good).filter_by(Good_ID=id).first()
         if (len(name) != 0):
             ourGood.Name = name
@@ -417,9 +411,6 @@ def good_alter(id="", name="", life="", description="", prod_country_id="", type
             ourGood.Type = type_id
         if (len(picture) != 0):
             ourGood.Picture = picture
-    else:
-        status = False
-        response = "GOOD_DOES_NOT_EXIST"
 
     session.commit()
     return status, response

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 #database config
 db_dialect      = "mysql+pymysql"
 db_host         = "localhost"

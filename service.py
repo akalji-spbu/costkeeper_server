@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import api
 import tornado.web
 import tornado.httpserver
@@ -150,7 +152,7 @@ class GoodHandler(tornado.web.RequestHandler):
         if allowed == True :
             object = data_json['object']
             if (method == "good_add"):
-                barcode = int(object['barcode'])
+                barcode = str(object['barcode'])
                 name = str(object['name'])
                 life = str(object['life'])
                 description = str(object['description'])
@@ -161,7 +163,7 @@ class GoodHandler(tornado.web.RequestHandler):
 
             if (method == "good_alter"):
                 id = str(object['id'])
-                name = str(object['name'])
+                name = str(object['name']).encode('utf-8')
                 life = str(object['life'])
                 description = str(object['description'])
                 prod_country_id = str(object['prod_country_id'])

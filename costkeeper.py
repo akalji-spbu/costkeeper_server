@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Table, Column, Integer, String, TEXT, MetaData, ForeignKey, Float, DateTime
@@ -15,20 +17,21 @@ def clrscr():
 class Good(Base):
     __tablename__ = 'goods'
     Good_ID = Column (Integer, primary_key = True, unique=True)
-    Barcode = Column (Integer, unique=True)
+    Barcode = Column (String(20), unique=True)
     Name = Column (String(45))
     Life = Column (String(45))
     Description = Column (TEXT)
-    Prod_county_ID = Column (Integer)
+    Prod_country_ID = Column (Integer)
     Type_ID = Column (Integer)
     Picture = Column (String(15))
-    def __init__(self, Name, Barcode, Life, Description, Prod_country_ID, Type_ID):
+    def __init__(self, Name, Barcode, Life, Description, Prod_country_ID, Type_ID, Picture):
         self.Name = Name
         self.Life = Life
         self.Barcode = Barcode
         self.Description = Description
-        self.Prod_county_ID = Prod_country_ID
+        self.Prod_country_ID = Prod_country_ID
         self.Type_ID = Type_ID
+        self.Picture = Picture
 
 
 class Cost(Base):
