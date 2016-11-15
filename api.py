@@ -235,17 +235,113 @@ def user_get(token="",ID="",secret=""):
 
 
 #shops methods
-def shop_add():
-    print()
+def check_shop_by_id(id):
+    engine = create_engine(dburi)
+    conn = engine.connect()
+    Session = sessionmaker(bind=engine)
+    select_stmt = select([costkeeper.Shop.Shop_ID]).where(costkeeper.Shop.Shop_ID == id)
+    result = conn.execute(select_stmt)
+    rows = result.fetchall()
+    result.close()
+    rows = result.fetchall()
+    result.close()
+    if not rows:
+        return False
+    else:
+        return True
 
-def shop_alter():
-    print()
+def check_shop_exist(name, city, street, building):
+    engine = create_engine(dburi)
+    conn = engine.connect()
+    select_stmt = select([costkeeper.Shop.Shop_ID]).where(costkeeper.Shop.Shop_Name == name).where(costkeeper.Shop.City_ID == city).where(costkeeper.Shop.Street_ID == street).where(costkeeper.Shop.Building == building)
+    result = conn.execute(select_stmt)
+    rows = result.fetchall()
+    result.close()
+    if not rows:
+        return False
+    else:
+        return True
 
-def shop_complaint():
-    print()
+def shop_add(name="",city="", street="", building=""):
+    if(check_shop_exist(name, city, street, building) == False):
+        # Creating database session
+        engine = create_engine(dburi)
+        Session = sessionmaker(bind=engine)
+        session = Session()
+        # /Creating database session
+        Shop_Name   = name
+        City_ID     = city
+        Street_ID   = street
+        Building    = building
+        NewShop     = costkeeper.Shop(Shop_Name, City_ID, Street_ID, Building)
+        try:
+            session.add(NewShop)
+            response = "SUCCESS"
+            status   = True
+        except sqlalchemy.exc.OperationalError:
+            response = "ADDING_ERROR"
+            status   = False
 
-def shop_get():
-    print()
+        session.commit()
+
+    else:
+        status = False
+        response = "SHOP_ALREDY_EXIST"
+
+
+    return status, response
+
+
+
+
+def shop_alter(id, name,city, street, building):
+
+    # Creating database session
+    engine = create_engine(dburi)
+    conn = engine.connect()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
+    select_stmt = select([costkeeper.Shop.Shop_ID]).where(costkeeper.User.token == id)
+    result = conn.execute(select_stmt)
+    rows = result.fetchall()
+    result.close()
+    if not rows:
+        return "SHOP_DOES_NOT_EXIST"
+    else:
+        ourShop = session.query(costkeeper.Shop.Shop_ID).filter_by(Shop_ID=id).first()
+        if (len(name) != 0):
+            ourShop.Shop_Name = name
+        if (len(city) != 0):
+            ourShop.City_ID = city
+        if (len(street) != 0):
+            ourShop.Street_ID = street
+        if (len(building) != 0):
+            ourShop.Building = building
+        session.commit()
+        return "SUCCESS"
+
+
+
+
+def shop_get(id):
+    # Creating database session
+    engine = create_engine(dburi)
+    conn = engine.connect()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
+    select_stmt = select([costkeeper.Shop.Shop_ID, costkeeper.Shop.Shop_Name, costkeeper.Shop.City_ID,
+                          costkeeper.Shop.Street_ID, costkeeper.Shop.Building]).where(costkeeper.Shop.User_ID == id)
+
+    result = conn.execute(select_stmt)
+    rows = result.fetchall()
+    result.close()
+    if not rows:
+        return "SHOP_DOES_NOT_EXIST"
+    else:
+        json_data = '{"shop_id":"'+str(rows[0].Shop_ID) +'","name": "'+rows[0].Shop_Name +'","city_id":"'+ rows[0].City_ID+'","street_id":"'+rows[0].Street_ID +'","building": "'+rows[0].Building +'"}'
+        return json_data
 
 #end shops methods
 

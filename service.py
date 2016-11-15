@@ -75,6 +75,8 @@ class UserHandler(tornado.web.RequestHandler):
 class ShopHandler(tornado.web.RequestHandler):
     def get(self):
         token = self.get_argument('token', True)
+        secret = self.get_argument('secret', True)
+
     def post(self):
         json_sting = self.request.body
         data_json = tornado.escape.json_decode(json_sting)
@@ -83,25 +85,23 @@ class ShopHandler(tornado.web.RequestHandler):
         secret = str(data_json['secret'])
         object = data_json['object']
         allowed, userID, response = api.user_check_token(token)
-        if(allowed==True):
+        if(allowed == True):
             if (method == "shop_add"):
                 name        = str(object['name'])
                 city        = str(object['city'])
                 street      = str(object['street'])
                 building    = str(object['building'])
                 status,response = api.shop_add(name,city, street, building)
-                if (status == True):
-                    self.write(response)
-                else:
-                    self.write("UserDoesNotExist")
 
             if (method == "shop_alter"):
-                print()
+                id          = str(object['id'])
+                name        = str(object['name'])
+                city        = str(object['city'])
+                street      = str(object['street'])
+                building    = str(object['building'])
+                status, response = api.shop_alter(id, name, city, street, building)
 
-            if (method == "shop_complaint"):
-                print()
-        else:
-            self.write(response)
+        self.write(response)
 
 
 
