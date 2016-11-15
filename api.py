@@ -17,11 +17,29 @@ dburi = config.db_dialect + '://' + config.db_user + ':' + config.db_password + 
 def user_check_token(token):
     # Creating database session
     engine = create_engine(dburi)
-    Session = sessionmaker(bind=engine)
-    session = Session()
+    conn = engine.connect()
     # /Creating database session
-    userid = 1234
-    return(userid)
+    allowed = False
+    userID = ""
+
+    select_stmt = select([costkeeper.User.token_lifetime, costkeeper.User.User_ID]).where(costkeeper.User.token == token)
+    result = conn.execute(select_stmt)
+    rows = result.fetchall()
+    result.close()
+
+    if not rows:
+        response = "TOKEN_DOES_NOT_EXIST"
+    else:
+        if (rows[0].token_lifetime < datetime.today()):
+            response = "TOKEN_EXSPIRED"
+        else:
+            allowed = True
+            userID = rows[0].User_ID
+            response = "TOKEN_ALLOWED"
+
+    return allowed, userID, response
+
+
 
 def check_username_and_email(username, email):
     engine = create_engine(dburi)
@@ -217,5 +235,16 @@ def user_get(token="",ID="",secret=""):
 
 
 #shops methods
+def shop_add():
+    print()
+
+def shop_alter():
+    print()
+
+def shop_complaint():
+    print()
+
+def shop_get():
+    print()
 
 #end shops methods
