@@ -150,24 +150,24 @@ class GoodHandler(tornado.web.RequestHandler):
         if allowed == True :
             object = data_json['object']
             if (method == "good_add"):
-                name = str(data_json['name'])
-                life = str(data_json['life'])
-                description = str(data_json['description'])
-                prod_country_id = str(data_json['prod_country_id'])
-                type_id = str(data_json['type_id'])
-                picture = str(data_json['picture'])
+                barcode = int(object['barcode'])
+                name = str(object['name'])
+                life = str(object['life'])
+                description = str(object['description'])
+                prod_country_id = str(object['prod_country_id'])
+                type_id = str(object['type_id'])
+                picture = str(object['picture'])
                 status, response = api.good_add(barcode, name, life, description, prod_country_id, type_id, picture)
 
             if (method == "good_alter"):
-                id = str(data_json['id'])
-                barcode = str(data_json['barcode'])
-                name = str(data_json['name'])
-                life = str(data_json['life'])
-                description = str(data_json['description'])
-                prod_country_id = str(data_json['prod_country_id'])
-                type_id = str(data_json['type_id'])
-                picture = str(data_json['picture'])
-                status, response = api.good_alter(id, barcode, name, life, description, prod_country_id, type_id, picture)
+                id = str(object['id'])
+                name = str(object['name'])
+                life = str(object['life'])
+                description = str(object['description'])
+                prod_country_id = str(object['prod_country_id'])
+                type_id = str(object['type_id'])
+                picture = str(object['picture'])
+                status, response = api.good_alter(id, name, life, description, prod_country_id, type_id, picture)
         self.write(response)
 
 

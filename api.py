@@ -362,7 +362,7 @@ def good_exist(good_id=""):
         status = False
     return status
 
-def good_add(barcode="", name="", life="", description="", prod_country_id="", type_id="", picture=""):
+def good_add(barcode=0, name="", life="", description="", prod_country_id="", type_id="", picture=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -378,7 +378,7 @@ def good_add(barcode="", name="", life="", description="", prod_country_id="", t
     result.close()
 
     if not rows:
-        newGood = costkeeper.Good(name, life, description, prod_country_id, type_id, picture)
+        newGood = costkeeper.Good(barcode, name, life, description, prod_country_id, type_id, picture)
         try:
             session.add(newGood)
         except sqlalchemy.exc.OperationalError:

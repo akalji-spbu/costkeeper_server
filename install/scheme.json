@@ -71,7 +71,7 @@
 }
 
 {
-  "type": "shop_aler",
+  "type": "shop_alter",
   "secret": "",
   "token": "",
   "object": {

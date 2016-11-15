@@ -22,9 +22,10 @@ class Good(Base):
     Prod_county_ID = Column (Integer)
     Type_ID = Column (Integer)
     Picture = Column (String(15))
-    def __init__(self, Name, Life, Description, Prod_country_ID, Type_ID):
+    def __init__(self, Name, Barcode, Life, Description, Prod_country_ID, Type_ID):
         self.Name = Name
         self.Life = Life
+        self.Barcode = Barcode
         self.Description = Description
         self.Prod_county_ID = Prod_country_ID
         self.Type_ID = Type_ID
