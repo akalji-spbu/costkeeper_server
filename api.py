@@ -346,7 +346,148 @@ def shop_get(id):
 #end shops methods
 
 #good methods
+def good_exist(good_id=""):
+    status = True
+    # Creating database session
+    engine = create_engine(dburi)
+    conn = engine.connect()
+    # /Creating database session
 
+    select_stmt = select([costkeeper.Good.Good_ID]).where(costkeeper.Good.Good_ID == id)
+    result = conn.execute(select_stmt)
+    rows = result.fetchall()
+    result.close()
 
+    if not rows:
+        status = False
+    return status
 
+def good_add(barcode="", name="", life="", description="", prod_country_id="", type_id="", picture=""):
+    # Creating database session
+    engine = create_engine(dburi)
+    conn = engine.connect()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
+    status = True
+    response ="SUCCESS"
+
+    select_stmt = select([costkeeper.Good.Good_ID]).where(costkeeper.Good.Barcode == barcode)
+    result = conn.execute(select_stmt)
+    rows = result.fetchall()
+    result.close()
+
+    if not rows:
+        newGood = costkeeper.Good(name, life, description, prod_country_id, type_id, picture)
+        try:
+            session.add(newGood)
+        except sqlalchemy.exc.OperationalError:
+            status = False
+            response = "ADDING_ERROR"
+    else:
+        status = False
+        response = "GOOD_ALREADY_EXIST"
+
+    session.commit()
+    return status, response
+
+def good_alter(id="", name="", life="", description="", prod_country_id="", type_id="", picture=""):
+    # Creating database session
+    engine = create_engine(dburi)
+    conn = engine.connect()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
+
+    status = True
+    response = "SUCCESS"
+
+    check_good = good_exist(id)
+    if check_good == True:
+        ourGood = session.query(costkeeper.Good).filter_by(Good_ID=id).first()
+        if (len(name) != 0):
+            ourGood.Name = name
+        if (len(life) != 0):
+            ourGood.Life = life
+        if (len(description) != 0):
+            ourGood.Description = description
+        if (len(prod_country_id) != 0):
+            ourGood.Prod_country_ID = prod_country_id
+        if (len(type_id) != 0):
+            ourGood.Type = type_id
+        if (len(picture) != 0):
+            ourGood.Picture = picture
+    else:
+        status = False
+        response = "GOOD_DOES_NOT_EXIST"
+
+    session.commit()
+    return status, response
+
+def good_get(secret="", good_id=""):
+    # Creating database session
+    engine = create_engine(dburi)
+    conn = engine.connect()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
+    status = True
+    response = "SUCCESS"
+
+    status = good_exist(good_id)
+    if status == True:
+        select_stmt = select([costkeeper.Good.Good_ID, costkeeper.Good.Barcode, costkeeper.Good.Life, costkeeper.Good.Description,
+                              costkeeper.Good.Name, costkeeper.Good.Picture, costkeeper.Good.Prod_county_ID ]).where(costkeeper.Good.Good_ID == good_id)
+        result = conn.execute(select_stmt)
+        rows = result.fetchall()
+        result.close()
+        response = '{"good_id":"'+str(rows[0].Good_ID) +'","barecode": "'+rows[0].Barecode +'","life": "'+rows[0].Life +'","description": "'+rows[0].Description \
+                   +'","name": "'+rows[0].Name +'","picture": "'+rows[0].Picture +'","prod_country_id": "'+rows[0].Prod_country_ID +'","type_id": "'+rows[0].Type+'"}'
+    else:
+        response = "GOOD_DOES_NOT_EXIST"
+    return status, response
+
+def good_get_cost(secret="", good_id="", shop_id=""):
+    # Creating database session
+    engine = create_engine(dburi)
+    conn = engine.connect()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
+    status = True
+    response = "SUCCESS"
+    return status, response
+
+def good_get_costs_in_all_shops(secret="", good_id=""):
+    # Creating database session
+    engine = create_engine(dburi)
+    conn = engine.connect()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
+    status = True
+    response = "SUCCESS"
+    return status, response
+
+def good_get_cost_history_in_shop(secret="", good_id="", shop_id=""):
+    # Creating database session
+    engine = create_engine(dburi)
+    conn = engine.connect()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
+    status = True
+    response = "SUCCESS"
+    return status, response
+
+def good_find(secret="", good_id=""):
+    # Creating database session
+    engine = create_engine(dburi)
+    conn = engine.connect()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
+    status = True
+    response = "SUCCESS"
+    return status, response
 #end good methods
