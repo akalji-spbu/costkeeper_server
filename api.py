@@ -12,7 +12,7 @@ from sqlalchemy.sql import table, column
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import TEXT, INTEGER, String
 
-dburi = config.db_dialect + '://' + config.db_user + ':' + config.db_password + '@' + config.db_host + ':' +config.db_port+ '/'+ config.db_name
+dburi = config.db_dialect + '://' + config.db_user + ':' + config.db_password + '@' + config.db_host + ':' +config.db_port+ '/'+ config.db_name +'?charset=utf8'
 
 
 #users methods
@@ -417,15 +417,15 @@ def good_alter(id="", name="", life="", description="", prod_country_id="", type
 
 def good_get(secret="", good_id=""):
     # Creating database session
-    engine = create_engine(dburi)
+    engine = create_engine(dburi, encoding='utf-8')
     conn = engine.connect()
     Session = sessionmaker(bind=engine)
     session = Session()
     # /Creating database session
-    status = True
-    response = "SUCCESS"
 
-    select_stmt = select([costkeeper.Good.Good_ID]).where(costkeeper.Good.Good_ID == id)
+    status = True
+
+    select_stmt = select([costkeeper.Good.Good_ID]).where(costkeeper.Good.Good_ID == good_id)
     result = conn.execute(select_stmt)
     rows = result.fetchall()
     result.close()
@@ -434,13 +434,14 @@ def good_get(secret="", good_id=""):
         status = False
         response = "GOOD_DOES_NOT_EXIST"
     else:
-        select_stmt = select([costkeeper.Good.Good_ID, costkeeper.Good.Barcode, costkeeper.Good.Life, costkeeper.Good.Description,
-                              costkeeper.Good.Name, costkeeper.Good.Picture, costkeeper.Good.Prod_county_ID ]).where(costkeeper.Good.Good_ID == good_id)
+        select_stmt = select([costkeeper.Good.Good_ID, costkeeper.Good.Barcode, costkeeper.Good.Life, costkeeper.Good.Description, costkeeper.Good.Name, costkeeper.Good.Picture, costkeeper.Good.Prod_country_ID, costkeeper.Good.Type_ID ]).where(costkeeper.Good.Good_ID == good_id)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         result.close()
-        response = '{"good_id":"'+str(rows[0].Good_ID) +'","barecode": "'+rows[0].Barecode +'","life": "'+rows[0].Life +'","description": "'+rows[0].Description \
-                   +'","name": "'+rows[0].Name +'","picture": "'+rows[0].Picture +'","prod_country_id": "'+rows[0].Prod_country_ID +'","type_id": "'+rows[0].Type+'"}'
+        encoded = rows[0].Description
+        print(encoded)
+        response = '{"good_id":"'+str(rows[0].Good_ID) +'","barcode": "'+rows[0].Barcode +'","life": "'+rows[0].Life +'","description": "'+rows[0].Description \
+                   +'","name": "'+rows[0].Name +'","picture": "'+rows[0].Picture +'","prod_country_id": "'+str(rows[0].Prod_country_ID) +'","type_id": "'+str(rows[0].Type_ID)+'"}'
 
     return status, response
 

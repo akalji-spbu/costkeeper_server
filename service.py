@@ -115,21 +115,21 @@ class GoodHandler(tornado.web.RequestHandler):
         secret = self.get_argument('secret', True)
         if allowed == True :
             if (method == "good_get"):
-                good_id = self.get_argument('good_id',True)
+                good_id = int(self.get_argument('good_id',True))
                 status, response = api.good_get(secret, good_id)
 
             if (method == "good_get_cost"):
-                good_id = self.get_argument('good_id',True)
-                shop_id = self.get_argument('shop_id',True)
+                good_id = int(self.get_argument('good_id',True))
+                shop_id = int(self.get_argument('shop_id',True))
                 status, response = api.good_get_cost(secret, good_id, shop_id)
 
             if (method == "good_get_costs_in_all_shops"):
-                good_id = self.get_argument('good_id',True)
+                good_id = int(self.get_argument('good_id',True))
                 status, response = api.good_get_costs_in_all_shops(secret, good_id)
 
             if (method == "good_get_cost_history_in_shop"):
-                good_id = self.get_argument('good_id',True)
-                shop_id = self.get_argument('shop_id',True)
+                good_id = int(self.get_argument('good_id',True))
+                shop_id = int(self.get_argument('shop_id',True))
                 status, response = api.good_get_cost_history_in_shop(secret, good_id, shop_id)
 
             if (method == "good_find"):
