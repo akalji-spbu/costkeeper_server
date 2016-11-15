@@ -74,7 +74,6 @@ class UserHandler(tornado.web.RequestHandler):
             print()
 
 
-
 class ShopHandler(tornado.web.RequestHandler):
     def get(self):
         token = self.get_argument('token', True)
@@ -105,7 +104,6 @@ class ShopHandler(tornado.web.RequestHandler):
                 status, response = api.shop_alter(id, name, city, street, building)
 
         self.write(response)
-
 
 
 class GoodHandler(tornado.web.RequestHandler):
@@ -193,34 +191,48 @@ class CostHandler(tornado.web.RequestHandler):
 class BasketHandler(tornado.web.RequestHandler):
     def get(self):
         token = self.get_argument('token', True)
+        method = self.get_argument('method', True)
+        allowed,userID,response = api.user_check_token(token)
+        secret = self.get_argument('secret', True)
+        if allowed == True :
+            if(method == "basket_get"):
+                status, response = api.basket_get()
+            if(method == "basket_get_all"):
+                status, response = api.basket_get_all()
+        self.write(response)
+
     def post(self):
         json_sting = self.request.body
         data_json = tornado.escape.json_decode(json_sting)
         method = str(data_json['type'])
         token = str(data_json['token'])
         secret = str(data_json['secret'])
-        object = data_json['object']
+        allowed, userID, response = api.user_check_token(token)
+        if (allowed == True):
+            object = data_json['object']
 
-        if (method == "basket_add"):
-            print()
+            if (method == "basket_add"):
+                status,response = api.basket_add()
 
-        if (method == "basket_add_item"):
-            print()
+            if (method == "basket_delete_item"):
+                status,response = api.basket_delete_item()
 
-        if (method == "basket_delete_item"):
-            print()
+            if (method == "basket_erase"):
+                status,response = api.basket_erase()
 
-        if (method == "basket_alter_item"):
-            print()
+            if (method == "basket_modify"):
+                status,response = api.basket_modify()
 
-        if (method == "basket_erase"):
-            print()
+            if (method == "basket_add_item"):
+                status,response = api.basket_add_item()
 
-        if (method == "basket_delete"):
-            print()
+            if (method == "basket_alter_item"):
+                status,response = api.basket_alter_item()
 
-        if (method == "basket_modify"):
-            print()
+            if (method == "basket_delete"):
+                status,response = api.basket_delete()
+        self.write(response)
+
 
 
 class Application(tornado.web.Application):

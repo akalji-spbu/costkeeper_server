@@ -15,7 +15,6 @@ from sqlalchemy import TEXT, INTEGER, String
 
 dburi = config.db_dialect + '://' + config.db_user + ':' + config.db_password + '@' + config.db_host + ':' +config.db_port+ '/'+ config.db_name +'?charset=utf8'
 
-
 #users methods
 def user_check_token(token):
     # Creating database session
@@ -42,8 +41,6 @@ def user_check_token(token):
 
     return allowed, userID, response
 
-
-
 def check_username_and_email(username, email):
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -66,7 +63,6 @@ def check_username_and_email(username, email):
         email_exist = True
 
     return username_exist, email_exist
-
 
 def user_auth(email,password):
     # Creating database session
@@ -129,7 +125,6 @@ def user_reg(nickname="", password="", email="", firstname="", lastname="", avat
     session.commit()
     return True
 
-
 def user_alter(token="",nickname="",email="",firstname="",lastname="",avatar=""):
     # Creating database session
     engine = create_engine(dburi)
@@ -162,7 +157,6 @@ def user_alter(token="",nickname="",email="",firstname="",lastname="",avatar="")
                 ourUser.avatar = avatar
             session.commit()
     return "Success"
-
 
 def user_delete():
     # Creating database session
@@ -205,7 +199,6 @@ def user_alter_password(token="",password="",newpassword=""):
         session.commit()
         return token
 
-
 def user_get(token="",ID="",secret=""):
     # Creating database session
     engine = create_engine(dburi)
@@ -232,7 +225,6 @@ def user_get(token="",ID="",secret=""):
             return "USER_DOES_NOT_EXIST"
         json_data = '{"user_id":"'+str(rows[0].User_ID) +'","nickname": "'+rows[0].User_Nickname +'","firstname":"'+ rows[0].User_Firstname+'","lastname":"'+rows[0].User_Lastname +'","avatar": "'+rows[0].avatar +'"}'
         return json_data
-
 
 #end users methods
 
@@ -294,9 +286,6 @@ def shop_add(name="",city="", street="", building=""):
 
     return status, response
 
-
-
-
 def shop_alter(id, name,city, street, building):
 
     # Creating database session
@@ -323,9 +312,6 @@ def shop_alter(id, name,city, street, building):
             ourShop.Building = building
         session.commit()
         return "SUCCESS"
-
-
-
 
 def shop_get(id):
     # Creating database session
@@ -489,6 +475,7 @@ def good_find(secret="", good_id=""):
     status = True
     response = "SUCCESS"
     return status, response
+
 #end good methods
 
 #Cost methods
@@ -509,4 +496,45 @@ def cost_add(good_id='', shop_id='', currency_id='', value=''):
 
     session.commit()
     return status, response
+
 #End cost methods
+
+
+#basket methods
+def basket_add():
+    status = True
+    response = "SUCCESS"
+    return status, response    
+
+def basket_delete_item():
+    status = True
+    response = "SUCCESS"
+    return status, response
+
+def basket_modify():
+    status = True
+    response = "SUCCESS"
+    return status, response
+
+def basket_erase():
+    status = True
+    response = "SUCCESS"
+    return status, response
+
+def basket_get():
+    status = True
+    response = "SUCCESS"
+    return status, response
+
+def basket_add_item():
+    print()
+
+def basket_alter_item():
+    print()
+
+def basket_delete():
+    print()
+
+def basket_get_all():
+    print()
+#end basket methods
