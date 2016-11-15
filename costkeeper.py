@@ -41,8 +41,8 @@ class Cost(Base):
     Shop_ID = Column (Integer)
     Currency_ID = Column (Integer)
     Cost_value = Column (Float)
-    def __init__(self, Cost_ID, Good_ID, Shop_ID, Currency_ID, Cost_value):
-        self.Cost_ID = Cost_ID
+    def __init__(self, Cost_Time, Good_ID, Shop_ID, Currency_ID, Cost_value):
+        self.Cost_Time = Cost_Time
         self.Good_ID = Good_ID
         self.Shop_ID = Shop_ID
         self.Currency_ID = Currency_ID

@@ -5,6 +5,7 @@ import costkeeper
 import sqlalchemy.exc
 import random
 import string
+import datetime
 from datetime import datetime, timedelta
 from hashlib import md5
 from sqlalchemy import create_engine, select
@@ -491,4 +492,21 @@ def good_find(secret="", good_id=""):
 #end good methods
 
 #Cost methods
+def cost_add(good_id='', shop_id='', currency_id='', value=''):
+    # Creating database session
+    engine = create_engine(dburi)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
+    NewCost = costkeeper.Cost(datetime.today(), good_id, shop_id, currency_id, value)
+    try:
+        session.add(NewCost)
+        status = True
+        response = "SUCSESS"
+    except sqlalchemy.exc.OperationalError:
+        response = "COST_ADDING_ERROR"
+        status = False
+
+    session.commit()
+    return status, response
 #End cost methods
