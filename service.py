@@ -108,6 +108,30 @@ class ShopHandler(tornado.web.RequestHandler):
 class GoodHandler(tornado.web.RequestHandler):
     def get(self):
         token = self.get_argument('token', True)
+        method = self.get_argument('method', True)
+        if (method == "good_get"):
+            secret = self.get_argument('secret', True)
+            good_id = self.get_argument('good_id',True)
+            self.write()
+        if (method == "good_get_cost"):
+            secret = self.get_argument('secret', True)
+            good_id = self.get_argument('good_id',True)
+            shop_id = self.get_argument('shop_id',True)
+            self.write()
+        if (method == "good_get_costs_in_all_shops"):
+            secret = self.get_argument('secret', True)
+            good_id = self.get_argument('good_id',True)
+            self.write()
+        if (method == "good_get_cost_history_in_shop"):
+            secret = self.get_argument('secret', True)
+            good_id = self.get_argument('good_id',True)
+            shop_id = self.get_argument('shop_id',True)
+            self.write()
+        if (method == "good_find"):
+            secret = self.get_argument('secret', True)
+            good_name = self.get_argument('good_name',True)
+            self.write()
+
     def post(self):
         json_sting = self.request.body
         data_json = tornado.escape.json_decode(json_sting)
@@ -116,9 +140,24 @@ class GoodHandler(tornado.web.RequestHandler):
         secret = str(data_json['secret'])
         object = data_json['object']
         if (method == "good_add"):
+            barcode = str(data_json['barcode'])
+            name = str(data_json['name'])
+            life = str(data_json['life'])
+            description = str(data_json['description'])
+            prod_country_id = str(data_json['prod_country_id'])
+            type_id = str(data_json['type_id'])
+            picture = str(data_json['picture'])
             print()
 
         if (method == "good_alter"):
+            id = str(data_json['id'])
+            barcode = str(data_json['barcode'])
+            name = str(data_json['name'])
+            life = str(data_json['life'])
+            description = str(data_json['description'])
+            prod_country_id = str(data_json['prod_country_id'])
+            type_id = str(data_json['type_id'])
+            picture = str(data_json['picture'])
             print()
 
 

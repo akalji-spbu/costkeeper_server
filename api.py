@@ -248,3 +248,9 @@ def shop_get():
     print()
 
 #end shops methods
+
+#good methods
+
+
+
+#end good methods
