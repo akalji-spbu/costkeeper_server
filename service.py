@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 
 import api
+import sys
 import tornado.web
 import tornado.httpserver
+
 import json
 
-from tornado.options import define, options
-define("port", default=14001, help="run on the given port", type=int)
 
 
 class UserHandler(tornado.web.RequestHandler):
     def get(self):
+        self.write(port)
         method = self.get_argument('method', True)
         if (method == "user_get"):
             token = self.get_argument('token', True)
@@ -232,8 +233,15 @@ class Application(tornado.web.Application):
         tornado.web.Application.__init__(self, handlers)
 
 
+
+port = 14001
+if(len(sys.argv)>0):
+    port = sys.argv[1]
+
+print(port)
+
 # Run the instance
 application = Application()
 http_server = tornado.httpserver.HTTPServer(application, xheaders=True)
-http_server.listen(options.port)
+http_server.listen(port)
 tornado.ioloop.IOLoop.current().start()
