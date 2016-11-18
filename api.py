@@ -30,14 +30,14 @@ def user_check_token(token):
     result.close()
 
     if not rows:
-        response = "TOKEN_DOES_NOT_EXIST"
+        response = "ERROR_TOKEN_DOES_NOT_EXIST"
     else:
         if (rows[0].token_lifetime < datetime.today()):
-            response = "TOKEN_EXSPIRED"
+            response = "ERROR_TOKEN_EXSPIRED"
         else:
             allowed = True
             userID = rows[0].User_ID
-            response = "TOKEN_ALLOWED"
+            response = "ERROR_TOKEN_ALLOWED"
 
     return allowed, userID, response
 
@@ -133,16 +133,16 @@ def user_alter(token="",nickname="",email="",firstname="",lastname="",avatar="")
     session = Session()
     # /Creating database session
     if(len(token) == 0):
-        return "TOKEN_DOES_NOT_EXIST"
+        return "ERROR_TOKEN_DOES_NOT_EXIST"
     else:
         select_stmt = select([costkeeper.User.token_lifetime]).where(costkeeper.User.token == token)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         result.close()
         if not rows:
-            return "TOKEN_DOES_NOT_EXIST"
+            return "ERROR_TOKEN_DOES_NOT_EXIST"
         if(rows[0].token_lifetime < datetime.today()):
-            return "TOKEN_EXSPIRED"
+            return "ERROR_TOKEN_EXSPIRED"
         else:
             ourUser = session.query(costkeeper.User).filter_by(token=token).first()
             if (len(nickname) != 0):
@@ -174,7 +174,7 @@ def user_alter_password(token="",password="",newpassword=""):
     session = Session()
     # /Creating database session
     if(len(token) == 0):
-        return "TOKEN_DOES_NOT_EXIST"
+        return "ERROR_TOKEN_DOES_NOT_EXIST"
     else:
         key = config.salt + ":" + password
         passkey = md5(key.encode('utf-8')).hexdigest()
@@ -183,11 +183,11 @@ def user_alter_password(token="",password="",newpassword=""):
         rows = result.fetchall()
         result.close()
         if not rows:
-            return "TOKEN_DOES_NOT_EXIST"
+            return "ERROR_TOKEN_DOES_NOT_EXIST"
         if(rows[0].token_lifetime < datetime.today()):
-            return "TOKEN_EXSPIRED"
+            return "ERROR_TOKEN_EXSPIRED"
         if(rows[0].password !=passkey):
-            return "WRONG_PASSWORD"
+            return "ERROR_WRONG_PASSWORD"
         key = config.salt + ":" + newpassword
         passkey = md5(key.encode('utf-8')).hexdigest()
         ourUser = session.query(costkeeper.User).filter_by(token=token).first()
@@ -207,22 +207,22 @@ def user_get(token="",ID="",secret=""):
     session = Session()
     # /Creating database session
     if (len(token) == 0):
-        return "TOKEN_DOES_NOT_EXIST"
+        return "ERROR_TOKEN_DOES_NOT_EXIST"
     else:
         select_stmt = select([costkeeper.User.token_lifetime]).where(costkeeper.User.token == token)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         result.close()
         if not rows:
-            return "TOKEN_DOES_NOT_EXIST"
+            return "ERROR_TOKEN_DOES_NOT_EXIST"
         if (rows[0].token_lifetime < datetime.today()):
-            return "TOKEN_EXSPIRED"
+            return "ERROR_TOKEN_EXSPIRED"
         select_stmt = select([costkeeper.User.User_ID,costkeeper.User.User_Nickname,costkeeper.User.User_Firstname,costkeeper.User.User_Lastname,costkeeper.User.avatar ]).where(costkeeper.User.User_ID == ID)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         result.close()
         if not rows:
-            return "USER_DOES_NOT_EXIST"
+            return "ERROR_USER_DOES_NOT_EXIST"
         json_data = '{"user_id":"'+str(rows[0].User_ID) +'","nickname": "'+rows[0].User_Nickname +'","firstname":"'+ rows[0].User_Firstname+'","lastname":"'+rows[0].User_Lastname +'","avatar": "'+rows[0].avatar +'"}'
         return json_data
 
@@ -281,7 +281,7 @@ def shop_add(name="",city="", street="", building=""):
 
     else:
         status = False
-        response = "SHOP_ALREDY_EXIST"
+        response = "ERROR_SHOP_ALREDY_EXIST"
 
 
     return status, response
@@ -299,7 +299,7 @@ def shop_alter(id, name,city, street, building):
     rows = result.fetchall()
     result.close()
     if not rows:
-        return "SHOP_DOES_NOT_EXIST"
+        return "ERROR_SHOP_DOES_NOT_EXIST"
     else:
         ourShop = session.query(costkeeper.Shop.Shop_ID).filter_by(Shop_ID=id).first()
         if (len(name) != 0):
@@ -327,7 +327,7 @@ def shop_get(id):
     rows = result.fetchall()
     result.close()
     if not rows:
-        return "SHOP_DOES_NOT_EXIST"
+        return "ERROR_SHOP_DOES_NOT_EXIST"
     else:
         json_data = '{"shop_id":"'+str(rows[0].Shop_ID) +'","name": "'+rows[0].Shop_Name +'","city_id":"'+ rows[0].City_ID+'","street_id":"'+rows[0].Street_ID +'","building": "'+rows[0].Building +'"}'
         return json_data
@@ -344,7 +344,7 @@ def good_add(barcode=0, name="", life="", description="", prod_country_id="", ty
     session = Session()
     # /Creating database session
     status = True
-    response ="SUCCESS"
+    response = "SUCCESS"
 
     select_stmt = select([costkeeper.Good.Good_ID]).where(costkeeper.Good.Barcode == barcode)
     result = conn.execute(select_stmt)
@@ -360,7 +360,7 @@ def good_add(barcode=0, name="", life="", description="", prod_country_id="", ty
             response = "ADDING_ERROR"
     else:
         status = False
-        response = "GOOD_ALREADY_EXIST"
+        response = "ERROR_GOOD_ALREADY_EXIST"
 
     session.commit()
     return status, response
@@ -383,7 +383,7 @@ def good_alter(id="", name="", life="", description="", prod_country_id="", type
 
     if not rows:
         status = False
-        response = "GOOD_DOES_NOT_EXIST"
+        response = "ERROR_GOOD_DOES_NOT_EXIST"
     else:
         ourGood = session.query(costkeeper.Good).filter_by(Good_ID=id).first()
         if (len(name) != 0):
@@ -419,7 +419,7 @@ def good_get(secret="", good_id=""):
 
     if not rows:
         status = False
-        response = "GOOD_DOES_NOT_EXIST"
+        response = "ERROR_GOOD_DOES_NOT_EXIST"
     else:
         select_stmt = select([costkeeper.Good.Good_ID, costkeeper.Good.Barcode, costkeeper.Good.Life, costkeeper.Good.Description, costkeeper.Good.Name, costkeeper.Good.Picture, costkeeper.Good.Prod_country_ID, costkeeper.Good.Type_ID ]).where(costkeeper.Good.Good_ID == good_id)
         result = conn.execute(select_stmt)
@@ -523,7 +523,7 @@ def basket_add(user_id,basket_name=""):
     return status, response
 
 
-def basket_delete_item():
+def basket_delete_item(basket_id="",good_id=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -534,6 +534,22 @@ def basket_delete_item():
     status = True
     response = "SUCCESS"
 
+    if(len(basket_id) == 0):
+        status = False
+        response = "ERROR_NO_BASKET_ID"
+    else:
+        if(len(good_id) == 0):
+            status = False
+            response = "ERROR_NO_GOOD_ID"
+        else:
+            delete_stmt = costkeeper.Good_in_basket.delete().where(costkeeper.Good_in_basket.Good_ID == good_id).where(costkeeper.Good_in_basket.Basket_ID == basket_id)
+            result = conn.execute(delete_stmt)
+            rows = result.fetchall()
+            result.close()
+            if not rows:
+                status = False
+                response = "ERROR_ITEM_DOES_NOT_EXIST"
+    session.commit()
     return status, response
 
 
@@ -555,7 +571,7 @@ def basket_modify(basket_id,new_name):
 
     if not rows:
         status = False
-        response = "BASKET_DOES_NOT_EXIST"
+        response = "ERROR_BASKET_DOES_NOT_EXIST"
     else:
         ourBasket = session.query(costkeeper.Basket).filter_by(Basket_ID=basket_id).first()
         if(len(new_name) == 0):
@@ -565,6 +581,7 @@ def basket_modify(basket_id,new_name):
         ourBasket.Modify_date = datetime.today()
     session.commit()
     return status, response
+
 
 def basket_erase():
 
@@ -609,10 +626,11 @@ def basket_get(basket_id=""):
         else:
             response = response + "goods: {"
             for row in rows:
-                response = response + "{good_id:" + row.Good_ID + ",number_of_goods" + row.Number_of_goods+"},"
+                response = response + "{good_id:" + str(row.Good_ID) + ",number_of_goods" + str(row.Number_of_goods)+"},"
             response = response + "\b}}"
 
     return status, response
+
 
 def basket_add_item(basket_id, good_id, count):
     # Creating database session

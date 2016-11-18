@@ -217,7 +217,9 @@ class BasketHandler(tornado.web.RequestHandler):
                 status,response = api.basket_add(userID,basket_name)
 
             if (method == "basket_delete_item"):
-                status,response = api.basket_delete_item()
+                basket_id = str(object['basket_id'])
+                good_id = str(object['good_id'])
+                status,response = api.basket_delete_item(basket_id,good_id)
 
             if (method == "basket_erase"):
                 status,response = api.basket_erase()
