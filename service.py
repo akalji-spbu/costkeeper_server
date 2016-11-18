@@ -199,7 +199,7 @@ class BasketHandler(tornado.web.RequestHandler):
                 basket_id = self.get_argument('basket_id',True)
                 status, response = api.basket_get(basket_id)
             if(method == "basket_get_all"):
-                status, response = api.basket_get_all()
+                status, response = api.basket_get_all(userID)
         self.write(response)
 
     def post(self):

@@ -691,6 +691,36 @@ def basket_alter_item(basket_id, good_id, count):
 def basket_delete():
     print()
 
-def basket_get_all():
-    print()
+def basket_get_all(user_id):
+    # Creating database session
+    engine = create_engine(dburi)
+    conn = engine.connect()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
+
+    status = True
+    response = "SUCCESS"
+
+    select_stmt = select([costkeeper.Basket.Basket_ID]).where(costkeeper.Basket.User_ID == user_id)
+    result = conn.execute(select_stmt)
+    rows = result.fetchall()
+    result.close()
+
+    if not rows:
+        status = False
+        response = "ERROR_BASKETS_DOES_NOT_EXISTS"
+    else:
+        select_stmt = select([costkeeper.Basket.Basket_ID, costkeeper.Basket.Name, costkeeper.Basket.Creation_date, costkeeper.Basket.Modify_date]).where(costkeeper.Basket.User_ID == user_id)
+        result = conn.execute(select_stmt)
+        rows = result.fetchall()
+        result.close()
+        response = '''{"userID":"''' + str(user_id) + '''","Array": ['''
+        for row in rows:
+            response = response + "{basketID:" + row.Basket_ID + ",basketName" + row.Name + ",creationDate" + row.Creation_date + ",modifiedDate" + row.Modify_date + "},"
+        response = response + "\b}}"
+
+
+
+    return status, response
 #end basket methods
