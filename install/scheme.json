@@ -160,6 +160,7 @@
   "object": {
     "basket_id":"",
     "good_id":"",
+    "count":""
   }
 }
 
@@ -170,7 +171,7 @@
   "object": {
     "basket_id":"",
     "good_id":"",
-    "add":""
+    "count":""
   }
 }
 

@@ -526,11 +526,79 @@ def basket_get():
     response = "SUCCESS"
     return status, response
 
-def basket_add_item():
-    print()
+def basket_add_item(basket_id, good_id, count):
+    # Creating database session
+    engine = create_engine(dburi)
+    conn = engine.connect()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
+    select_stmt = select([costkeeper.Basket.Basket_ID]).where(costkeeper.Basket.Basket_ID == basket_id)
+    result = conn.execute(select_stmt)
+    basketexist = result.fetchall()
+    result.close()
+    if not basketexist:
+        status = False
+        response = "ERROR_BASKET_NOT_EXIST"
+    else:
+        select_stmt = select([costkeeper.Good_in_basket.basket_id, costkeeper.Good_in_basket.Good_ID]).where(costkeeper.Good_in_basket.Basket_ID == basket_id).where(costkeeper.Good_in_basket.Basket_ID == basket_id)
+        result = conn.execute(select_stmt)
+        rows = result.fetchall()
+        result.close()
+        if not rows:
+            NewGood_in_basket = costkeeper.Good_in_basket(basket_id, good_id, count)
+            try:
+                session.add(NewGood_in_basket)
+                status = True
+                response = "SUCCESS"
+            except sqlalchemy.exc.OperationalError:
+                response = "ERROR_ADDING"
+                status = False
+        else:
+            ourGood_in_basket = session.query(costkeeper.Good_in_basket).filter(costkeeper.Good_in_basket.Basket_ID == basket_id).filter(costkeeper.Good_in_basket.Basket_ID == good_id).first()
+            ourGood_in_basket.count = ourGood_in_basket.count + count
+            status = True
+            response = "SUCCESS"
+        if(status==True):
+            ourBasket = session.query(costkeeper.Basket).filter_by(Basket_ID=basket_id).first()
+            ourBasket.Modify_date = datetime.today()
+    session.commit()
+    return status, response
 
-def basket_alter_item():
-    print()
+
+def basket_alter_item(basket_id, good_id, count):
+    # Creating database session
+    engine = create_engine(dburi)
+    conn = engine.connect()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
+    select_stmt = select([costkeeper.Basket.Basket_ID]).where(costkeeper.Basket.Basket_ID == basket_id)
+    result = conn.execute(select_stmt)
+    basketexist = result.fetchall()
+    result.close()
+    if not basketexist:
+        status = False
+        response = "ERROR_BASKET_NOT_EXIST"
+    else:
+        select_stmt = select([costkeeper.Good_in_basket.basket_id, costkeeper.Good_in_basket.Good_ID]).where(costkeeper.Good_in_basket.Basket_ID == basket_id).where(costkeeper.Good_in_basket.Basket_ID == basket_id)
+        result = conn.execute(select_stmt)
+        rows = result.fetchall()
+        result.close()
+        if not rows:
+            response = "ERROR_GOOD_IN_THE_BASKET_NOT_EXIST"
+            status   = False
+        else:
+            ourGood_in_basket = session.query(costkeeper.Good_in_basket).filter(costkeeper.Good_in_basket.Basket_ID == basket_id).filter(costkeeper.Good_in_basket.Basket_ID == good_id).first()
+            ourGood_in_basket.count = ourGood_in_basket.count + count
+            status = True
+            response = "SUCCESS"
+        if(status==True):
+            ourBasket = session.query(costkeeper.Basket).filter_by(Basket_ID=basket_id).first()
+            ourBasket.Modify_date = datetime.today()
+    session.commit()
+    return status, response
+
 
 def basket_delete():
     print()
