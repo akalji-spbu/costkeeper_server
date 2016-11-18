@@ -233,14 +233,14 @@ class BasketHandler(tornado.web.RequestHandler):
                 basket_id = str(object['basket_id'])
                 good_id = int(object['good_id'])
                 count = str(object['count'])
-                status, response = api.basket_alter_item(basket_id, good_id, count)
+                status, response = api.basket_add_item(basket_id, good_id, count)
 
 
             if (method == "basket_alter_item"):
                 basket_id = str(object['basket_id'])
                 good_id = int(object['good_id'])
                 count = str(object['count'])
-                status, response = api.basket_add_item(basket_id, good_id, count)
+                status, response = api.basket_alter_item(basket_id, good_id, count)
 
             if (method == "basket_delete"):
                 status,response = api.basket_delete()

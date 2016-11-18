@@ -520,6 +520,7 @@ def basket_add(user_id,basket_name=""):
     except sqlalchemy.exc.OperationalError:
         status = False
         response = "ADDING_ERROR"
+    session.commit()
     return status, response
 
 
@@ -615,19 +616,24 @@ def basket_get(basket_id=""):
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         result.close()
-        response = '{"basket_id":"'+str([0].Basket_ID) +'","name": "'+str(rows[0].Name)+'","creation_date": "'+str(rows[0].Creation_date)+'","modfy_date": "'+str(rows[0].Modify_date)
+        response = '{"basket_id":"'+str(rows[0].Basket_ID) +'","name": "'+str(rows[0].Name)+'","creation_date": "'+str(rows[0].Creation_date)+'","modfy_date": "'+str(rows[0].Modify_date)
 
         select_stmt = select([costkeeper.Good_in_basket.Good_ID, costkeeper.Good_in_basket.Number_of_goods]).where(costkeeper.Good_in_basket.Basket_ID == basket_id)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
+        rowcount = result.rowcount
         result.close()
         if not rows:
-            response = response + ",basket_is_empty"+'"}'
+            response = response +'"}'
         else:
-            response = response + "goods: {"
+            response = response + "\",\"goods\": ["
+            cnt = 0
             for row in rows:
-                response = response + "{good_id:" + str(row.Good_ID) + ",number_of_goods" + str(row.Number_of_goods)+"},"
-            response = response + "\b}}"
+                cnt = cnt+1
+                response = response + "{\"good_id\":\"" + str(row.Good_ID) + "\",\"number_of_goods\":\"" + str(row.Number_of_goods)+"\"}"
+                if (cnt < rowcount):
+                    response = response + ","
+            response = response + "]}"
 
     return status, response
 
@@ -645,9 +651,9 @@ def basket_add_item(basket_id, good_id, count):
     result.close()
     if not basketexist:
         status = False
-        response = "ERROR_BASKET_NOT_EXIST"
+        response = "ERROR_BASKET_DOES_NOT_EXIST"
     else:
-        select_stmt = select([costkeeper.Good_in_basket.basket_id, costkeeper.Good_in_basket.Good_ID]).where(costkeeper.Good_in_basket.Basket_ID == basket_id).where(costkeeper.Good_in_basket.Basket_ID == basket_id)
+        select_stmt = select([costkeeper.Good_in_basket.Basket_ID, costkeeper.Good_in_basket.Good_ID]).where(costkeeper.Good_in_basket.Basket_ID == basket_id).where(costkeeper.Good_in_basket.Good_ID == good_id)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         result.close()
@@ -661,8 +667,9 @@ def basket_add_item(basket_id, good_id, count):
                 response = "ERROR_ADDING"
                 status = False
         else:
-            ourGood_in_basket = session.query(costkeeper.Good_in_basket).filter(costkeeper.Good_in_basket.Basket_ID == basket_id).filter(costkeeper.Good_in_basket.Basket_ID == good_id).first()
-            ourGood_in_basket.count = ourGood_in_basket.count + count
+            ourGood_in_basket = session.query(costkeeper.Good_in_basket).filter(costkeeper.Good_in_basket.Basket_ID == basket_id).filter(costkeeper.Good_in_basket.Good_ID == good_id).first()
+            #print(dir(ourGood_in_basket))
+            ourGood_in_basket.Number_of_goods = ourGood_in_basket.Number_of_goods + int(count)
             status = True
             response = "SUCCESS"
         if(status==True):
@@ -685,18 +692,18 @@ def basket_alter_item(basket_id, good_id, count):
     result.close()
     if not basketexist:
         status = False
-        response = "ERROR_BASKET_NOT_EXIST"
+        response = "ERROR_BASKET_DOES_NOT_EXIST"
     else:
-        select_stmt = select([costkeeper.Good_in_basket.basket_id, costkeeper.Good_in_basket.Good_ID]).where(costkeeper.Good_in_basket.Basket_ID == basket_id).where(costkeeper.Good_in_basket.Basket_ID == basket_id)
+        select_stmt = select([costkeeper.Good_in_basket.Basket_ID, costkeeper.Good_in_basket.Good_ID]).where(costkeeper.Good_in_basket.Basket_ID == basket_id).where(costkeeper.Good_in_basket.Basket_ID == basket_id)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         result.close()
         if not rows:
-            response = "ERROR_GOOD_IN_THE_BASKET_NOT_EXIST"
+            response = "ERROR_GOOD_IN_THE_BASKET_DOES_NOT_EXIST"
             status   = False
         else:
-            ourGood_in_basket = session.query(costkeeper.Good_in_basket).filter(costkeeper.Good_in_basket.Basket_ID == basket_id).filter(costkeeper.Good_in_basket.Basket_ID == good_id).first()
-            ourGood_in_basket.count = ourGood_in_basket.count + count
+            ourGood_in_basket = session.query(costkeeper.Good_in_basket).filter(costkeeper.Good_in_basket.Basket_ID == basket_id).filter(costkeeper.Good_in_basket.Good_ID == good_id).first()
+            ourGood_in_basket.Number_of_goods = int(count)
             status = True
             response = "SUCCESS"
         if(status==True):
@@ -723,6 +730,7 @@ def basket_get_all(user_id):
     select_stmt = select([costkeeper.Basket.Basket_ID]).where(costkeeper.Basket.User_ID == user_id)
     result = conn.execute(select_stmt)
     rows = result.fetchall()
+    rowcount = result.rowcount
     result.close()
 
     if not rows:
@@ -734,9 +742,14 @@ def basket_get_all(user_id):
         rows = result.fetchall()
         result.close()
         response = '''{"userID":"''' + str(user_id) + '''","Array": ['''
+        cnt = 0
         for row in rows:
-            response = response + "{basketID:" + row.Basket_ID + ",basketName" + row.Name + ",creationDate" + row.Creation_date + ",modifiedDate" + row.Modify_date + "},"
-        response = response + "\b}}"
+            cnt = cnt+1
+            response = response + '''{"basketID":"''' + str(row.Basket_ID) + '''","basketName":"''' + row.Name + '''","creationDate":"''' + str(row.Creation_date) + '''","modifiedDate":"''' + str(row.Modify_date) + '''"}'''
+            if(cnt < rowcount):
+                response = response + ","
+
+        response = response + "]}"
 
 
 

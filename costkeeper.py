@@ -68,7 +68,7 @@ class Currency(Base):
 
 
 class Basket(Base):
-    __tablename__ = 'basket'
+    __tablename__ = 'baskets'
     Basket_ID  = Column (Integer, primary_key = True, unique=True)
     User_ID = Column (Integer)
     Creation_date = Column (DateTime)
@@ -82,7 +82,7 @@ class Basket(Base):
 
 
 class Good_in_basket(Base):
-    __tablename__ = 'Goods_in_baskets'
+    __tablename__ = 'goods_in_baskets'
     Basket_ID = Column (Integer, primary_key = True, autoincrement=False)
     Good_ID = Column (Integer, primary_key = True, autoincrement=False)
     Number_of_goods = Column(Integer)
