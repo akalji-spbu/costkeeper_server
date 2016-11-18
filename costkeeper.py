@@ -122,7 +122,7 @@ class City(Base):
 
 class Street(Base):
     __tablename__               = 'streets'
-    Street_ID                   = Column(Integer, primary_key=True, unique=True)
+    Street_ID                   = Column(Integer, primary_key=True, unique=True, autoincrement=True)
     Street_Name                 = Column(String(45))
     def __init__(self, Street_Name):
         self.Street_Name        = Street_Name
