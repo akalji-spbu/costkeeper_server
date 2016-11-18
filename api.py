@@ -8,7 +8,7 @@ import string
 import datetime
 from datetime import datetime, timedelta
 from hashlib import md5
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine, select, delete
 from sqlalchemy.sql import table, column
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import TEXT, INTEGER, String
@@ -501,29 +501,117 @@ def cost_add(good_id='', shop_id='', currency_id='', value=''):
 
 
 #basket methods
-def basket_add():
-    status = True
-    response = "SUCCESS"
-    return status, response    
+def basket_add(user_id,basket_name=""):
+    # Creating database session
+    engine = create_engine(dburi)
+    conn = engine.connect()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
 
-def basket_delete_item():
     status = True
     response = "SUCCESS"
+
+    if(len(basket_name) == 0):
+        basket_name = "Untitled"
+    newBasket = costkeeper.Basket(user_id,datetime.today(),datetime.today(),basket_name)
+    try:
+        session.add(newBasket)
+    except sqlalchemy.exc.OperationalError:
+        status = False
+        response = "ADDING_ERROR"
     return status, response
 
-def basket_modify():
+
+def basket_delete_item():
+    # Creating database session
+    engine = create_engine(dburi)
+    conn = engine.connect()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
+
     status = True
     response = "SUCCESS"
+
+    return status, response
+
+
+def basket_modify(basket_id,new_name):
+    # Creating database session
+    engine = create_engine(dburi)
+    conn = engine.connect()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
+
+    status = True
+    response = "SUCCESS"
+
+    select_stmt = select([costkeeper.Basket.Basket_ID]).where(costkeeper.Basket.Basket_ID == basket_id)
+    result = conn.execute(select_stmt)
+    rows = result.fetchall()
+    result.close()
+
+    if not rows:
+        status = False
+        response = "BASKET_DOES_NOT_EXIST"
+    else:
+        ourBasket = session.query(costkeeper.Basket).filter_by(Basket_ID=basket_id).first()
+        if(len(new_name) == 0):
+            ourBasket.Name = "Untitled"
+        else:
+            ourBasket.Name = new_name
+        ourBasket.Modify_date = datetime.today()
+    session.commit()
     return status, response
 
 def basket_erase():
+
     status = True
     response = "SUCCESS"
+
     return status, response
 
-def basket_get():
+
+def basket_get(basket_id=""):
+    # Creating database session
+    engine = create_engine(dburi)
+    conn = engine.connect()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
+
     status = True
     response = "SUCCESS"
+
+    select_stmt = select([costkeeper.Basket.Basket_ID]).where(costkeeper.Basket.Basket_ID == basket_id)
+    result = conn.execute(select_stmt)
+    rows = result.fetchall()
+    result.close()
+
+    if not rows:
+        status = False
+        response = "BASKET_DOES_NOT_EXIST"
+    else:
+        select_stmt = select([costkeeper.Basket.Basket_ID,costkeeper.Basket.Name,costkeeper.Basket.Creation_date, costkeeper.Basket.Modify_date ]).where(costkeeper.Basket.Basket_ID == basket_id)
+        result = conn.execute(select_stmt)
+        rows = result.fetchall()
+        result.close()
+        response = '{"basket_id":"'+str([0].Basket_ID) +'","name": "'+str(rows[0].Name)+'","creation_date": "'+str(rows[0].Creation_date)+'","modfy_date": "'+str(rows[0].Modify_date)
+
+        select_stmt = select([costkeeper.Good_in_basket.Good_ID, costkeeper.Good_in_basket.Number_of_goods]).where(costkeeper.Good_in_basket.Basket_ID == basket_id)
+        result = conn.execute(select_stmt)
+        rows = result.fetchall()
+        result.close()
+        if not rows:
+            response = response + ",basket_is_empty"+'"}'
+        else:
+            response = response + "goods: {"
+            for row in rows:
+                response = response + "{good_id:" + row.Good_ID + ",number_of_goods" + row.Number_of_goods+"},"
+            response = response + "\b}}"
+
     return status, response
 
 def basket_add_item(basket_id, good_id, count):

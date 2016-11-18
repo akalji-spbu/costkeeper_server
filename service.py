@@ -196,7 +196,8 @@ class BasketHandler(tornado.web.RequestHandler):
         secret = self.get_argument('secret', True)
         if allowed == True :
             if(method == "basket_get"):
-                status, response = api.basket_get()
+                basket_id = self.get_argument('basket_id',True)
+                status, response = api.basket_get(basket_id)
             if(method == "basket_get_all"):
                 status, response = api.basket_get_all()
         self.write(response)
@@ -212,6 +213,8 @@ class BasketHandler(tornado.web.RequestHandler):
             object = data_json['object']
 
             if (method == "basket_add"):
+                basket_name = str(object['name'])
+                status,response = api.basket_add(userID,basket_name)
 
             if (method == "basket_delete_item"):
                 status,response = api.basket_delete_item()
@@ -220,7 +223,9 @@ class BasketHandler(tornado.web.RequestHandler):
                 status,response = api.basket_erase()
 
             if (method == "basket_modify"):
-                status,response = api.basket_modify()
+                basket_id = str(object['basket_id'])
+                new_name = str(object['new_name'])
+                status,response = api.basket_modify(basket_id,new_name)
 
             if (method == "basket_add_item"):
                 basket_id = str(object['basket_id'])
