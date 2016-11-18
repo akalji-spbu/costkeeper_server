@@ -104,20 +104,20 @@ class Region(Base):
     __tablename__               = 'regions'
     Region_ID                   = Column(Integer, primary_key=True, unique=True)
     Region_Name                 = Column(String(45))
-    Region_Code                 = Column(Integer)
-    def __init__(self, Сountry_Name, Country_ID):
-        self.Country_Name       = Сountry_Name
-        self.Country_ID         = Country_ID
+    countries_Country_ID                 = Column(Integer)
+    def __init__(self, Region_Name, Сountry_ID):
+        self.Region_Name       = Region_Name
+        self.countries_Country_ID         = Сountry_ID
 
 
 class City(Base):
     __tablename__               = 'cities'
     City_ID                     = Column(Integer, primary_key=True, unique=True)
     City_Name                   = Column(String(45))
-    Region_ID                   = Column(Integer)
+    regions_Region_ID                   = Column(Integer)
     def __init__(self, City_Name, Region_ID):
         self.City_Name          = City_Name
-        self.Region_ID          = Region_ID
+        self.regions_Region_ID          = Region_ID
 
 
 class Street(Base):
