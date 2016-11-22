@@ -55,6 +55,14 @@
   }
 }
 
+{
+  "user_id":"",
+  "nickname": "",
+  "firstname":"",
+  "lastname":"",
+  "avatar": ""
+}
+
 
 //SHOP METHOD
 

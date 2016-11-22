@@ -5,11 +5,9 @@ import sys
 import tornado.web
 import tornado.httpserver
 
-import json
-
-
 
 class UserHandler(tornado.web.RequestHandler):
+    @tornado.web.asynchronous
     def get(self):
         self.write(port)
         method = self.get_argument('method', True)
@@ -53,7 +51,7 @@ class UserHandler(tornado.web.RequestHandler):
             if (status == True):
                 self.write(token)
             else:
-                self.write("UserDoesNotExist")
+                self.write("ERROR_USER_DOES_NOT_EXIST")
 
 
         if (method == "user_alter"):
@@ -75,6 +73,7 @@ class UserHandler(tornado.web.RequestHandler):
 
 
 class ShopHandler(tornado.web.RequestHandler):
+    @tornado.web.asynchronous
     def get(self):
         token = self.get_argument('token', True)
         secret = self.get_argument('secret', True)
@@ -107,6 +106,7 @@ class ShopHandler(tornado.web.RequestHandler):
 
 
 class GoodHandler(tornado.web.RequestHandler):
+    @tornado.web.asynchronous
     def get(self):
         token = self.get_argument('token', True)
         method = self.get_argument('method', True)
@@ -169,6 +169,7 @@ class GoodHandler(tornado.web.RequestHandler):
 
 
 class CostHandler(tornado.web.RequestHandler):
+    @tornado.web.asynchronous
     def get(self):
         token = self.get_argument('token', True)
     def post(self):
@@ -189,6 +190,7 @@ class CostHandler(tornado.web.RequestHandler):
                 return response
 
 class BasketHandler(tornado.web.RequestHandler):
+    @tornado.web.asynchronous
     def get(self):
         token = self.get_argument('token', True)
         method = self.get_argument('method', True)

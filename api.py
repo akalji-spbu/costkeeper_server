@@ -120,7 +120,7 @@ def user_reg(nickname="", password="", email="", firstname="", lastname="", avat
     try:
         session.add(NewUser)
     except sqlalchemy.exc.OperationalError:
-        print("Error adding")
+        print("ERROR_CORE_ADDING")
 
     session.commit()
     return True
@@ -156,7 +156,7 @@ def user_alter(token="",nickname="",email="",firstname="",lastname="",avatar="")
             if (len(avatar) != 0):
                 ourUser.avatar = avatar
             session.commit()
-    return "Success"
+    return "SUCCESS"
 
 def user_delete():
     # Creating database session
