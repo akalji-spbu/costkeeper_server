@@ -16,6 +16,10 @@ from sqlalchemy import TEXT, INTEGER, String
 dburi = config.db_dialect + '://' + config.db_user + ':' + config.db_password + '@' + config.db_host + ':' +config.db_port+ '/'+ config.db_name +'?charset=utf8'
 
 #users methods
+
+def user_is_admin(user_id):
+    return False
+
 def user_check_token(token):
     # Creating database session
     engine = create_engine(dburi)
@@ -713,8 +717,26 @@ def basket_alter_item(basket_id, good_id, count):
     return status, response
 
 
-def basket_delete():
-    print()
+def basket_delete(user_id, basket_id):
+    print(user_id)
+    status = True
+    response = "SUCCESS"
+    # Creating database session
+    engine = create_engine(dburi)
+    conn = engine.connect()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
+    ourBasket = session.query(costkeeper.Basket).filter_by(Basket_ID=basket_id).first()
+    if ourBasket != None:
+        if (ourBasket.User_ID==user_id or user_is_admin(user_id)):
+            session.delete(ourBasket)
+            session.commit()
+    else:
+        response = "ERROR_BASKET_DOES_NOT_EXISTS"
+    session.close()
+
+    return status, response
 
 def basket_get_all(user_id):
     # Creating database session

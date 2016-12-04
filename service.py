@@ -243,9 +243,10 @@ class BasketHandler(tornado.web.RequestHandler):
                 status, response = api.basket_alter_item(basket_id, good_id, count)
 
             if (method == "basket_delete"):
-                status,response = api.basket_delete()
-        self.write(response)
+                basket_id = str(object['basket_id'])
+                status,response = api.basket_delete(userID, basket_id)
 
+        self.write(response)
 
 
 class Application(tornado.web.Application):
