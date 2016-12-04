@@ -599,7 +599,7 @@ def basket_modify(basket_id,new_name):
     return status, response
 
 
-def basket_erase(basket_id=""):
+def basket_erase(user_id,basket_id=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -610,7 +610,24 @@ def basket_erase(basket_id=""):
     status = True
     response = "SUCCESS"
 
-    
+    select_stmt = select([costkeeper.Basket.User_ID]).where(costkeeper.Basket.Basket_ID == basket_id)
+    result = conn.execute(select_stmt)
+    rows = result.fetchall()
+    result.close()
+    if not rows:
+        status = False
+        response = "ERROR_WRONG_BASKET_ID"
+        return status, response
+    else:
+        if rows[0].User_ID != user_id:
+            status = False
+            response = "ERROR_ACCESS"
+            return status, response
+
+    ourGoods = session.query(costkeeper.Good_in_basket).filter_by(Basket_ID=basket_id).all()
+    for result in ourGoods:
+        session.delete(result)
+    session.commit()
     return status, response
 
 
@@ -736,7 +753,6 @@ def basket_alter_item(basket_id, good_id, count):
 
 
 def basket_delete(user_id, basket_id):
-    print(user_id)
     status = True
     response = "SUCCESS"
     # Creating database session
@@ -748,7 +764,7 @@ def basket_delete(user_id, basket_id):
     ourBasket = session.query(costkeeper.Basket).filter_by(Basket_ID=basket_id).first()
     if ourBasket != None:
         if (ourBasket.User_ID==user_id or user_is_admin(user_id)):
-            basket_erase(basket_id)
+            basket_erase(user_id,basket_id)
             session.delete(ourBasket)
             session.commit()
     else:
