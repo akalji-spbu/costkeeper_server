@@ -528,7 +528,7 @@ def basket_add(user_id,basket_name=""):
     return status, response
 
 
-def basket_delete_item(basket_id="",good_id=""):
+def basket_delete_item(user_id="",basket_id="",good_id=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -538,8 +538,18 @@ def basket_delete_item(basket_id="",good_id=""):
 
     status = True
     response = "SUCCESS"
-
-    if(len(basket_id) == 0):
+    select_stmt = select([costkeeper.Basket.User_ID]).where(costkeeper.Basket.Basket_ID == basket_id)
+    result = conn.execute(select_stmt)
+    rows = result.fetchall()
+    result.close()
+    if not rows:
+        status = False
+        response = "ERROR_WRONG_BASKET_ID"
+    else:
+        if rows[0].User_ID != user_id:
+            status = False
+            response = "ERROR_ACCESS"
+    if(len(basket_id) == 0 and status == True):
         status = False
         response = "ERROR_NO_BASKET_ID"
     else:
@@ -547,13 +557,15 @@ def basket_delete_item(basket_id="",good_id=""):
             status = False
             response = "ERROR_NO_GOOD_ID"
         else:
-            delete_stmt = costkeeper.Good_in_basket.delete().where(costkeeper.Good_in_basket.Good_ID == good_id).where(costkeeper.Good_in_basket.Basket_ID == basket_id)
+            ourGoodInBasket = session.query(costkeeper.Good_in_basket).filter_by(costkeeper.Good_in_basket.Basket_ID == basket_id,costkeeper.Good_in_basket.Good_ID == good_id).first()
             result = conn.execute(delete_stmt)
             rows = result.fetchall()
             result.close()
-            if not rows:
+            if(ourGoodInBasket == None):
                 status = False
-                response = "ERROR_ITEM_DOES_NOT_EXIST"
+                response = "ERROR_GOOD_IN_BASKET_DOES_NOT_EXIST"
+            else:
+                session.delete(ourGoodInBasket)
     session.commit()
     return status, response
 
@@ -589,9 +601,16 @@ def basket_modify(basket_id,new_name):
 
 
 def basket_erase(basket_id):
+    # Creating database session
+    engine = create_engine(dburi)
+    conn = engine.connect()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
 
     status = True
     response = "SUCCESS"
+
 
     return status, response
 
