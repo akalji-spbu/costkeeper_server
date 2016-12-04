@@ -59,12 +59,17 @@
   "user_id":"",
   "nickname": "",
   "firstname":"",
-  "lastname":"",
-  "avatar": ""
-}
+  "lastname":"",4
 
 
 //SHOP METHOD
+{
+	"shop_id":"",
+	"name": "",
+	"city_id":"",
+	"street_id":"",
+	"building": ""
+}
 
 {
   "type": "shop_add",

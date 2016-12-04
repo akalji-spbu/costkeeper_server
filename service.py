@@ -7,9 +7,7 @@ import tornado.httpserver
 
 
 class UserHandler(tornado.web.RequestHandler):
-    @tornado.web.asynchronous
     def get(self):
-        self.write(port)
         method = self.get_argument('method', True)
         if (method == "user_get"):
             token = self.get_argument('token', True)
@@ -265,7 +263,6 @@ port = 14001
 if(len(sys.argv)>0):
     port = sys.argv[1]
 
-print(port)
 
 # Run the instance
 application = Application()
