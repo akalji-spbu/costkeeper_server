@@ -588,7 +588,7 @@ def basket_modify(basket_id,new_name):
     return status, response
 
 
-def basket_erase():
+def basket_erase(basket_id):
 
     status = True
     response = "SUCCESS"
@@ -730,6 +730,7 @@ def basket_delete(user_id, basket_id):
     ourBasket = session.query(costkeeper.Basket).filter_by(Basket_ID=basket_id).first()
     if ourBasket != None:
         if (ourBasket.User_ID==user_id or user_is_admin(user_id)):
+            basket_erase(basket_id)
             session.delete(ourBasket)
             session.commit()
     else:
