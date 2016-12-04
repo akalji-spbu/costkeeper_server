@@ -162,13 +162,17 @@ def user_alter(token="",nickname="",email="",firstname="",lastname="",avatar="")
             session.commit()
     return "SUCCESS"
 
-def user_delete():
-    # Creating database session
-    engine = create_engine(dburi)
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    # /Creating database session
-    return("Hello World")
+def user_delete(d_user_id, user_id):
+    status = False
+    response = ""
+    if (d_user_id==user_id or user_is_admin(user_id)):
+        # Creating database session
+        engine = create_engine(dburi)
+        Session = sessionmaker(bind=engine)
+        session = Session()
+        # /Creating database session
+
+    return status, response
 
 def user_alter_password(token="",password="",newpassword=""):
     # Creating database session
