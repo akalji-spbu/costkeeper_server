@@ -41,7 +41,7 @@ def user_check_token(token):
         else:
             allowed = True
             userID = rows[0].User_ID
-            response = "ERROR_TOKEN_ALLOWED"
+            response = "TOKEN_ALLOWED"
 
     return allowed, userID, response
 
@@ -163,14 +163,32 @@ def user_alter(token="",nickname="",email="",firstname="",lastname="",avatar="")
     return "SUCCESS"
 
 def user_delete(d_user_id, user_id):
+    d_user_id = int(d_user_id)
+    user_id = int(user_id)
     status = False
     response = ""
+    print(d_user_id==user_id)
     if (d_user_id==user_id or user_is_admin(user_id)):
         # Creating database session
         engine = create_engine(dburi)
         Session = sessionmaker(bind=engine)
+        conn = engine.connect()
         session = Session()
         # /Creating database session
+        select_stmt = select([costkeeper.Basket.Basket_ID]).where(costkeeper.Basket.User_ID == user_id)
+        result = conn.execute(select_stmt)
+        rows = result.fetchall()
+        rowcount = result.rowcount
+        result.close()
+        for row in rows:
+            basket_delete(d_user_id, row.Basket_ID)
+
+        ourUser = session.query(costkeeper.User).filter_by(User_ID=d_user_id).first()
+        session.delete(ourUser)
+        session.commit()
+        session.close()
+        status = True
+        response = "SUCCEESS"
 
     return status, response
 
@@ -205,6 +223,7 @@ def user_alter_password(token="",password="",newpassword=""):
         ourUser.token = token
         ourUser.token_lifetime = datetime.today()+timedelta(days=1)
         session.commit()
+        session.close()
         return token
 
 def user_get(token="",ID="",secret=""):
@@ -291,7 +310,7 @@ def shop_add(name="",city="", street="", building=""):
         status = False
         response = "ERROR_SHOP_ALREDY_EXIST"
 
-
+    session.close()
     return status, response
 
 def shop_alter(id, name,city, street, building):
@@ -319,6 +338,7 @@ def shop_alter(id, name,city, street, building):
         if (len(building) != 0):
             ourShop.Building = building
         session.commit()
+        session.close()
         return "SUCCESS"
 
 def shop_get(id):
@@ -371,6 +391,7 @@ def good_add(barcode=0, name="", life="", description="", prod_country_id="", ty
         response = "ERROR_GOOD_ALREADY_EXIST"
 
     session.commit()
+    session.close()
     return status, response
 
 def good_alter(id="", name="", life="", description="", prod_country_id="", type_id="", picture=""):
@@ -408,6 +429,7 @@ def good_alter(id="", name="", life="", description="", prod_country_id="", type
             ourGood.Picture = picture
 
     session.commit()
+    session.close()
     return status, response
 
 def good_get(secret="", good_id=""):
@@ -503,6 +525,7 @@ def cost_add(good_id='', shop_id='', currency_id='', value=''):
         status = False
 
     session.commit()
+    session.close()
     return status, response
 
 #End cost methods
@@ -529,6 +552,7 @@ def basket_add(user_id,basket_name=""):
         status = False
         response = "ADDING_ERROR"
     session.commit()
+    session.close()
     return status, response
 
 
@@ -570,6 +594,7 @@ def basket_delete_item(user_id="",basket_id="",good_id=""):
             else:
                 session.delete(ourGoodInBasket)
     session.commit()
+    session.close()
     return status, response
 
 
@@ -600,6 +625,7 @@ def basket_modify(basket_id,new_name):
             ourBasket.Name = new_name
         ourBasket.Modify_date = datetime.today()
     session.commit()
+    session.close()
     return status, response
 
 
@@ -632,6 +658,7 @@ def basket_erase(user_id,basket_id=""):
     for result in ourGoods:
         session.delete(result)
     session.commit()
+    session.close()
     return status, response
 
 
@@ -719,6 +746,7 @@ def basket_add_item(basket_id, good_id, count):
             ourBasket = session.query(costkeeper.Basket).filter_by(Basket_ID=basket_id).first()
             ourBasket.Modify_date = datetime.today()
     session.commit()
+    session.close()
     return status, response
 
 
@@ -753,6 +781,7 @@ def basket_alter_item(basket_id, good_id, count):
             ourBasket = session.query(costkeeper.Basket).filter_by(Basket_ID=basket_id).first()
             ourBasket.Modify_date = datetime.today()
     session.commit()
+    session.close()
     return status, response
 
 
@@ -774,7 +803,7 @@ def basket_delete(user_id, basket_id):
     else:
         response = "ERROR_BASKET_DOES_NOT_EXISTS"
     session.close()
-
+    session.close()
     return status, response
 
 def basket_get_all(user_id):
