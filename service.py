@@ -71,7 +71,7 @@ class UserHandler(tornado.web.RequestHandler):
 
 
 class ShopHandler(tornado.web.RequestHandler):
-    @tornado.web.asynchronous
+
     def get(self):
         token = self.get_argument('token', True)
         secret = self.get_argument('secret', True)
@@ -83,7 +83,7 @@ class ShopHandler(tornado.web.RequestHandler):
         token = str(data_json['token'])
         secret = str(data_json['secret'])
         object = data_json['object']
-        allowed, userID, response = api.user_check_token(token)
+        allowed, user_id, response = api.user_check_token(token)
         if(allowed == True):
             if (method == "shop_add"):
                 name        = str(object['name']).encode('utf-8')
@@ -104,11 +104,11 @@ class ShopHandler(tornado.web.RequestHandler):
 
 
 class GoodHandler(tornado.web.RequestHandler):
-    @tornado.web.asynchronous
+
     def get(self):
         token = self.get_argument('token', True)
         method = self.get_argument('method', True)
-        allowed,userID,response = api.user_check_token(token)
+        allowed,user_id,response = api.user_check_token(token)
         secret = self.get_argument('secret', True)
         if allowed == True :
             if (method == "good_get"):
@@ -141,7 +141,7 @@ class GoodHandler(tornado.web.RequestHandler):
         method = str(data_json['type'])
         token = str(data_json['token'])
         secret = str(data_json['secret'])
-        allowed,userID,response = api.user_check_token(token)
+        allowed,user_id,response = api.user_check_token(token)
         if allowed == True :
             object = data_json['object']
             if (method == "good_add"):
@@ -167,7 +167,7 @@ class GoodHandler(tornado.web.RequestHandler):
 
 
 class CostHandler(tornado.web.RequestHandler):
-    @tornado.web.asynchronous
+
     def get(self):
         token = self.get_argument('token', True)
     def post(self):
@@ -177,7 +177,7 @@ class CostHandler(tornado.web.RequestHandler):
         token = str(data_json['token'])
         secret = str(data_json['secret'])
         object = data_json['object']
-        allowed, userID, response = api.user_check_token(token)
+        allowed, user_id, response = api.user_check_token(token)
         if (allowed == True):
             if (method == "cost_add"):
                 good_id         = int(object['good_id'])
@@ -188,18 +188,17 @@ class CostHandler(tornado.web.RequestHandler):
                 return response
 
 class BasketHandler(tornado.web.RequestHandler):
-    @tornado.web.asynchronous
     def get(self):
         token = self.get_argument('token', True)
         method = self.get_argument('method', True)
-        allowed,userID,response = api.user_check_token(token)
+        allowed,user_id,response = api.user_check_token(token)
         secret = self.get_argument('secret', True)
         if allowed == True :
             if(method == "basket_get"):
                 basket_id = self.get_argument('basket_id',True)
                 status, response = api.basket_get(basket_id)
             if(method == "basket_get_all"):
-                status, response = api.basket_get_all(userID)
+                status, response = api.basket_get_all(user_id)
         self.write(response)
 
     def post(self):
