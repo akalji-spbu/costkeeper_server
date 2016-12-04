@@ -8,7 +8,7 @@ import string
 import datetime
 from datetime import datetime, timedelta
 from hashlib import md5
-from sqlalchemy import create_engine, select, delete
+from sqlalchemy import create_engine, select, delete, and_, or_
 from sqlalchemy.sql import table, column
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import TEXT, INTEGER, String
@@ -549,6 +549,8 @@ def basket_delete_item(user_id="",basket_id="",good_id=""):
         if rows[0].User_ID != user_id:
             status = False
             response = "ERROR_ACCESS"
+            return status,response
+
     if(len(basket_id) == 0 and status == True):
         status = False
         response = "ERROR_NO_BASKET_ID"
@@ -557,10 +559,7 @@ def basket_delete_item(user_id="",basket_id="",good_id=""):
             status = False
             response = "ERROR_NO_GOOD_ID"
         else:
-            ourGoodInBasket = session.query(costkeeper.Good_in_basket).filter_by(costkeeper.Good_in_basket.Basket_ID == basket_id,costkeeper.Good_in_basket.Good_ID == good_id).first()
-            result = conn.execute(delete_stmt)
-            rows = result.fetchall()
-            result.close()
+            ourGoodInBasket = session.query(costkeeper.Good_in_basket).filter_by(Good_ID=good_id).filter_by(Basket_ID=basket_id).first()
             if(ourGoodInBasket == None):
                 status = False
                 response = "ERROR_GOOD_IN_BASKET_DOES_NOT_EXIST"
@@ -600,7 +599,7 @@ def basket_modify(basket_id,new_name):
     return status, response
 
 
-def basket_erase(basket_id):
+def basket_erase(basket_id=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -611,7 +610,7 @@ def basket_erase(basket_id):
     status = True
     response = "SUCCESS"
 
-
+    
     return status, response
 
 
