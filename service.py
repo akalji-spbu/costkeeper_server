@@ -166,7 +166,6 @@ class GoodHandler(tornado.web.RequestHandler):
 
 
 class CostHandler(tornado.web.RequestHandler):
-
     def get(self):
         token = self.get_argument('token', True)
     def post(self):
@@ -184,7 +183,7 @@ class CostHandler(tornado.web.RequestHandler):
                 currency_id     = int(object['currency_id'])
                 value           = float(object['value'])
                 status, response = api.cost_add(good_id, shop_id, currency_id, value)
-                return response
+                self.write(response)
 
 
 class BasketHandler(tornado.web.RequestHandler):

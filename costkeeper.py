@@ -48,7 +48,6 @@ class Cost(Base):
         self.Currency_ID = Currency_ID
         self.Cost_value = Cost_value
 
-
 class Type_of_good(Base):
     __tablename__ = 'types_of_goods'
     Type_ID = Column (Integer, primary_key = True, unique=True)

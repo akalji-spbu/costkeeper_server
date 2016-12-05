@@ -270,7 +270,6 @@ def check_shop_by_id(id):
     result.close()
     rows = result.fetchall()
     result.close()
-    session.close()
     if not rows:
         return False
     else:
@@ -590,17 +589,18 @@ def cost_add(good_id='', shop_id='', currency_id='', value=''):
     Session = sessionmaker(bind=engine)
     session = Session()
     # /Creating database session
-    NewCost = costkeeper.Cost(datetime.today(), good_id, shop_id, currency_id, value)
+    NewCost = costkeeper.Cost(datetime.today(), int(good_id), int(shop_id), int(currency_id), float(value))
     try:
         session.add(NewCost)
         status = True
         response = "SUCSESS"
+        session.commit()
+        session.close()
     except sqlalchemy.exc.OperationalError:
         response = "COST_ADDING_ERROR"
         status = False
+        session.close()
 
-    session.commit()
-    session.close()
     return status, response
 
 #End cost methods
