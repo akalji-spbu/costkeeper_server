@@ -462,7 +462,7 @@ def good_get(secret="", good_id=""):
 
     return status, response
 
-def good_get_cost(good_id="", shop_id=""):
+def good_get_cost(good_id=0, shop_id=0):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -477,7 +477,7 @@ def good_get_cost(good_id="", shop_id=""):
     result = conn.execute(select_stmt)
     rows = result.fetchall()
     result.close()
-    if not rows or len(good_id)==0:
+    if not rows or good_id==0:
         status = False
         response = "ERROR_GOOD_DOES_NOT_EXIST"
     else:
@@ -485,11 +485,11 @@ def good_get_cost(good_id="", shop_id=""):
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         result.close()
-        if not rows or len(shop_id) == 0:
+        if not rows or shop_id == 0:
             status = False
             response = "ERROR_SHOP_DOES_NOT_EXIST"
         else:
-            select_stmt = select([costkeeper.Cost.Cost_value,costkeeper.Cost.Currency_ID]).where(costkeeper.Cost.Shop_ID == shop_id).where(costkeeper.Cost.Good_ID == good_id).order_by(costkeeper.Cost.Cost_Time.desc()).first()
+            select_stmt = select([costkeeper.Cost.Cost_value,costkeeper.Cost.Currency_ID]).where(costkeeper.Cost.Shop_ID == shop_id).where(costkeeper.Cost.Good_ID == good_id).order_by(costkeeper.Cost.Cost_Time.desc())
             result = conn.execute(select_stmt)
             rows = result.fetchall()
             result.close()
@@ -501,7 +501,7 @@ def good_get_cost(good_id="", shop_id=""):
     session.close()
     return status, response
 
-def good_get_costs_in_all_shops(good_id=""):
+def good_get_costs_in_all_shops(good_id=0):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -516,14 +516,14 @@ def good_get_costs_in_all_shops(good_id=""):
     result = conn.execute(select_stmt)
     rows = result.fetchall()
     result.close()
-    if not rows or len(good_id)==0:
+    if not rows or good_id==0:
         status = False
         response = "ERROR_GOOD_DOES_NOT_EXIST"
     else:
         select_stmt = select([costkeeper.Cost.Shop_ID]).where(costkeeper.Cost.Good_ID == good_id).distinct(costkeeper.Cost.Shop_ID)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
-        i = result.rowcount()
+        i = result.rowcount
         result.close()
         count = 0
         if not rows:

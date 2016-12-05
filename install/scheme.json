@@ -95,15 +95,6 @@
     "building":""   }
 }
 
-{
-  "type": "shop_complaint",
-  "secret": "",
-  "token": "",
-  "object": {
-    "id":"",
-    "text":""
-  }
-}
 
 
 //GOODS METHOD
