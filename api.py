@@ -304,17 +304,15 @@ def shop_add(name="",city="", street="", building=""):
             session.add(NewShop)
             response = "SUCCESS"
             status   = True
+            session.commit()
         except sqlalchemy.exc.OperationalError:
             response = "ADDING_ERROR"
             status   = False
-
-        session.commit()
 
     else:
         status = False
         response = "ERROR_SHOP_ALREDY_EXIST"
 
-    session.close()
     return status, response
 
 def shop_alter(id, name,city, street, building):

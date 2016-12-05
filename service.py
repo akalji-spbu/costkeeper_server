@@ -21,7 +21,6 @@ class UserHandler(tornado.web.RequestHandler):
         method = str(data_json['type'])
         token  = str(data_json['token'])
         secret = str(data_json['secret'])
-        allowed, userID, response = api.user_check_token(token)
         object = data_json['object']
 
 
@@ -68,8 +67,9 @@ class UserHandler(tornado.web.RequestHandler):
             self.write(api.user_alter_password(token,password,newpassword))
 
         if (method == "user_delete"):
+            allowed, user_id, response = api.user_check_token(token)
             d_user_id = str(object['d_user_id'])
-            status, response = api.user_delete(d_user_id, userID)
+            status, response = api.user_delete(d_user_id, user_id)
             self.write(response)
 
 
