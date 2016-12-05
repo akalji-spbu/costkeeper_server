@@ -560,7 +560,7 @@ def good_get_cost_history_in_shop(good_id="", shop_id=""):
         status = False
         response = "ERROR_NO_GOODS_IN_THIS_SHOP"
     else:
-        response = '''"good_id":"''' + str(good_id) + ''''","shop_id":"''' + str(good_id) + '''","costs":['''
+        response = '''"good_id":"''' + str(good_id) + '''","shop_id":"''' + str(good_id) + '''","costs":['''
         cnt = 0
         for row in rows:
             cnt = cnt + 1
