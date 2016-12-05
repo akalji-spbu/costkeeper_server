@@ -73,7 +73,6 @@ class UserHandler(tornado.web.RequestHandler):
             self.write(response)
 
 
-
 class ShopHandler(tornado.web.RequestHandler):
 
     def get(self):
@@ -131,11 +130,7 @@ class GoodHandler(tornado.web.RequestHandler):
             if (method == "good_get_cost_history_in_shop"):
                 good_id = int(self.get_argument('good_id',True))
                 shop_id = int(self.get_argument('shop_id',True))
-                status, response = api.good_get_cost_history_in_shop(secret, good_id, shop_id)
-
-            if (method == "good_find"):
-                good_name = self.get_argument('good_name',True).encode('utf-8')
-                status, response = api.good_find(secret, good_id, shop_id)
+                status, response = api.good_get_cost_history_in_shop(good_id, shop_id)
         self.write(response)
 
 
@@ -190,6 +185,7 @@ class CostHandler(tornado.web.RequestHandler):
                 value           = float(object['value'])
                 status, response = api.cost_add(good_id, shop_id, currency_id, value)
                 return response
+
 
 class BasketHandler(tornado.web.RequestHandler):
     def get(self):

@@ -160,6 +160,7 @@ def user_alter(token="",nickname="",email="",firstname="",lastname="",avatar="")
             if (len(avatar) != 0):
                 ourUser.avatar = avatar
             session.commit()
+    session.close()
     return "SUCCESS"
 
 def user_delete(d_user_id, user_id):
@@ -249,8 +250,10 @@ def user_get(token="",ID="",secret=""):
         rows = result.fetchall()
         result.close()
         if not rows:
+            session.close()
             return "ERROR_USER_DOES_NOT_EXIST"
         json_data = '{"user_id":"'+str(rows[0].User_ID) +'","nickname": "'+rows[0].User_Nickname +'","firstname":"'+ rows[0].User_Firstname+'","lastname":"'+rows[0].User_Lastname +'","avatar": "'+rows[0].avatar +'"}'
+        session.close()
         return json_data
 
 #end users methods
@@ -267,6 +270,7 @@ def check_shop_by_id(id):
     result.close()
     rows = result.fetchall()
     result.close()
+    session.close()
     if not rows:
         return False
     else:
@@ -314,7 +318,6 @@ def shop_add(name="",city="", street="", building=""):
     return status, response
 
 def shop_alter(id, name,city, street, building):
-
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -484,15 +487,30 @@ def good_get_costs_in_all_shops(secret="", good_id=""):
     response = "SUCCESS"
     return status, response
 
-def good_get_cost_history_in_shop(secret="", good_id="", shop_id=""):
+def good_get_cost_history_in_shop(good_id="", shop_id=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
     Session = sessionmaker(bind=engine)
-    session = Session()
     # /Creating database session
     status = True
-    response = "SUCCESS"
+    response = '''"good_id":"''' +str(good_id)+''''","shop_id":"'''+str(good_id)+'''","costs":['''
+
+    select_stmt = select([costkeeper.Cost.Cost_Time, costkeeper.Cost.Cost_value, costkeeper.Cost.Currency_ID]).where(costkeeper.Cost.Good_ID == good_id).where(costkeeper.Cost.Shop_ID == shop_id)
+    result = conn.execute(select_stmt)
+    rows = result.fetchall()
+    rowcount = result.rowcount
+    result.close()
+
+    cnt = 0
+    for row in rows:
+        cnt = cnt + 1
+        response = response + '''{"datetime":"''' + str(row.Cost_Time) + '''","cost":"''' + row.Cost_value + '''","currency":"''' + str(row.Currency_ID)+ '''"}'''
+        if (cnt < rowcount):
+            response = response + ","
+
+    response = response + "]}"
+
     return status, response
 
 def good_find(secret="", good_id=""):
