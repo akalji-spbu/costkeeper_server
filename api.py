@@ -465,26 +465,83 @@ def good_get(secret="", good_id=""):
 
     return status, response
 
-def good_get_cost(secret="", good_id="", shop_id=""):
+def good_get_cost(good_id="", shop_id=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
     Session = sessionmaker(bind=engine)
     session = Session()
     # /Creating database session
+
     status = True
     response = "SUCCESS"
+
+    select_stmt = select([costkeeper.Good.Good_ID]).where(costkeeper.Good.Good_ID == good_id)
+    result = conn.execute(select_stmt)
+    rows = result.fetchall()
+    result.close()
+    if not rows or len(good_id)==0:
+        status = False
+        response = "ERROR_GOOD_DOES_NOT_EXIST"
+    else:
+        select_stmt = select([costkeeper.Shop.Shop_ID]).where(costkeeper.Shop.Shop_ID == shop_id)
+        result = conn.execute(select_stmt)
+        rows = result.fetchall()
+        result.close()
+        if not rows or len(shop_id) == 0:
+            status = False
+            response = "ERROR_SHOP_DOES_NOT_EXIST"
+        else:
+            select_stmt = select([costkeeper.Cost.Cost_value,costkeeper.Cost.Currency_ID]).where(costkeeper.Cost.Shop_ID == shop_id).where(costkeeper.Cost.Good_ID == good_id).order_by(costkeeper.Cost.Cost_Time.desc()).first()
+            result = conn.execute(select_stmt)
+            rows = result.fetchall()
+            result.close()
+            if not rows:
+                status = False
+                response = "ERROR_COST_DOES_NOT_EXIST"
+            else:
+                response = "{\"shop_id\":\" "+str(shop_id)+"\",\"cost\": \""+str(rows[0].Cost_value)+"\",\"currency\":\""+str(rows[0].Currency_ID)+"\"}"
+    session.close()
     return status, response
 
-def good_get_costs_in_all_shops(secret="", good_id=""):
+def good_get_costs_in_all_shops(good_id=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
     Session = sessionmaker(bind=engine)
     session = Session()
     # /Creating database session
+
     status = True
     response = "SUCCESS"
+
+    select_stmt = select([costkeeper.Good.Good_ID]).where(costkeeper.Good.Good_ID == good_id)
+    result = conn.execute(select_stmt)
+    rows = result.fetchall()
+    result.close()
+    if not rows or len(good_id)==0:
+        status = False
+        response = "ERROR_GOOD_DOES_NOT_EXIST"
+    else:
+        select_stmt = select([costkeeper.Cost.Shop_ID]).where(costkeeper.Cost.Good_ID == good_id).distinct(costkeeper.Cost.Shop_ID)
+        result = conn.execute(select_stmt)
+        rows = result.fetchall()
+        i = result.rowcount()
+        result.close()
+        count = 0
+        if not rows:
+            status = False
+            response = "ERROR_COST_DOES_NOT_EXIST"
+        else:
+            response = "{\"good_id\":\""+str(good_id)+"\",\"costs\":["
+            for row in rows:
+                count = count +1
+                status,r = good_get_cost(good_id,row.Shop_ID)
+                response = response + r
+                if(count != i):
+                    response = response +","
+            response = response +"]}"
+
     return status, response
 
 def good_get_cost_history_in_shop(good_id="", shop_id=""):
