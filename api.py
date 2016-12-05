@@ -494,7 +494,6 @@ def good_get_cost_history_in_shop(good_id="", shop_id=""):
     Session = sessionmaker(bind=engine)
     # /Creating database session
     status = True
-
     select_stmt = select([costkeeper.Cost.Cost_Time, costkeeper.Cost.Cost_value, costkeeper.Cost.Currency_ID]).where(costkeeper.Cost.Good_ID == good_id).where(costkeeper.Cost.Shop_ID == shop_id)
     result = conn.execute(select_stmt)
     rows = result.fetchall()
@@ -861,8 +860,5 @@ def basket_get_all(user_id):
                 response = response + ","
 
         response = response + "]}"
-
-
-
     return status, response
 #end basket methods
