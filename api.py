@@ -494,22 +494,25 @@ def good_get_cost_history_in_shop(good_id="", shop_id=""):
     Session = sessionmaker(bind=engine)
     # /Creating database session
     status = True
-    response = '''"good_id":"''' +str(good_id)+''''","shop_id":"'''+str(good_id)+'''","costs":['''
 
     select_stmt = select([costkeeper.Cost.Cost_Time, costkeeper.Cost.Cost_value, costkeeper.Cost.Currency_ID]).where(costkeeper.Cost.Good_ID == good_id).where(costkeeper.Cost.Shop_ID == shop_id)
     result = conn.execute(select_stmt)
     rows = result.fetchall()
     rowcount = result.rowcount
     result.close()
+    if not rows:
+        status = False
+        response = "ERROR_NO_GOODS_IN_THIS_SHOP"
+    else:
+        response = '''"good_id":"''' + str(good_id) + ''''","shop_id":"''' + str(good_id) + '''","costs":['''
+        cnt = 0
+        for row in rows:
+            cnt = cnt + 1
+            response = response + '''{"datetime":"''' + str(row.Cost_Time) + '''","cost":"''' + row.Cost_value + '''","currency":"''' + str(row.Currency_ID)+ '''"}'''
+            if (cnt < rowcount):
+                response = response + ","
 
-    cnt = 0
-    for row in rows:
-        cnt = cnt + 1
-        response = response + '''{"datetime":"''' + str(row.Cost_Time) + '''","cost":"''' + row.Cost_value + '''","currency":"''' + str(row.Currency_ID)+ '''"}'''
-        if (cnt < rowcount):
-            response = response + ","
-
-    response = response + "]}"
+        response = response + "]}"
 
     return status, response
 
