@@ -17,8 +17,10 @@ dburi = config.db_dialect + '://' + config.db_user + ':' + config.db_password + 
 
 #users methods
 
+
 def user_is_admin(user_id):
     return False
+
 
 def user_check_token(token):
     # Creating database session
@@ -45,6 +47,7 @@ def user_check_token(token):
 
     return allowed, userID, response
 
+
 def check_username_and_email(username, email):
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -67,6 +70,7 @@ def check_username_and_email(username, email):
         email_exist = True
 
     return username_exist, email_exist
+
 
 def user_auth(email,password):
     # Creating database session
@@ -96,6 +100,7 @@ def user_auth(email,password):
         ourUser.token_lifetime = datetime.today()+timedelta(days=1)
         session.commit()
     return status, token
+
 
 def user_reg(nickname="", password="", email="", firstname="", lastname="", avatar=""):
     # Creating database session
@@ -128,6 +133,7 @@ def user_reg(nickname="", password="", email="", firstname="", lastname="", avat
 
     session.commit()
     return True
+
 
 def user_alter(token="",nickname="",email="",firstname="",lastname="",avatar=""):
     # Creating database session
@@ -163,6 +169,7 @@ def user_alter(token="",nickname="",email="",firstname="",lastname="",avatar="")
     session.close()
     return "SUCCESS"
 
+
 def user_delete(d_user_id, user_id):
     d_user_id = int(d_user_id)
     user_id = int(user_id)
@@ -192,6 +199,7 @@ def user_delete(d_user_id, user_id):
         response = "SUCCEESS"
 
     return status, response
+
 
 def user_alter_password(token="",password="",newpassword=""):
     # Creating database session
@@ -227,6 +235,7 @@ def user_alter_password(token="",password="",newpassword=""):
         session.close()
         return token
 
+
 def user_get(token="",ID="",secret=""):
     # Creating database session
     engine = create_engine(dburi)
@@ -260,6 +269,7 @@ def user_get(token="",ID="",secret=""):
 
 
 #shops methods
+
 def check_shop_by_id(id):
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -275,6 +285,7 @@ def check_shop_by_id(id):
     else:
         return True
 
+
 def check_shop_exist(name, city, street, building):
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -286,6 +297,7 @@ def check_shop_exist(name, city, street, building):
         return False
     else:
         return True
+
 
 def shop_add(name="",city="", street="", building=""):
     if(check_shop_exist(name, city, street, building) == False):
@@ -314,6 +326,7 @@ def shop_add(name="",city="", street="", building=""):
 
     return status, response
 
+
 def shop_alter(id, name,city, street, building):
     # Creating database session
     engine = create_engine(dburi)
@@ -340,6 +353,7 @@ def shop_alter(id, name,city, street, building):
         session.commit()
         session.close()
         return "SUCCESS"
+
 
 def shop_get(id):
     # Creating database session
@@ -394,6 +408,7 @@ def good_add(barcode=0, name="", life="", description="", prod_country_id="", ty
     session.close()
     return status, response
 
+
 def good_alter(id="", name="", life="", description="", prod_country_id="", type_id="", picture=""):
     # Creating database session
     engine = create_engine(dburi)
@@ -432,6 +447,7 @@ def good_alter(id="", name="", life="", description="", prod_country_id="", type
     session.close()
     return status, response
 
+
 def good_get(secret="", good_id=""):
     # Creating database session
     engine = create_engine(dburi, encoding='utf-8')
@@ -461,6 +477,7 @@ def good_get(secret="", good_id=""):
                    +'","name": "'+rows[0].Name +'","picture": "'+rows[0].Picture +'","prod_country_id": "'+str(rows[0].Prod_country_ID) +'","type_id": "'+str(rows[0].Type_ID)+'"}'
 
     return status, response
+
 
 def good_get_cost(good_id=0, shop_id=0):
     # Creating database session
@@ -500,6 +517,7 @@ def good_get_cost(good_id=0, shop_id=0):
                 response = "{\"shop_id\":\" "+str(shop_id)+"\",\"cost\": \""+str(rows[0].Cost_value)+"\",\"currency\":\""+str(rows[0].Currency_ID)+"\"}"
     session.close()
     return status, response
+
 
 def good_get_costs_in_all_shops(good_id=0):
     # Creating database session
@@ -541,6 +559,7 @@ def good_get_costs_in_all_shops(good_id=0):
 
     return status, response
 
+
 def good_get_cost_history_in_shop(good_id="", shop_id=""):
     # Creating database session
     engine = create_engine(dburi)
@@ -569,6 +588,7 @@ def good_get_cost_history_in_shop(good_id="", shop_id=""):
 
     return status, response
 
+
 def good_find(secret="", good_id=""):
     # Creating database session
     engine = create_engine(dburi)
@@ -583,6 +603,7 @@ def good_find(secret="", good_id=""):
 #end good methods
 
 #Cost methods
+
 def cost_add(good_id='', shop_id='', currency_id='', value=''):
     # Creating database session
     engine = create_engine(dburi)
@@ -649,7 +670,7 @@ def basket_delete_item(user_id="",basket_id="",good_id=""):
         status = False
         response = "ERROR_WRONG_BASKET_ID"
     else:
-        if rows[0].User_ID != user_id:
+        if rows[0].User_ID != user_id and user_is_admin(user_id) == False:
             status = False
             response = "ERROR_ACCESS"
             return status,response
@@ -724,7 +745,7 @@ def basket_erase(user_id,basket_id=""):
         response = "ERROR_WRONG_BASKET_ID"
         return status, response
     else:
-        if rows[0].User_ID != user_id:
+        if rows[0].User_ID != user_id and user_is_admin(user_id) == False:
             status = False
             response = "ERROR_ACCESS"
             return status, response
@@ -881,6 +902,7 @@ def basket_delete(user_id, basket_id):
     session.close()
     return status, response
 
+
 def basket_get_all(user_id):
     # Creating database session
     engine = create_engine(dburi)
@@ -917,21 +939,25 @@ def basket_get_all(user_id):
         response = response + "]}"
     return status, response
 
+
 def basket_get_lowest_cost(shops_list, basket_id):
+
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
     # /Creating database session
-    best_sum = float("inf")
-    best_shop = ""
+
     status = True
-    response = ""
+    response = "SUCCESS"
+
+    min_sum = -1.
+    m_shop = ""
+
     if not shops_list:
         status = False
         response = "ERROR_SHOPS_LIST_IS_EMPTY"
     else:
-        select_stmt = select([costkeeper.Good_in_basket.Good_ID, costkeeper.Good_in_basket.Number_of_goods]).where(
-            costkeeper.Good_in_basket.Basket_ID == basket_id).outerjoin
+        select_stmt = select([costkeeper.Good_in_basket.Good_ID]).where(costkeeper.Good_in_basket.Basket_ID == basket_id)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         rowcount = result.rowcount
@@ -940,12 +966,35 @@ def basket_get_lowest_cost(shops_list, basket_id):
             status = False
             response = "ERROR_BASKET_IS_EMPTY"
         else:
+            current_sum = 0
+            cur_shop=""
             for shop in shops_list:
-                current_shop_cost = 0
-
-
-
-
+                cur_shop=shop
+                costs_of_goods = engine.execute( "SELECT goods_in_baskets.Good_ID, goods_in_baskets.Number_of_goods, costs.Cost_value, costs.Cost_Time FROM goods_in_baskets  LEFT JOIN costs ON goods_in_baskets.Good_ID=costs.Good_ID WHERE costs.Cost_Time IN (SELECT MAX( costs.Cost_Time ) FROM costs WHERE Shop_ID=shop_id GROUP BY costs.Good_ID)")
+                if(costs_of_goods.rowcount <rowcount):
+                    current_sum = -2
+                else:
+                    for item in costs_of_goods:
+                        current_sum = current_sum + item.Number_of_goods*item.Cost_value
+                if min_sum == -1 or min_sum>current_sum :
+                    min_sum = current_sum
+                    m_shop = cur_shop
+            if(min_sum==-1):
+                response = "SHOP_WITH_THIS_GOODS_DOES_NOT_EXIST"
+            else:
+                response = "{\"shop_id\":\""+m_shop+"\",\"best_cost\":\""+str(min_sum)+"\"}"
+        # if not ex_goods:
+        #     response = response+"}"
+        # else:
+        #     response = response +",\"goods_without_cost\":["
+        #     i = 0
+        #     for good in ex_goods:
+        #         i = i+1
+        #         response = response+"\"good_id\":\""+str(good.Good_ID)+"\""
+        #         if i !=len(ex_goods):
+        #             response=response+","
+        #     response = response +"}"
 
     return status, response
+
 #end basket methods

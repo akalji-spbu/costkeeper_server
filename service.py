@@ -198,6 +198,10 @@ class BasketHandler(tornado.web.RequestHandler):
                 status, response = api.basket_get(basket_id)
             if(method == "basket_get_all"):
                 status, response = api.basket_get_all(user_id)
+            if (method == "basket_get_lowest_cost"):
+                basket_id = int(self.get_argument('basket_id',True))
+                shop_list = list(self.get_argument('shop_list',True))
+                status,response = api.basket_get_lowest_cost(shop_list, basket_id)
         self.write(response)
 
     def post(self):
