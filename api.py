@@ -916,4 +916,36 @@ def basket_get_all(user_id):
 
         response = response + "]}"
     return status, response
+
+def basket_get_lowest_cost(shops_list, basket_id):
+    # Creating database session
+    engine = create_engine(dburi)
+    conn = engine.connect()
+    # /Creating database session
+    best_sum = float("inf")
+    best_shop = ""
+    status = True
+    response = ""
+    if not shops_list:
+        status = False
+        response = "ERROR_SHOPS_LIST_IS_EMPTY"
+    else:
+        select_stmt = select([costkeeper.Good_in_basket.Good_ID, costkeeper.Good_in_basket.Number_of_goods]).where(
+            costkeeper.Good_in_basket.Basket_ID == basket_id).outerjoin
+        result = conn.execute(select_stmt)
+        rows = result.fetchall()
+        rowcount = result.rowcount
+        result.close()
+        if not rows:
+            status = False
+            response = "ERROR_BASKET_IS_EMPTY"
+        else:
+            for shop in shops_list:
+                current_shop_cost = 0
+
+
+
+
+
+    return status, response
 #end basket methods
