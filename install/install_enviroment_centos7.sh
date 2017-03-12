@@ -2,7 +2,8 @@ rpm -Uvh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0
 yum clean all
 yum -y update
 yum -y upgrade
-yum install -y nano mc make gcc nginx openssl-devel MariaDB-server MariaDB-client
+yum install -y nano mc make gcc nginx openssl-devel  supervisor
+yum install MariaDB-server MariaDB-client
 
 cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.back
 cp /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.back

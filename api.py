@@ -132,6 +132,7 @@ def user_reg(nickname="", password="", email="", firstname="", lastname="", avat
         print("ERROR_CORE_ADDING")
 
     session.commit()
+    session.close()
     return True
 
 
