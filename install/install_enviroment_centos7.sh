@@ -1,7 +1,18 @@
 rpm -Uvh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
+touch /etc/yum.repos.d/MariaDB10.repo
+echo "# MariaDB 10.1 CentOS repository list - created 2016-01-18 09:58 UTC" >> /etc/yum.repos.d/MariaDB10.repo
+echo "# http://mariadb.org/mariadb/repositories/" >> /etc/yum.repos.d/MariaDB10.repo
+echo "[mariadb]" >> /etc/yum.repos.d/MariaDB10.repo
+echo "name = MariaDB" >> /etc/yum.repos.d/MariaDB10.repo
+echo "baseurl = http://yum.mariadb.org/10.1/centos7-amd64" >> /etc/yum.repos.d/MariaDB10.repo
+echo "gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB" >> /etc/yum.repos.d/MariaDB10.repo
+echo "gpgcheck=1" >> /etc/yum.repos.d/MariaDB10.repo
+
+
 yum clean all
 yum -y update
 yum -y upgrade
+yum install epel-release
 yum install -y nano mc make gcc nginx openssl-devel  supervisor
 yum install MariaDB-server MariaDB-client
 
@@ -12,6 +23,8 @@ systemctl enable mariadb.service
 systemctl start mariadb.service
 systemctl enable nginx.service
 systemctl start nginx.service
+systemctl enable supervisord.service
+systemctl start supervisord.service
 mysql_secure_installation
 
 
