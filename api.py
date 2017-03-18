@@ -133,6 +133,7 @@ def user_reg(nickname="", password="", email="", firstname="", lastname="", avat
 
     session.commit()
     session.close()
+
     return True
 
 
