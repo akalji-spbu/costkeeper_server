@@ -73,7 +73,11 @@ def getGoodInfoByBarcode(barcode):
     return STATUS, RESPONSE
 
 def load_page(url_of_good_page):
+    HEADERS = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101 Firefox/52.0'
+    }
     session = requests.session()
+    session.headers = HEADERS
     page = session.get(url_of_good_page)
     doc = lxml.html.document_fromstring(page.text)
     return doc

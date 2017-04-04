@@ -12,9 +12,9 @@ echo "gpgcheck=1" >> /etc/yum.repos.d/MariaDB10.repo
 yum clean all
 yum -y update
 yum -y upgrade
-yum install epel-release
-yum install -y nano mc make gcc nginx openssl-devel  supervisor
-yum install MariaDB-server MariaDB-client
+yum install -y epel-release
+yum install -y nano mc make gcc nginx openssl-devel  supervisor wget
+yum install -y MariaDB-server MariaDB-client
 
 cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.back
 cp /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.back
