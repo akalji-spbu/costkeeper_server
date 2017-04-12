@@ -773,13 +773,13 @@ def cost_add(good_id='', shop_id='', currency_id='', value=''):
         session.add(NewCost)
         status = True
         response = {
-            "STATUS": "SUCCESS"
+            "STATUS":"SUCCESS"
         }
         session.commit()
         session.close()
     except sqlalchemy.exc.OperationalError:
         response = {
-            "STATUS": "COST_ADDING_ERROR"
+            "STATUS":"COST_ADDING_ERROR"
         }
         status = False
         session.close()
@@ -851,13 +851,13 @@ def basket_delete_item(user_id="", basket_id="", good_id=""):
     if (len(basket_id) == 0 and status == True):
         status = False
         response = {
-            "STATUS": "ERROR_NO_BASKET_ID"
+            "STATUS":"ERROR_NO_BASKET_ID"
         }
     else:
         if (len(good_id) == 0):
             status = False
             response = {
-                "STATUS": "ERROR_NO_GOOD_ID"
+                "STATUS":"ERROR_NO_GOOD_ID"
             }
         else:
             ourGoodInBasket = session.query(costkeeper.Good_in_basket).filter_by(Good_ID=good_id).filter_by(
@@ -865,7 +865,7 @@ def basket_delete_item(user_id="", basket_id="", good_id=""):
             if (ourGoodInBasket == None):
                 status = False
                 response = {
-                    "STATUS": "ERROR_GOOD_IN_BASKET_DOES_NOT_EXIST"
+                    "STATUS":"ERROR_GOOD_IN_BASKET_DOES_NOT_EXIST"
                 }
             else:
                 session.delete(ourGoodInBasket)
@@ -884,7 +884,7 @@ def basket_modify(basket_id, new_name):
 
     status = True
     response = {
-        "STATUS": "SUCCESS"
+        "STATUS":"SUCCESS"
     }
 
     select_stmt = select([costkeeper.Basket.Basket_ID]).where(costkeeper.Basket.Basket_ID == basket_id)
@@ -895,7 +895,7 @@ def basket_modify(basket_id, new_name):
     if not rows:
         status = False
         response = {
-            "STATUS": "ERROR_BASKET_DOES_NOT_EXIST"
+            "STATUS":"ERROR_BASKET_DOES_NOT_EXIST"
         }
     else:
         ourBasket = session.query(costkeeper.Basket).filter_by(Basket_ID=basket_id).first()
@@ -919,7 +919,7 @@ def basket_erase(user_id, basket_id=""):
 
     status = True
     response = {
-        "STATUS": "SUCCESS"
+        "STATUS":"SUCCESS"
     }
 
     select_stmt = select([costkeeper.Basket.User_ID]).where(costkeeper.Basket.Basket_ID == basket_id)
@@ -929,14 +929,14 @@ def basket_erase(user_id, basket_id=""):
     if not rows:
         status = False
         response = {
-            "STATUS": "ERROR_WRONG_BASKET_ID"
+            "STATUS":"ERROR_WRONG_BASKET_ID"
         }
         return status, response
     else:
         if rows[0].User_ID != user_id and user_is_admin(user_id) == False:
             status = False
             response = {
-                "STATUS": "ERROR_ACCESS"
+                "STATUS":"ERROR_ACCESS"
             }
             return status, response
 
@@ -966,36 +966,42 @@ def basket_get(basket_id=""):
     if not rows:
         status = False
         response = {
-            "STATUS": "BASKET_DOES_NOT_EXIST"
+            "STATUS":"BASKET_DOES_NOT_EXIST"
         }
     else:
+        #Че тут БЛЯТЬ творится?
         select_stmt = select([costkeeper.Basket.Basket_ID, costkeeper.Basket.Name, costkeeper.Basket.Creation_date,
                               costkeeper.Basket.Modify_date]).where(costkeeper.Basket.Basket_ID == basket_id)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         result.close()
-        response = '{"basket_id":"' + str(rows[0].Basket_ID) + '","name": "' + str(
-            rows[0].Name) + '","creation_date": "' + str(rows[0].Creation_date) + '","modfy_date": "' + str(
-            rows[0].Modify_date)
-
         select_stmt = select([costkeeper.Good_in_basket.Good_ID, costkeeper.Good_in_basket.Number_of_goods]).where(
             costkeeper.Good_in_basket.Basket_ID == basket_id)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         rowcount = result.rowcount
         result.close()
-        if not rows:
-            response = response + '"}'
-        else:
-            response = response + "\",\"goods\": ["
-            cnt = 0
+        goods = []
+        if rows:
             for row in rows:
-                cnt = cnt + 1
-                response = response + "{\"good_id\":\"" + str(row.Good_ID) + "\",\"number_of_goods\":\"" + str(
-                    row.Number_of_goods) + "\"}"
-                if (cnt < rowcount):
-                    response = response + ","
-            response = response + "]}"
+                goods.append(
+                    {
+                        "good_id":str(row.Good_ID),
+                        "number_of_goods":str(row.Number_of_goods)
+                    }
+                )
+
+        basket = {
+            "basket_id":str(rows[0].Basket_ID),
+            "name":str(rows[0].Name),
+            "creation_date":str(rows[0].Creation_date),
+            "modify_date":str(rows[0].Modify_date),
+            "goods":goods
+        }
+        response = {
+            "STATUS":"SUCCESS",
+            "Object":basket
+        }
 
     return status, response
 
@@ -1039,7 +1045,6 @@ def basket_add_item(basket_id, good_id, count):
             ourGood_in_basket = session.query(costkeeper.Good_in_basket).filter(
                 costkeeper.Good_in_basket.Basket_ID == basket_id).filter(
                 costkeeper.Good_in_basket.Good_ID == good_id).first()
-            # print(dir(ourGood_in_basket))
             ourGood_in_basket.Number_of_goods = ourGood_in_basket.Number_of_goods + int(count)
             status = True
             response = {
