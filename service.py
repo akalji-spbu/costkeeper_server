@@ -4,6 +4,8 @@ import api
 import sys
 import tornado.web
 import tornado.httpserver
+import json
+import config
 
 
 class UserHandler(tornado.web.RequestHandler):
@@ -103,7 +105,7 @@ class ShopHandler(tornado.web.RequestHandler):
                 building    = str(object['building']).encode('utf-8')
                 status, response = api.shop_alter(id, name, city, street, building)
 
-        self.write(response)
+        self.write(json.dumps(response))
 
 
 class GoodHandler(tornado.web.RequestHandler):
@@ -131,7 +133,7 @@ class GoodHandler(tornado.web.RequestHandler):
                 good_id = int(self.get_argument('good_id',True))
                 shop_id = int(self.get_argument('shop_id',True))
                 status, response = api.good_get_cost_history_in_shop(good_id, shop_id)
-        self.write(response)
+        self.write(json.dumps(response))
 
 
     def post(self):
@@ -162,7 +164,7 @@ class GoodHandler(tornado.web.RequestHandler):
                 type_id = str(object['type_id'])
                 picture = str(object['picture'])
                 status, response = api.good_alter(id, name, life, description, prod_country_id, type_id, picture)
-        self.write(response)
+        self.write(json.dumps(response))
 
 
 class CostHandler(tornado.web.RequestHandler):
@@ -183,7 +185,7 @@ class CostHandler(tornado.web.RequestHandler):
                 currency_id     = int(object['currency_id'])
                 value           = float(object['value'])
                 status, response = api.cost_add(good_id, shop_id, currency_id, value)
-                self.write(response)
+                self.write(json.dumps(response))
 
 
 class BasketHandler(tornado.web.RequestHandler):
@@ -202,7 +204,7 @@ class BasketHandler(tornado.web.RequestHandler):
                 basket_id = int(self.get_argument('basket_id',True))
                 shop_list = list(self.get_argument('shop_list',True))
                 status,response = api.basket_get_lowest_cost(shop_list, basket_id)
-        self.write(response)
+        self.write(json.dumps(response))
 
     def post(self):
         json_sting = self.request.body
@@ -248,7 +250,7 @@ class BasketHandler(tornado.web.RequestHandler):
                 basket_id = str(object['basket_id'])
                 status,response = api.basket_delete(user_id, basket_id)
 
-        self.write(response)
+        self.write(json.dumps(response))
 
 
 class Application(tornado.web.Application):
@@ -262,10 +264,10 @@ class Application(tornado.web.Application):
 
 
 
-port = 14001
-if(len(sys.argv)>0):
+try:
     port = sys.argv[1]
-
+except:
+    port = config.port
 
 # Run the instance
 application = Application()

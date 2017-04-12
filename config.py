@@ -11,6 +11,9 @@ db_password     = ""
 #system config
 salt = ""
 
+#tornado config
+port = 14001
+
 
 #anticaptcha config
 anticaptha_mode = "ANTIGATE"
