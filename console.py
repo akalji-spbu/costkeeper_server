@@ -23,7 +23,7 @@ def import_regions():
     PATH = "cities.xml"
     DOMTree = xml.dom.minidom.parse(PATH)
     collection = DOMTree.documentElement
-    countryID = "1"
+    countryID = "162"
     cities = collection.getElementsByTagName("city")
     for city in cities:
         engine = create_engine(dburi)
@@ -48,11 +48,9 @@ def import_regions():
 
 
 def import_cities():
-    PATH = input("path of XML with cities: ")
     PATH = "cities.xml"
     DOMTree = xml.dom.minidom.parse(PATH)
     collection = DOMTree.documentElement
-    countryID = "1"
     cities = collection.getElementsByTagName("city")
     for city in cities:
         engine = create_engine(dburi)
@@ -78,8 +76,24 @@ def import_cities():
             session.commit()
         session.close()
 
+def import_countries():
+    PATH = "cities.xml"
+    DOMTree = xml.dom.minidom.parse(PATH)
+    collection = DOMTree.documentElement
+    countries = collection.getElementsByTagName("country")
+    for country in countries:
+        our_country = country.getAttribute("name")
+        print(our_country)
+        engine = create_engine(dburi)
+        Session = sessionmaker(bind=engine)
+        session = Session()
+        NewCountry = costkeeper.Country(our_country)
+        session.add(NewCountry)
+        session.commit()
+    session.close()
 
 
 
 
-import_cities()
+
+import_countries()
