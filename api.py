@@ -131,7 +131,7 @@ def user_reg(nickname="", password="", email="", firstname="", lastname=""):
     status = True;
 
     username_exist, email_exist = check_username_and_email(nickname,email)
-    if (email_exist or username_exist == False):
+    if (email_exist == False) and (username_exist == False):
         User_Nickname = nickname
         User_Email = email
         User_Firstname = firstname
