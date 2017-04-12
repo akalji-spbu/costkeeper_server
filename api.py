@@ -31,8 +31,8 @@ def user_check_token(token):
     allowed = False
     userID = ""
 
-    select_stmt = select([costkeeper.User.token_lifetime, costkeeper.User.User_ID]).where(
-        costkeeper.User.token == token)
+    select_stmt = select([costkeeper.User.Token_Lifetime, costkeeper.User.User_ID]).where(
+        costkeeper.User.Token == token)
     result = conn.execute(select_stmt)
     rows = result.fetchall()
     result.close()
@@ -93,7 +93,7 @@ def user_auth(email, password):
     response = {}
 
     select_stmt = select([costkeeper.User.User_ID]).where(
-        costkeeper.User.User_Email == email and costkeeper.User.password == passkey)
+        costkeeper.User.User_Email == email and costkeeper.User.Password == passkey)
     result = conn.execute(select_stmt)
     rows = result.fetchall()
     result.close()
@@ -181,7 +181,7 @@ def user_alter(token="", nickname="", email="", firstname="", lastname="", avata
             "STATUS": "ERROR_TOKEN_DOES_NOT_EXIST"
         }
     else:
-        select_stmt = select([costkeeper.User.token_lifetime]).where(costkeeper.User.token == token)
+        select_stmt = select([costkeeper.User.Token_Lifetime]).where(costkeeper.User.Token == token)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         result.close()
@@ -265,8 +265,8 @@ def user_alter_password(token="", password="", newpassword=""):
     else:
         key = config.salt + ":" + password
         passkey = md5(key.encode('utf-8')).hexdigest()
-        select_stmt = select([costkeeper.User.token_lifetime, costkeeper.User.password]).where(
-            costkeeper.User.token == token)
+        select_stmt = select([costkeeper.User.Token_Lifetime, costkeeper.User.Password]).where(
+            costkeeper.User.Token == token)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         result.close()
@@ -314,7 +314,7 @@ def user_get(token="", ID="", secret=""):
             "STATUS": "ERROR_TOKEN_DOES_NOT_EXIST"
         }
     else:
-        select_stmt = select([costkeeper.User.token_lifetime]).where(costkeeper.User.token == token)
+        select_stmt = select([costkeeper.User.Token_Lifetime]).where(costkeeper.User.Token == token)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         result.close()
@@ -436,7 +436,7 @@ def shop_alter(id, name, city, street, building):
     Session = sessionmaker(bind=engine)
     session = Session()
     # /Creating database session
-    select_stmt = select([costkeeper.Shop.Shop_ID]).where(costkeeper.User.token == id)
+    select_stmt = select([costkeeper.Shop.Shop_ID]).where(costkeeper.User.Token == id)
     result = conn.execute(select_stmt)
     rows = result.fetchall()
     result.close()
