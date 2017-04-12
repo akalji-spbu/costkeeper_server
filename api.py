@@ -975,7 +975,7 @@ def basket_modify(basket_id, new_name):
             ourBasket.Name = "Untitled"
         else:
             ourBasket.Name = new_name
-        ourBasket.Modify_date = datetime.today()
+        ourBasket.Modify_Date = datetime.today()
     session.commit()
     session.close()
     return status, response
@@ -1041,8 +1041,8 @@ def basket_get(basket_id=""):
             "STATUS":"ERROR_BASKET_DOES_NOT_EXIST"
         }
     else:
-        select_stmt = select([costkeeper.Basket.Basket_ID, costkeeper.Basket.Name, costkeeper.Basket.Creation_date,
-                              costkeeper.Basket.Modify_date]).where(costkeeper.Basket.Basket_ID == basket_id)
+        select_stmt = select([costkeeper.Basket.Basket_ID, costkeeper.Basket.Name, costkeeper.Basket.Creation_Date,
+                              costkeeper.Basket.Modify_Date]).where(costkeeper.Basket.Basket_ID == basket_id)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         result.close()
@@ -1064,8 +1064,8 @@ def basket_get(basket_id=""):
         basket = {
             "basket_id":str(rows[0].Basket_ID),
             "name":str(rows[0].Name),
-            "creation_date":str(rows[0].Creation_date),
-            "modify_date":str(rows[0].Modify_date),
+            "creation_date":str(rows[0].Creation_Date),
+            "modify_date":str(rows[0].Modify_Date),
             "goods":goods
         }
         response = {
@@ -1122,7 +1122,7 @@ def basket_add_item(basket_id, good_id, count):
             }
         if (status == True):
             ourBasket = session.query(costkeeper.Basket).filter_by(Basket_ID=basket_id).first()
-            ourBasket.Modify_date = datetime.today()
+            ourBasket.Modify_Date = datetime.today()
     session.commit()
     session.close()
     return status, response
@@ -1166,7 +1166,7 @@ def basket_alter_item(basket_id, good_id, count):
             }
         if (status == True):
             ourBasket = session.query(costkeeper.Basket).filter_by(Basket_ID=basket_id).first()
-            ourBasket.Modify_date = datetime.today()
+            ourBasket.Modify_Date = datetime.today()
     session.commit()
     session.close()
     return status, response
@@ -1220,8 +1220,8 @@ def basket_get_all(user_id):
             "STATUS": "ERROR_BASKETS_DOES_NOT_EXISTS"
         }
     else:
-        select_stmt = select([costkeeper.Basket.Basket_ID, costkeeper.Basket.Name, costkeeper.Basket.Creation_date,
-                              costkeeper.Basket.Modify_date]).where(costkeeper.Basket.User_ID == user_id)
+        select_stmt = select([costkeeper.Basket.Basket_ID, costkeeper.Basket.Name, costkeeper.Basket.Creation_Date,
+                              costkeeper.Basket.Modify_Date]).where(costkeeper.Basket.User_ID == user_id)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         result.close()
@@ -1231,8 +1231,8 @@ def basket_get_all(user_id):
                 {
                     "Basket_ID": str(row.Basket_ID),
                     "Basket_Name": row.Name,
-                    "Creation_Date": str(row.Creation_date),
-                    "Modified_Date": str(row.Modify_date)
+                    "Creation_Date": str(row.Creation_Date),
+                    "Modified_Date": str(row.Modify_Date)
                 }
             )
         object = {
