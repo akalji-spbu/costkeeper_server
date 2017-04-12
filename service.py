@@ -64,7 +64,7 @@ class UserHandler(tornado.web.RequestHandler):
             if (method =="set_avatar"):
                 b64image = str(object['b64image'])
                 status, response = api.set_avatar(user_id, b64image)
-
+        self.write(json.dumps(response))
 
 
 class ShopHandler(tornado.web.RequestHandler):
