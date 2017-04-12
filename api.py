@@ -2,20 +2,21 @@
 
 import config
 import costkeeper
+import picture_saver
+
 import sqlalchemy.exc
 import random
 import string
 import datetime
 from datetime import datetime, timedelta
 from hashlib import md5
-from sqlalchemy import create_engine, select, delete, and_, or_
-from sqlalchemy.sql import table, column
+from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import TEXT, INTEGER, String
 
-dburi = config.db_dialect + '://' + config.db_user + ':' + config.db_password + '@' + config.db_host + ':' +config.db_port+ '/'+ config.db_name +'?charset=utf8'
+dburi = config.db_dialect + '://' + config.db_user + ':' + config.db_password + '@' + config.db_host + ':' + config.db_port + '/' + config.db_name + '?charset=utf8'
 
-#users methods
+
+# users methods
 
 
 def user_is_admin(user_id):
@@ -30,25 +31,26 @@ def user_check_token(token):
     allowed = False
     userID = ""
 
-    select_stmt = select([costkeeper.User.token_lifetime, costkeeper.User.User_ID]).where(costkeeper.User.token == token)
+    select_stmt = select([costkeeper.User.token_lifetime, costkeeper.User.User_ID]).where(
+        costkeeper.User.token == token)
     result = conn.execute(select_stmt)
     rows = result.fetchall()
     result.close()
 
     if not rows:
         response = {
-            "STATUS":"ERROR_TOKEN_DOES_NOT_EXIST"
+            "STATUS": "ERROR_TOKEN_DOES_NOT_EXIST"
         }
     else:
         if (rows[0].token_lifetime < datetime.today()):
             response = {
-                "STATUS":"ERROR_TOKEN_EXSPIRED"
+                "STATUS": "ERROR_TOKEN_EXSPIRED"
             }
         else:
             allowed = True
             userID = rows[0].User_ID
             response = {
-                "STATUS":"TOKEN_ALLOWED"
+                "STATUS": "TOKEN_ALLOWED"
             }
 
     return allowed, userID, response
@@ -78,7 +80,7 @@ def check_username_and_email(username, email):
     return username_exist, email_exist
 
 
-def user_auth(email,password):
+def user_auth(email, password):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -88,7 +90,8 @@ def user_auth(email,password):
     key = config.salt + ":" + password
     passkey = md5(key.encode('utf-8')).hexdigest()
 
-    select_stmt = select([costkeeper.User.User_ID]).where(costkeeper.User.User_Email == email and costkeeper.User.password==passkey)
+    select_stmt = select([costkeeper.User.User_ID]).where(
+        costkeeper.User.User_Email == email and costkeeper.User.password == passkey)
     result = conn.execute(select_stmt)
     rows = result.fetchall()
     result.close()
@@ -103,7 +106,7 @@ def user_auth(email,password):
         token = ''.join([random.choice(a) for i in range(20)])
         ourUser = session.query(costkeeper.User).filter_by(User_ID=User_ID).first()
         ourUser.token = token
-        ourUser.token_lifetime = datetime.today()+timedelta(days=1)
+        ourUser.token_lifetime = datetime.today() + timedelta(days=1)
         session.commit()
     return status, token
 
@@ -119,19 +122,19 @@ def user_reg(nickname="", password="", email="", firstname="", lastname="", avat
     passkey = md5(key.encode('utf-8')).hexdigest()
     token = ""
 
-    User_Nickname   = nickname
-    User_Email      = email
-    User_Firstname  = firstname
-    User_Lastname   = lastname
-    Role_ID         = 1
-    avatar          = avatar
-    password        = passkey
-    token           = ""
-    token_lifetime  = 0
-    Creation_Date   = datetime.today()
+    User_Nickname = nickname
+    User_Email = email
+    User_Firstname = firstname
+    User_Lastname = lastname
+    Role_ID = 1
+    avatar = avatar
+    password = passkey
+    token = ""
+    token_lifetime = 0
+    Creation_Date = datetime.today()
 
-
-    NewUser = costkeeper.User(User_Nickname, User_Email, User_Firstname, User_Lastname, Role_ID, avatar, password, token, token_lifetime, Creation_Date)
+    NewUser = costkeeper.User(User_Nickname, User_Email, User_Firstname, User_Lastname, Role_ID, avatar, password,
+                              token, token_lifetime, Creation_Date)
     try:
         session.add(NewUser)
     except sqlalchemy.exc.OperationalError:
@@ -143,16 +146,16 @@ def user_reg(nickname="", password="", email="", firstname="", lastname="", avat
     return True
 
 
-def user_alter(token="",nickname="",email="",firstname="",lastname="",avatar=""):
+def user_alter(token="", nickname="", email="", firstname="", lastname="", avatar=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
     Session = sessionmaker(bind=engine)
     session = Session()
     # /Creating database session
-    if(len(token) == 0):
+    if (len(token) == 0):
         response = {
-            "STATUS":"ERROR_TOKEN_DOES_NOT_EXIST"
+            "STATUS": "ERROR_TOKEN_DOES_NOT_EXIST"
         }
     else:
         select_stmt = select([costkeeper.User.token_lifetime]).where(costkeeper.User.token == token)
@@ -161,11 +164,11 @@ def user_alter(token="",nickname="",email="",firstname="",lastname="",avatar="")
         result.close()
         if not rows:
             response = {
-                "STATUS":"ERROR_TOKEN_DOES_NOT_EXIST"
+                "STATUS": "ERROR_TOKEN_DOES_NOT_EXIST"
             }
-        if(rows[0].token_lifetime < datetime.today()):
+        if (rows[0].token_lifetime < datetime.today()):
             response = {
-                "STATUS":"ERROR_TOKEN_EXSPIRED"
+                "STATUS": "ERROR_TOKEN_EXSPIRED"
             }
         else:
             ourUser = session.query(costkeeper.User).filter_by(token=token).first()
@@ -182,7 +185,7 @@ def user_alter(token="",nickname="",email="",firstname="",lastname="",avatar="")
             session.commit()
     session.close()
     response = {
-        "STATUS":"SUCCESS"
+        "STATUS": "SUCCESS"
     }
     return response
 
@@ -192,8 +195,8 @@ def user_delete(d_user_id, user_id):
     user_id = int(user_id)
     status = False
     response = ""
-    print(d_user_id==user_id)
-    if (d_user_id==user_id or user_is_admin(user_id)):
+    print(d_user_id == user_id)
+    if (d_user_id == user_id or user_is_admin(user_id)):
         # Creating database session
         engine = create_engine(dburi)
         Session = sessionmaker(bind=engine)
@@ -220,21 +223,22 @@ def user_delete(d_user_id, user_id):
     return status, response
 
 
-def user_alter_password(token="",password="",newpassword=""):
+def user_alter_password(token="", password="", newpassword=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
     Session = sessionmaker(bind=engine)
     session = Session()
     # /Creating database session
-    if(len(token) == 0):
+    if (len(token) == 0):
         response = {
             "STATUS": "ERROR_TOKEN_DOES_NOT_EXIST"
         }
     else:
         key = config.salt + ":" + password
         passkey = md5(key.encode('utf-8')).hexdigest()
-        select_stmt = select([costkeeper.User.token_lifetime,costkeeper.User.password]).where(costkeeper.User.token == token)
+        select_stmt = select([costkeeper.User.token_lifetime, costkeeper.User.password]).where(
+            costkeeper.User.token == token)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         result.close()
@@ -242,13 +246,13 @@ def user_alter_password(token="",password="",newpassword=""):
             response = {
                 "STATUS": "ERROR_TOKEN_DOES_NOT_EXIST"
             }
-        elif(rows[0].token_lifetime < datetime.today()):
+        elif (rows[0].token_lifetime < datetime.today()):
             response = {
-                "STATUS":"ERROR_TOKEN_EXSPIRED"
+                "STATUS": "ERROR_TOKEN_EXSPIRED"
             }
-        elif(rows[0].password !=passkey):
+        elif (rows[0].password != passkey):
             response = {
-                "STATUS":"ERROR_WRONG_PASSWORD"
+                "STATUS": "ERROR_WRONG_PASSWORD"
             }
         else:
             key = config.salt + ":" + newpassword
@@ -258,17 +262,17 @@ def user_alter_password(token="",password="",newpassword=""):
             a = string.ascii_lowercase + string.digits
             token = ''.join([random.choice(a) for i in range(20)])
             ourUser.token = token
-            ourUser.token_lifetime = datetime.today()+timedelta(days=1)
+            ourUser.token_lifetime = datetime.today() + timedelta(days=1)
             session.commit()
             session.close()
             response = {
-                "STATUS":"SUCCESS",
-                "token":token
+                "STATUS": "SUCCESS",
+                "token": token
             }
         return response
 
 
-def user_get(token="",ID="",secret=""):
+def user_get(token="", ID="", secret=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -277,7 +281,7 @@ def user_get(token="",ID="",secret=""):
     # /Creating database session
     if (len(token) == 0):
         response = {
-            "STATUS":"ERROR_TOKEN_DOES_NOT_EXIST"
+            "STATUS": "ERROR_TOKEN_DOES_NOT_EXIST"
         }
     else:
         select_stmt = select([costkeeper.User.token_lifetime]).where(costkeeper.User.token == token)
@@ -286,20 +290,22 @@ def user_get(token="",ID="",secret=""):
         result.close()
         if not rows:
             response = {
-                "STATUS":"ERROR_TOKEN_DOES_NOT_EXIST"
+                "STATUS": "ERROR_TOKEN_DOES_NOT_EXIST"
             }
         if (rows[0].token_lifetime < datetime.today()):
             response = {
-                "STATUS":"ERROR_TOKEN_EXSPIRED"
+                "STATUS": "ERROR_TOKEN_EXSPIRED"
             }
-        select_stmt = select([costkeeper.User.User_ID,costkeeper.User.User_Nickname,costkeeper.User.User_Firstname,costkeeper.User.User_Lastname,costkeeper.User.avatar ]).where(costkeeper.User.User_ID == ID)
+        select_stmt = select([costkeeper.User.User_ID, costkeeper.User.User_Nickname, costkeeper.User.User_Firstname,
+                              costkeeper.User.User_Lastname, costkeeper.User.avatar]).where(
+            costkeeper.User.User_ID == ID)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         result.close()
         if not rows:
             session.close()
             response = {
-                "STATUS":"ERROR_USER_DOES_NOT_EXIST"
+                "STATUS": "ERROR_USER_DOES_NOT_EXIST"
             }
         else:
             object = {
@@ -311,15 +317,20 @@ def user_get(token="",ID="",secret=""):
             }
             session.close()
             response = {
-                "STATUS":"SUCCEESS",
-                "Object":object
+                "STATUS": "SUCCEESS",
+                "Object": object
             }
         return response
 
-#end users methods
+    def set_avatar(user_id, b64image):
+        status, response = picture_saver.save_b64_picture(b64image, config.users_avatars_folder, str(user_id))
+        return status, response
 
 
-#shops methods
+# end users methods
+
+
+# shops methods
 
 def check_shop_by_id(id):
     engine = create_engine(dburi)
@@ -340,7 +351,9 @@ def check_shop_by_id(id):
 def check_shop_exist(name, city, street, building):
     engine = create_engine(dburi)
     conn = engine.connect()
-    select_stmt = select([costkeeper.Shop.Shop_ID]).where(costkeeper.Shop.Shop_Name == name).where(costkeeper.Shop.City_ID == city).where(costkeeper.Shop.Street_ID == street).where(costkeeper.Shop.Building == building)
+    select_stmt = select([costkeeper.Shop.Shop_ID]).where(costkeeper.Shop.Shop_Name == name).where(
+        costkeeper.Shop.City_ID == city).where(costkeeper.Shop.Street_ID == street).where(
+        costkeeper.Shop.Building == building)
     result = conn.execute(select_stmt)
     rows = result.fetchall()
     result.close()
@@ -350,41 +363,41 @@ def check_shop_exist(name, city, street, building):
         return True
 
 
-def shop_add(name="",city="", street="", building=""):
-    if(check_shop_exist(name, city, street, building) == False):
+def shop_add(name="", city="", street="", building=""):
+    if (check_shop_exist(name, city, street, building) == False):
         # Creating database session
         engine = create_engine(dburi)
         Session = sessionmaker(bind=engine)
         session = Session()
         # /Creating database session
-        Shop_Name   = name
-        City_ID     = city
-        Street_ID   = street
-        Building    = building
-        NewShop     = costkeeper.Shop(Shop_Name, City_ID, Street_ID, Building)
+        Shop_Name = name
+        City_ID = city
+        Street_ID = street
+        Building = building
+        NewShop = costkeeper.Shop(Shop_Name, City_ID, Street_ID, Building)
         try:
             session.add(NewShop)
             response = {
-                "STATUS":"SUCCESS"
+                "STATUS": "SUCCESS"
             }
-            status   = True
+            status = True
             session.commit()
         except sqlalchemy.exc.OperationalError:
             response = {
-                "STATUS":"ADDING_ERROR"
+                "STATUS": "ADDING_ERROR"
             }
-            status   = False
+            status = False
 
     else:
         status = False
         response = {
-            "STATUS":"ERROR_SHOP_ALREDY_EXIST"
+            "STATUS": "ERROR_SHOP_ALREDY_EXIST"
         }
 
     return status, response
 
 
-def shop_alter(id, name,city, street, building):
+def shop_alter(id, name, city, street, building):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -397,7 +410,7 @@ def shop_alter(id, name,city, street, building):
     result.close()
     if not rows:
         response = {
-            "STATUS":"ERROR_SHOP_DOES_NOT_EXIST"
+            "STATUS": "ERROR_SHOP_DOES_NOT_EXIST"
         }
         status = False
     else:
@@ -414,7 +427,7 @@ def shop_alter(id, name,city, street, building):
         session.close()
         status = True
         response = {
-            "STATUS":"SUCCESS"
+            "STATUS": "SUCCESS"
         }
     return status, response
 
@@ -434,26 +447,27 @@ def shop_get(id):
     result.close()
     if not rows:
         response = {
-            "STATUS":"ERROR_SHOP_DOES_NOT_EXIST"
+            "STATUS": "ERROR_SHOP_DOES_NOT_EXIST"
         }
     else:
         object = {
-            "shop_id":  str(rows[0].Shop_ID),
-            "name":     rows[0].Shop_Name,
-            "city_id":  rows[0].City_ID,
-            "street_id":rows[0].Street_ID,
+            "shop_id": str(rows[0].Shop_ID),
+            "name": rows[0].Shop_Name,
+            "city_id": rows[0].City_ID,
+            "street_id": rows[0].Street_ID,
             "building": rows[0].Building
 
         }
         response = {
-            "STATUS":"SUCCESS",
-            "Object":object
+            "STATUS": "SUCCESS",
+            "Object": object
         }
     return response
 
-#end shops methods
 
-#good methods
+# end shops methods
+
+# good methods
 
 def good_add(barcode=0, name="", life="", description="", prod_country_id="", type_id="", picture=""):
     # Creating database session
@@ -464,7 +478,7 @@ def good_add(barcode=0, name="", life="", description="", prod_country_id="", ty
     # /Creating database session
     status = True
     rresponse = {
-            "STATUS":"SUCCESS"
+        "STATUS": "SUCCESS"
     }
 
     select_stmt = select([costkeeper.Good.Good_ID]).where(costkeeper.Good.Barcode == barcode)
@@ -479,12 +493,12 @@ def good_add(barcode=0, name="", life="", description="", prod_country_id="", ty
         except sqlalchemy.exc.OperationalError:
             status = False
             response = {
-                "STATUS":"ADDING_ERROR"
+                "STATUS": "ADDING_ERROR"
             }
     else:
         status = False
         response = {
-            "STATUS":"ERROR_GOOD_ALREADY_EXIST"
+            "STATUS": "ERROR_GOOD_ALREADY_EXIST"
         }
 
     session.commit()
@@ -502,7 +516,7 @@ def good_alter(id="", name="", life="", description="", prod_country_id="", type
 
     status = True
     response = {
-        "STATUS":"SUCCESS"
+        "STATUS": "SUCCESS"
     }
 
     select_stmt = select([costkeeper.Good.Good_ID]).where(costkeeper.Good.Good_ID == id)
@@ -513,7 +527,7 @@ def good_alter(id="", name="", life="", description="", prod_country_id="", type
     if not rows:
         status = False
         response = {
-            "STATUS":"ERROR_GOOD_DOES_NOT_EXIST"
+            "STATUS": "ERROR_GOOD_DOES_NOT_EXIST"
         }
     else:
         ourGood = session.query(costkeeper.Good).filter_by(Good_ID=id).first()
@@ -553,27 +567,30 @@ def good_get(secret="", good_id=""):
     if not rows:
         status = False
         response = {
-            "STATUS":"ERROR_GOOD_DOES_NOT_EXIST"
+            "STATUS": "ERROR_GOOD_DOES_NOT_EXIST"
         }
     else:
-        select_stmt = select([costkeeper.Good.Good_ID, costkeeper.Good.Barcode, costkeeper.Good.Life, costkeeper.Good.Description, costkeeper.Good.Name, costkeeper.Good.Picture, costkeeper.Good.Prod_country_ID, costkeeper.Good.Type_ID ]).where(costkeeper.Good.Good_ID == good_id)
+        select_stmt = select(
+            [costkeeper.Good.Good_ID, costkeeper.Good.Barcode, costkeeper.Good.Life, costkeeper.Good.Description,
+             costkeeper.Good.Name, costkeeper.Good.Picture, costkeeper.Good.Prod_country_ID,
+             costkeeper.Good.Type_ID]).where(costkeeper.Good.Good_ID == good_id)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         result.close()
         encoded = rows[0].Description
         print(encoded)
-        object = {"good_id":str(rows[0].Good_ID),
-                  "barcode":rows[0].Barcode,
-                  "life":rows[0].Life,
-                  "description":rows[0].Description,
-                  "name":rows[0].Name,
+        object = {"good_id": str(rows[0].Good_ID),
+                  "barcode": rows[0].Barcode,
+                  "life": rows[0].Life,
+                  "description": rows[0].Description,
+                  "name": rows[0].Name,
                   "picture": rows[0].Picture,
                   "prod_country_id": str(rows[0].Prod_country_ID),
-                  "type_id":str(rows[0].Type_ID)
-        }
+                  "type_id": str(rows[0].Type_ID)
+                  }
         response = {
-            "STATUS":"SUCCESS",
-            "Object":object
+            "STATUS": "SUCCESS",
+            "Object": object
         }
 
     return status, response
@@ -593,10 +610,10 @@ def good_get_cost(good_id=0, shop_id=0):
     result = conn.execute(select_stmt)
     rows = result.fetchall()
     result.close()
-    if not rows or good_id==0:
+    if not rows or good_id == 0:
         status = False
         response = {
-            "STATUS":"ERROR_GOOD_DOES_NOT_EXIST"
+            "STATUS": "ERROR_GOOD_DOES_NOT_EXIST"
         }
     else:
         select_stmt = select([costkeeper.Shop.Shop_ID]).where(costkeeper.Shop.Shop_ID == shop_id)
@@ -606,27 +623,29 @@ def good_get_cost(good_id=0, shop_id=0):
         if not rows or shop_id == 0:
             status = False
             response = {
-                "STATUS":"ERROR_SHOP_DOES_NOT_EXIST"
+                "STATUS": "ERROR_SHOP_DOES_NOT_EXIST"
             }
         else:
-            select_stmt = select([costkeeper.Cost.Cost_value,costkeeper.Cost.Currency_ID]).where(costkeeper.Cost.Shop_ID == shop_id).where(costkeeper.Cost.Good_ID == good_id).order_by(costkeeper.Cost.Cost_Time.desc())
+            select_stmt = select([costkeeper.Cost.Cost_value, costkeeper.Cost.Currency_ID]).where(
+                costkeeper.Cost.Shop_ID == shop_id).where(costkeeper.Cost.Good_ID == good_id).order_by(
+                costkeeper.Cost.Cost_Time.desc())
             result = conn.execute(select_stmt)
             rows = result.fetchall()
             result.close()
             if not rows:
                 status = False
                 response = {
-                    "STATUS":"ERROR_COST_DOES_NOT_EXIST"
+                    "STATUS": "ERROR_COST_DOES_NOT_EXIST"
                 }
             else:
                 object = {
-                    "shop_id":str(shop_id),
-                    "cost":str(rows[0].Cost_value),
-                    "currency":str(rows[0].Currency_ID)
+                    "shop_id": str(shop_id),
+                    "cost": str(rows[0].Cost_value),
+                    "currency": str(rows[0].Currency_ID)
                 }
                 response = {
-                    "STATUS":"SUCCEESS",
-                    "Object":object
+                    "STATUS": "SUCCEESS",
+                    "Object": object
                 }
     session.close()
     return status, response
@@ -646,13 +665,14 @@ def good_get_costs_in_all_shops(good_id=0):
     result = conn.execute(select_stmt)
     rows = result.fetchall()
     result.close()
-    if not rows or good_id==0:
+    if not rows or good_id == 0:
         status = False
         response = {
-            "STATUS":"ERROR_GOOD_DOES_NOT_EXIST"
+            "STATUS": "ERROR_GOOD_DOES_NOT_EXIST"
         }
     else:
-        select_stmt = select([costkeeper.Cost.Shop_ID]).where(costkeeper.Cost.Good_ID == good_id).distinct(costkeeper.Cost.Shop_ID)
+        select_stmt = select([costkeeper.Cost.Shop_ID]).where(costkeeper.Cost.Good_ID == good_id).distinct(
+            costkeeper.Cost.Shop_ID)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         i = result.rowcount
@@ -661,22 +681,22 @@ def good_get_costs_in_all_shops(good_id=0):
         if not rows:
             status = False
             response = {
-                "STATUS":"ERROR_COST_DOES_NOT_EXIST"
+                "STATUS": "ERROR_COST_DOES_NOT_EXIST"
             }
         else:
             costs = []
             for row in rows:
-                status,r = good_get_cost(good_id,row.Shop_ID)
+                status, r = good_get_cost(good_id, row.Shop_ID)
                 costs.append(r["Object"])
 
             object = {
                 "good_id:str(good_id)"
-                "costs":costs
+                "costs": costs
             }
 
             response = {
-                "STATUS":"SUCCESS",
-                "Object":object
+                "STATUS": "SUCCESS",
+                "Object": object
             }
 
     return status, response
@@ -689,7 +709,8 @@ def good_get_cost_history_in_shop(good_id="", shop_id=""):
     Session = sessionmaker(bind=engine)
     # /Creating database session
     status = True
-    select_stmt = select([costkeeper.Cost.Cost_Time, costkeeper.Cost.Cost_value, costkeeper.Cost.Currency_ID]).where(costkeeper.Cost.Good_ID == good_id).where(costkeeper.Cost.Shop_ID == shop_id)
+    select_stmt = select([costkeeper.Cost.Cost_Time, costkeeper.Cost.Cost_value, costkeeper.Cost.Currency_ID]).where(
+        costkeeper.Cost.Good_ID == good_id).where(costkeeper.Cost.Shop_ID == shop_id)
     result = conn.execute(select_stmt)
     rows = result.fetchall()
     rowcount = result.rowcount
@@ -697,27 +718,27 @@ def good_get_cost_history_in_shop(good_id="", shop_id=""):
     if not rows:
         status = False
         response = {
-            "STATUS":"ERROR_NO_GOODS_IN_THIS_SHOP"
+            "STATUS": "ERROR_NO_GOODS_IN_THIS_SHOP"
         }
     else:
         costs = []
         for row in rows:
             costs.append(
                 {
-                    "datetime":str(row.Cost_Time),
-                    "cost":str(row.Cost_value),
-                    "currency":str(row.Currency_ID)
+                    "datetime": str(row.Cost_Time),
+                    "cost": str(row.Cost_value),
+                    "currency": str(row.Currency_ID)
                 }
             )
         object = {
-            "good_id":str(good_id),
-            "shop_id":str(shop_id),
-            "costs":costs
+            "good_id": str(good_id),
+            "shop_id": str(shop_id),
+            "costs": costs
         }
 
         response = {
-            "STATUS":"SUCCESS",
-            "Object":object
+            "STATUS": "SUCCESS",
+            "Object": object
         }
 
     return status, response
@@ -732,13 +753,14 @@ def good_find(secret="", good_id=""):
     # /Creating database session
     status = True
     response = {
-        "STATUS":"SUCCESS"
+        "STATUS": "SUCCESS"
     }
     return status, response
 
-#end good methods
 
-#Cost methods
+# end good methods
+
+# Cost methods
 
 def cost_add(good_id='', shop_id='', currency_id='', value=''):
     # Creating database session
@@ -757,18 +779,19 @@ def cost_add(good_id='', shop_id='', currency_id='', value=''):
         session.close()
     except sqlalchemy.exc.OperationalError:
         response = {
-            "STATUS":"COST_ADDING_ERROR"
+            "STATUS": "COST_ADDING_ERROR"
         }
         status = False
         session.close()
 
     return status, response
 
-#End cost methods
+
+# End cost methods
 
 
-#basket methods
-def basket_add(user_id,basket_name=""):
+# basket methods
+def basket_add(user_id, basket_name=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -781,22 +804,22 @@ def basket_add(user_id,basket_name=""):
         "STATUS": "SUCCESS"
     }
 
-    if(len(basket_name) == 0):
+    if (len(basket_name) == 0):
         basket_name = "Untitled"
-    newBasket = costkeeper.Basket(user_id,datetime.today(),datetime.today(),basket_name)
+    newBasket = costkeeper.Basket(user_id, datetime.today(), datetime.today(), basket_name)
     try:
         session.add(newBasket)
     except sqlalchemy.exc.OperationalError:
         status = False
         response = {
-            "STATUS":"ADDING_ERROR"
+            "STATUS": "ADDING_ERROR"
         }
     session.commit()
     session.close()
     return status, response
 
 
-def basket_delete_item(user_id="",basket_id="",good_id=""):
+def basket_delete_item(user_id="", basket_id="", good_id=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -815,33 +838,34 @@ def basket_delete_item(user_id="",basket_id="",good_id=""):
     if not rows:
         status = False
         response = {
-            "STATUS":"ERROR_WRONG_BASKET_ID"
+            "STATUS": "ERROR_WRONG_BASKET_ID"
         }
     else:
         if rows[0].User_ID != user_id and user_is_admin(user_id) == False:
             status = False
             response = {
-                "STATUS":"ERROR_ACCESS"
+                "STATUS": "ERROR_ACCESS"
             }
-            return status,response
+            return status, response
 
-    if(len(basket_id) == 0 and status == True):
+    if (len(basket_id) == 0 and status == True):
         status = False
         response = {
-            "STATUS":"ERROR_NO_BASKET_ID"
+            "STATUS": "ERROR_NO_BASKET_ID"
         }
     else:
-        if(len(good_id) == 0):
+        if (len(good_id) == 0):
             status = False
             response = {
-                "STATUS":"ERROR_NO_GOOD_ID"
+                "STATUS": "ERROR_NO_GOOD_ID"
             }
         else:
-            ourGoodInBasket = session.query(costkeeper.Good_in_basket).filter_by(Good_ID=good_id).filter_by(Basket_ID=basket_id).first()
-            if(ourGoodInBasket == None):
+            ourGoodInBasket = session.query(costkeeper.Good_in_basket).filter_by(Good_ID=good_id).filter_by(
+                Basket_ID=basket_id).first()
+            if (ourGoodInBasket == None):
                 status = False
                 response = {
-                    "STATUS":"ERROR_GOOD_IN_BASKET_DOES_NOT_EXIST"
+                    "STATUS": "ERROR_GOOD_IN_BASKET_DOES_NOT_EXIST"
                 }
             else:
                 session.delete(ourGoodInBasket)
@@ -850,7 +874,7 @@ def basket_delete_item(user_id="",basket_id="",good_id=""):
     return status, response
 
 
-def basket_modify(basket_id,new_name):
+def basket_modify(basket_id, new_name):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -871,11 +895,11 @@ def basket_modify(basket_id,new_name):
     if not rows:
         status = False
         response = {
-            "STATUS":"ERROR_BASKET_DOES_NOT_EXIST"
+            "STATUS": "ERROR_BASKET_DOES_NOT_EXIST"
         }
     else:
         ourBasket = session.query(costkeeper.Basket).filter_by(Basket_ID=basket_id).first()
-        if(len(new_name) == 0):
+        if (len(new_name) == 0):
             ourBasket.Name = "Untitled"
         else:
             ourBasket.Name = new_name
@@ -885,7 +909,7 @@ def basket_modify(basket_id,new_name):
     return status, response
 
 
-def basket_erase(user_id,basket_id=""):
+def basket_erase(user_id, basket_id=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -905,14 +929,14 @@ def basket_erase(user_id,basket_id=""):
     if not rows:
         status = False
         response = {
-            "STATUS":"ERROR_WRONG_BASKET_ID"
+            "STATUS": "ERROR_WRONG_BASKET_ID"
         }
         return status, response
     else:
         if rows[0].User_ID != user_id and user_is_admin(user_id) == False:
             status = False
             response = {
-                "STATUS":"ERROR_ACCESS"
+                "STATUS": "ERROR_ACCESS"
             }
             return status, response
 
@@ -942,28 +966,33 @@ def basket_get(basket_id=""):
     if not rows:
         status = False
         response = {
-            "STATUS":"BASKET_DOES_NOT_EXIST"
+            "STATUS": "BASKET_DOES_NOT_EXIST"
         }
     else:
-        select_stmt = select([costkeeper.Basket.Basket_ID,costkeeper.Basket.Name,costkeeper.Basket.Creation_date, costkeeper.Basket.Modify_date ]).where(costkeeper.Basket.Basket_ID == basket_id)
+        select_stmt = select([costkeeper.Basket.Basket_ID, costkeeper.Basket.Name, costkeeper.Basket.Creation_date,
+                              costkeeper.Basket.Modify_date]).where(costkeeper.Basket.Basket_ID == basket_id)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         result.close()
-        response = '{"basket_id":"'+str(rows[0].Basket_ID) +'","name": "'+str(rows[0].Name)+'","creation_date": "'+str(rows[0].Creation_date)+'","modfy_date": "'+str(rows[0].Modify_date)
+        response = '{"basket_id":"' + str(rows[0].Basket_ID) + '","name": "' + str(
+            rows[0].Name) + '","creation_date": "' + str(rows[0].Creation_date) + '","modfy_date": "' + str(
+            rows[0].Modify_date)
 
-        select_stmt = select([costkeeper.Good_in_basket.Good_ID, costkeeper.Good_in_basket.Number_of_goods]).where(costkeeper.Good_in_basket.Basket_ID == basket_id)
+        select_stmt = select([costkeeper.Good_in_basket.Good_ID, costkeeper.Good_in_basket.Number_of_goods]).where(
+            costkeeper.Good_in_basket.Basket_ID == basket_id)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         rowcount = result.rowcount
         result.close()
         if not rows:
-            response = response +'"}'
+            response = response + '"}'
         else:
             response = response + "\",\"goods\": ["
             cnt = 0
             for row in rows:
-                cnt = cnt+1
-                response = response + "{\"good_id\":\"" + str(row.Good_ID) + "\",\"number_of_goods\":\"" + str(row.Number_of_goods)+"\"}"
+                cnt = cnt + 1
+                response = response + "{\"good_id\":\"" + str(row.Good_ID) + "\",\"number_of_goods\":\"" + str(
+                    row.Number_of_goods) + "\"}"
                 if (cnt < rowcount):
                     response = response + ","
             response = response + "]}"
@@ -985,10 +1014,11 @@ def basket_add_item(basket_id, good_id, count):
     if not basketexist:
         status = False
         response = {
-            "STATUS":"ERROR_BASKET_DOES_NOT_EXIST"
+            "STATUS": "ERROR_BASKET_DOES_NOT_EXIST"
         }
     else:
-        select_stmt = select([costkeeper.Good_in_basket.Basket_ID, costkeeper.Good_in_basket.Good_ID]).where(costkeeper.Good_in_basket.Basket_ID == basket_id).where(costkeeper.Good_in_basket.Good_ID == good_id)
+        select_stmt = select([costkeeper.Good_in_basket.Basket_ID, costkeeper.Good_in_basket.Good_ID]).where(
+            costkeeper.Good_in_basket.Basket_ID == basket_id).where(costkeeper.Good_in_basket.Good_ID == good_id)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         result.close()
@@ -1002,18 +1032,20 @@ def basket_add_item(basket_id, good_id, count):
                 }
             except sqlalchemy.exc.OperationalError:
                 response = {
-                    "STATUS":"ERROR_ADDING"
+                    "STATUS": "ERROR_ADDING"
                 }
                 status = False
         else:
-            ourGood_in_basket = session.query(costkeeper.Good_in_basket).filter(costkeeper.Good_in_basket.Basket_ID == basket_id).filter(costkeeper.Good_in_basket.Good_ID == good_id).first()
-            #print(dir(ourGood_in_basket))
+            ourGood_in_basket = session.query(costkeeper.Good_in_basket).filter(
+                costkeeper.Good_in_basket.Basket_ID == basket_id).filter(
+                costkeeper.Good_in_basket.Good_ID == good_id).first()
+            # print(dir(ourGood_in_basket))
             ourGood_in_basket.Number_of_goods = ourGood_in_basket.Number_of_goods + int(count)
             status = True
             response = {
                 "STATUS": "SUCCESS"
             }
-        if(status==True):
+        if (status == True):
             ourBasket = session.query(costkeeper.Basket).filter_by(Basket_ID=basket_id).first()
             ourBasket.Modify_date = datetime.today()
     session.commit()
@@ -1035,26 +1067,29 @@ def basket_alter_item(basket_id, good_id, count):
     if not basketexist:
         status = False
         response = {
-            "STATUS":"ERROR_BASKET_DOES_NOT_EXIST"
+            "STATUS": "ERROR_BASKET_DOES_NOT_EXIST"
         }
     else:
-        select_stmt = select([costkeeper.Good_in_basket.Basket_ID, costkeeper.Good_in_basket.Good_ID]).where(costkeeper.Good_in_basket.Basket_ID == basket_id).where(costkeeper.Good_in_basket.Basket_ID == basket_id)
+        select_stmt = select([costkeeper.Good_in_basket.Basket_ID, costkeeper.Good_in_basket.Good_ID]).where(
+            costkeeper.Good_in_basket.Basket_ID == basket_id).where(costkeeper.Good_in_basket.Basket_ID == basket_id)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         result.close()
         if not rows:
             response = {
-                "STATUS":"ERROR_GOOD_IN_THE_BASKET_DOES_NOT_EXIST"
+                "STATUS": "ERROR_GOOD_IN_THE_BASKET_DOES_NOT_EXIST"
             }
-            status   = False
+            status = False
         else:
-            ourGood_in_basket = session.query(costkeeper.Good_in_basket).filter(costkeeper.Good_in_basket.Basket_ID == basket_id).filter(costkeeper.Good_in_basket.Good_ID == good_id).first()
+            ourGood_in_basket = session.query(costkeeper.Good_in_basket).filter(
+                costkeeper.Good_in_basket.Basket_ID == basket_id).filter(
+                costkeeper.Good_in_basket.Good_ID == good_id).first()
             ourGood_in_basket.Number_of_goods = int(count)
             status = True
             response = {
                 "STATUS": "SUCCESS"
             }
-        if(status==True):
+        if (status == True):
             ourBasket = session.query(costkeeper.Basket).filter_by(Basket_ID=basket_id).first()
             ourBasket.Modify_date = datetime.today()
     session.commit()
@@ -1075,13 +1110,13 @@ def basket_delete(user_id, basket_id):
     # /Creating database session
     ourBasket = session.query(costkeeper.Basket).filter_by(Basket_ID=basket_id).first()
     if ourBasket != None:
-        if (ourBasket.User_ID==user_id or user_is_admin(user_id)):
-            basket_erase(user_id,basket_id)
+        if (ourBasket.User_ID == user_id or user_is_admin(user_id)):
+            basket_erase(user_id, basket_id)
             session.delete(ourBasket)
             session.commit()
     else:
         response = {
-            "STATUS":"ERROR_BASKET_DOES_NOT_EXISTS"
+            "STATUS": "ERROR_BASKET_DOES_NOT_EXISTS"
         }
     session.close()
     return status, response
@@ -1106,10 +1141,11 @@ def basket_get_all(user_id):
     if not rows:
         status = False
         response = {
-            "STATUS":"ERROR_BASKETS_DOES_NOT_EXISTS"
+            "STATUS": "ERROR_BASKETS_DOES_NOT_EXISTS"
         }
     else:
-        select_stmt = select([costkeeper.Basket.Basket_ID, costkeeper.Basket.Name, costkeeper.Basket.Creation_date, costkeeper.Basket.Modify_date]).where(costkeeper.Basket.User_ID == user_id)
+        select_stmt = select([costkeeper.Basket.Basket_ID, costkeeper.Basket.Name, costkeeper.Basket.Creation_date,
+                              costkeeper.Basket.Modify_date]).where(costkeeper.Basket.User_ID == user_id)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         result.close()
@@ -1117,26 +1153,25 @@ def basket_get_all(user_id):
         for row in rows:
             baskets.append(
                 {
-                    "basketID":str(row.Basket_ID),
-                    "basketName":row.Name,
-                    "creationDate":str(row.Creation_date),
-                    "modifiedDate":str(row.Modify_date)
+                    "basketID": str(row.Basket_ID),
+                    "basketName": row.Name,
+                    "creationDate": str(row.Creation_date),
+                    "modifiedDate": str(row.Modify_date)
                 }
             )
         object = {
-            "userID":str(user_id),
-            "baskets":baskets
+            "userID": str(user_id),
+            "baskets": baskets
         }
 
         response = {
-            "STATUS":"SUCCESS",
-            "Object":object
+            "STATUS": "SUCCESS",
+            "Object": object
         }
     return status, response
 
 
 def basket_get_lowest_cost(shops_list, basket_id):
-
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -1151,7 +1186,8 @@ def basket_get_lowest_cost(shops_list, basket_id):
         status = False
         response = "ERROR_SHOPS_LIST_IS_EMPTY"
     else:
-        select_stmt = select([costkeeper.Good_in_basket.Good_ID]).where(costkeeper.Good_in_basket.Basket_ID == basket_id)
+        select_stmt = select([costkeeper.Good_in_basket.Good_ID]).where(
+            costkeeper.Good_in_basket.Basket_ID == basket_id)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         rowcount = result.rowcount
@@ -1161,34 +1197,35 @@ def basket_get_lowest_cost(shops_list, basket_id):
             response = "ERROR_BASKET_IS_EMPTY"
         else:
             current_sum = 0
-            cur_shop=""
+            cur_shop = ""
             for shop in shops_list:
-                cur_shop=shop
-                costs_of_goods = engine.execute( "SELECT goods_in_baskets.Good_ID, goods_in_baskets.Number_of_goods, costs.Cost_value, costs.Cost_Time FROM goods_in_baskets  LEFT JOIN costs ON goods_in_baskets.Good_ID=costs.Good_ID WHERE costs.Cost_Time IN (SELECT MAX( costs.Cost_Time ) FROM costs WHERE Shop_ID=shop_id GROUP BY costs.Good_ID)")
-                if(costs_of_goods.rowcount <rowcount):
+                cur_shop = shop
+                costs_of_goods = engine.execute(
+                    "SELECT goods_in_baskets.Good_ID, goods_in_baskets.Number_of_goods, costs.Cost_value, costs.Cost_Time FROM goods_in_baskets  LEFT JOIN costs ON goods_in_baskets.Good_ID=costs.Good_ID WHERE costs.Cost_Time IN (SELECT MAX( costs.Cost_Time ) FROM costs WHERE Shop_ID=shop_id GROUP BY costs.Good_ID)")
+                if (costs_of_goods.rowcount < rowcount):
                     current_sum = -2
                 else:
                     for item in costs_of_goods:
-                        current_sum = current_sum + item.Number_of_goods*item.Cost_value
-                if min_sum == -1 or min_sum>current_sum :
+                        current_sum = current_sum + item.Number_of_goods * item.Cost_value
+                if min_sum == -1 or min_sum > current_sum:
                     min_sum = current_sum
                     m_shop = cur_shop
-            if(min_sum==-1):
+            if (min_sum == -1):
                 response = "SHOP_WITH_THIS_GOODS_DOES_NOT_EXIST"
             else:
-                response = "{\"shop_id\":\""+m_shop+"\",\"best_cost\":\""+str(min_sum)+"\"}"
-        # if not ex_goods:
-        #     response = response+"}"
-        # else:
-        #     response = response +",\"goods_without_cost\":["
-        #     i = 0
-        #     for good in ex_goods:
-        #         i = i+1
-        #         response = response+"\"good_id\":\""+str(good.Good_ID)+"\""
-        #         if i !=len(ex_goods):
-        #             response=response+","
-        #     response = response +"}"
+                response = "{\"shop_id\":\"" + m_shop + "\",\"best_cost\":\"" + str(min_sum) + "\"}"
+                # if not ex_goods:
+                #     response = response+"}"
+                # else:
+                #     response = response +",\"goods_without_cost\":["
+                #     i = 0
+                #     for good in ex_goods:
+                #         i = i+1
+                #         response = response+"\"good_id\":\""+str(good.Good_ID)+"\""
+                #         if i !=len(ex_goods):
+                #             response=response+","
+                #     response = response +"}"
 
     return status, response
 
-#end basket methods
+    # end basket methods

@@ -32,7 +32,6 @@ class UserHandler(tornado.web.RequestHandler):
             email       = str(object['email'])
             firstname   = str(object['firstname']).encode('utf-8')
             lastname    = str(object['lastname']).encode('utf-8')
-            avatar      = str(object['avatar'])
             nickname_exist,email_exist = api.check_username_and_email(nickname, email)
             if(nickname_exist == False and email_exist == False):
                 reg = api.user_reg(nickname, password, email, firstname, lastname, avatar)
