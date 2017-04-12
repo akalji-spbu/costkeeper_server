@@ -183,10 +183,11 @@ def user_alter(token="", nickname="", email="", firstname="", lastname="", avata
             if (len(avatar) != 0):
                 ourUser.avatar = avatar
             session.commit()
+            response = {
+                "STATUS": "SUCCESS"
+            }
     session.close()
-    response = {
-        "STATUS": "SUCCESS"
-    }
+
     return response
 
 
