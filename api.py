@@ -42,7 +42,7 @@ def user_check_token(token):
             "STATUS": "ERROR_TOKEN_DOES_NOT_EXIST"
         }
     else:
-        if (rows[0].token_lifetime < datetime.today()):
+        if (rows[0].Token_Lifetime < datetime.today()):
             response = {
                 "STATUS": "ERROR_TOKEN_EXSPIRED"
             }
