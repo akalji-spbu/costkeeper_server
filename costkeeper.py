@@ -21,14 +21,14 @@ class Cost(Base):
     Good_ID     = Column (Integer)
     Shop_ID     = Column (Integer)
     Currency_ID = Column (Integer)
-    Cost_value  = Column (Float)
+    Cost_Value  = Column (Float)
 
-    def __init__(self, Cost_Time, Good_ID, Shop_ID, Currency_ID, Cost_value):
+    def __init__(self, Cost_Time, Good_ID, Shop_ID, Currency_ID, Cost_Value):
         self.Cost_Time   = Cost_Time
         self.Good_ID     = Good_ID
         self.Shop_ID     = Shop_ID
         self.Currency_ID = Currency_ID
-        self.Cost_value  = Cost_value
+        self.Cost_Value  = Cost_Value
 
 class Currency(Base):
     __tablename__ = 'currency'
@@ -81,8 +81,8 @@ class Manufacturer(Base):
     __tablename__ = 'manufacturers'
 
     Manufacturer_ID            = Column (Integer, primary_key = True, unique=True)
-    Manufacturer_Name          = Column (String(45))
-    Manufacturer_Original_Name = Column (String(45))
+    Manufacturer_Name          = Column (String(30))
+    Manufacturer_Original_Name = Column (String(30))
     Country_ID                 = Column (Integer)
 
     def __init__(self, Manufacturer_ID, Manufacturer_Name, Manufacturer_Original_Name, Country_ID):
@@ -95,39 +95,39 @@ class Unit(Base):
     __tablename__ = 'units'
 
     Name                     = Column (String(45))
-    International_name       = Column (String(45))
-    Short_name               = Column (String(45))
-    International_short_name = Column (String(45))
+    International_Name       = Column (String(45))
+    Short_Name               = Column (String(5))
+    International_Short_Name = Column (String(5))
 
-    def __init__(self, Name, International_name, Short_name, International_short_name):
+    def __init__(self, Name, International_Name, Short_Name, International_Short_Name):
         self.Name                     = Name
-        self.International_name       = International_name
-        self.Short_name               = Short_name
-        self.International_short_name = International_short_name
+        self.International_Name       = International_Name
+        self.Short_Name               = Short_Name
+        self.International_Short_Name = International_Short_Name
 
 class Alcohol(Base):
     __tablename__ = 'alcohol'
 
     Good_ID             = Column (Integer)
-    Strength_of_alcohol = Column (String(5))
-    Type_of_alcohol     = Column (Integer)
+    Strength_Of_Alcohol = Column (String(5))
+    Type_Of_Alcohol     = Column (Integer)
 
-    def __init__(self, Good_ID, Strength_of_alcohol, Type_of_alcohol):
+    def __init__(self, Good_ID, Strength_Of_Alcohol, Type_Of_Alcohol):
         self.Good_ID             = Good_ID
-        self.Strength_of_alcohol = Strength_of_alcohol
-        self.Type_of_alcohol     = Type_of_alcohol
+        self.Strength_Of_Alcohol = Strength_Of_Alcohol
+        self.Type_Of_Alcohol     = Type_Of_Alcohol
 
 class Type_of_alcohol(Base):
     __tablename__ = 'types_of_alcohol'
 
     Type_ID            = Column (Integer, primary_key = True, unique=True)
     Name               = Column (String(45))
-    International_name = Column (String(45))
+    International_Name = Column (String(45))
 
-    def __init__(self, Type_ID, Name, International_name):
+    def __init__(self, Type_ID, Name, International_Name):
         self.Type_ID            = Type_ID
         self.Name               = Name
-        self.International_name = International_name
+        self.International_Name = International_Name
 
 class Additional_good_picture(Base):
     __tablename__ = 'additional_good_pictures'
@@ -145,14 +145,14 @@ class Basket(Base):
 
     Basket_ID     = Column (Integer, primary_key = True, unique=True)
     User_ID       = Column (Integer)
-    Creation_date = Column (DateTime)
-    Modify_date   = Column (DateTime)
+    Creation_Date = Column (DateTime)
+    Modify_Date   = Column (DateTime)
     Name = Column (String(45))
 
-    def __init__(self, User_ID, Creation_date, Modify_date, Name):
+    def __init__(self, User_ID, Creation_Date, Modify_Date, Name):
         self.User_ID       = User_ID
-        self.Creation_date = Creation_date
-        self.Modify_date   = Modify_date
+        self.Creation_Date = Creation_Date
+        self.Modify_Date   = Modify_Date
         self.Name          = Name
 
 class Good_in_basket(Base):
@@ -160,12 +160,12 @@ class Good_in_basket(Base):
 
     Basket_ID       = Column (Integer, primary_key = True, autoincrement=False)
     Good_ID         = Column (Integer, primary_key = True, autoincrement=False)
-    Number_of_goods = Column(Integer)
+    Number_Of_Goods = Column(Integer)
 
-    def __init__(self, Basket_ID, Good_ID, Number_of_goods):
+    def __init__(self, Basket_ID, Good_ID, Number_Of_Goods):
         self.Basket_ID       = Basket_ID
         self.Good_ID         = Good_ID
-        self.Number_of_goods = Number_of_goods
+        self.Number_Of_Goods = Number_Of_Goods
 
 
 class Country(Base):
@@ -218,20 +218,20 @@ class User(Base):
     User_Firstname  = Column(String(45))
     User_Lastname   = Column(String(45))
     Role_ID         = Column(Integer)
-    password        = Column(String(45))
-    token           = Column(String(45))
-    token_lifetime  = Column(DateTime)
+    Password        = Column(String(45))
+    Token           = Column(String(45))
+    Token_Lifetime  = Column(DateTime)
     Creation_Date   = Column(DateTime)
 
-    def __init__(self, User_Nickname, User_Email, User_Firstname, User_Lastname, Role_ID, password, token, token_lifetime,Creation_Date):
+    def __init__(self, User_Nickname, User_Email, User_Firstname, User_Lastname, Role_ID, Password, Token, Token_Lifetime,Creation_Date):
         self.User_Nickname   = User_Nickname
         self.User_Email      = User_Email
         self.User_Firstname  = User_Firstname
         self.User_Lastname   = User_Lastname
         self.Role_ID         = Role_ID
-        self.password        = password
-        self.token           = token
-        self.token_lifetime  = token_lifetime
+        self.Password        = Password
+        self.Token           = Token
+        self.Token_Lifetime  = Token_Lifetime
         self.Creation_Date   = Creation_Date
 
 class Role(Base):
