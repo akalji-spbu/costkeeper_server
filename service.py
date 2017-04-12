@@ -24,7 +24,7 @@ class UserHandler(tornado.web.RequestHandler):
         token  = str(data_json['token'])
         secret = str(data_json['secret'])
         object = data_json['object']
-
+        allowed, user_id, response = api.user_check_token(token)
 
         if (method == "user_reg"):
             nickname    = str(object['nickname']).encode('utf-8')
@@ -32,46 +32,39 @@ class UserHandler(tornado.web.RequestHandler):
             email       = str(object['email'])
             firstname   = str(object['firstname']).encode('utf-8')
             lastname    = str(object['lastname']).encode('utf-8')
-            nickname_exist,email_exist = api.check_username_and_email(nickname, email)
-            if(nickname_exist == False and email_exist == False):
-                reg = api.user_reg(nickname, password, email, firstname, lastname, avatar)
-                if (reg == True):
-                    self.write("Success")
-            else:
-                if(nickname_exist == True):
-                    self.write("NICKNAME_IS_USED\n")
-                if (email_exist == True):
-                    self.write("EMAIL_IS_USED\n")
+            status, response = api.user_reg(nickname, password, email, firstname, lastname)
+
 
         if (method == "user_auth"):
             email    = str(object['email'])
             password = str(object['password'])
-            status, token = api.user_auth(email, password)
-            if (status == True):
-                self.write(token)
-            else:
-                self.write("ERROR_USER_DOES_NOT_EXIST")
+            status, response = api.user_auth(email, password)
+
+        if allowed:
+            if (method == "user_alter"):
+                nickname    = str(object['nickname']).encode('utf-8')
+                email       = str(object['email'])
+                firstname   = str(object['firstname']).encode('utf-8')
+                lastname    = str(object['lastname']).encode('utf-8')
+                avatar      = str(object['avatar'])
+                status, response = api.user_alter(token,nickname,email,firstname,lastname,avatar)
 
 
-        if (method == "user_alter"):
-            nickname    = str(object['nickname']).encode('utf-8')
-            email       = str(object['email'])
-            firstname   = str(object['firstname']).encode('utf-8')
-            lastname    = str(object['lastname']).encode('utf-8')
-            avatar      = str(object['avatar'])
-            self.write(api.user_alter(token,nickname,email,firstname,lastname,avatar))
+            if (method == "user_alter_password"):
+                password    = str(object['password'])
+                newpassword = str(object['new_password'])
+                status, response = api.user_alter_password(token,password,newpassword)
 
 
-        if (method == "user_alter_password"):
-            password    = str(object['password'])
-            newpassword = str(object['new_password'])
-            self.write(api.user_alter_password(token,password,newpassword))
+            if (method == "user_delete"):
+                d_user_id = str(object['d_user_id'])
+                status, response = api.user_delete(token,d_user_id)
 
-        if (method == "user_delete"):
-            allowed, user_id, response = api.user_check_token(token)
-            d_user_id = str(object['d_user_id'])
-            status, response = api.user_delete(d_user_id, user_id)
-            self.write(response)
+
+            if (method =="set_avatar"):
+                b64image = str(object['b64image'])
+                status, response = api.set_avatar(user_id, b64image)
+
 
 
 class ShopHandler(tornado.web.RequestHandler):

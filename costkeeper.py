@@ -94,6 +94,7 @@ class Manufacturer(Base):
 class Unit(Base):
     __tablename__ = 'units'
 
+    Unit_ID                  = Column (Integer, primary_key = True, unique=True)
     Name                     = Column (String(45))
     International_Name       = Column (String(45))
     Short_Name               = Column (String(5))
@@ -108,7 +109,7 @@ class Unit(Base):
 class Alcohol(Base):
     __tablename__ = 'alcohol'
 
-    Good_ID             = Column (Integer)
+    Good_ID             = Column (Integer, primary_key = True, unique= True)
     Strength_Of_Alcohol = Column (String(5))
     Type_Of_Alcohol     = Column (Integer)
 
@@ -175,7 +176,7 @@ class Country(Base):
     Сountry_Name = Column(String(45))
 
     def __init__(self, Сountry_Name):
-        self.Country_Name = Сountry_Name
+        self.Сountry_Name = Сountry_Name
 
 class Region(Base):
     __tablename__ = 'regions'
