@@ -470,7 +470,7 @@ def shop_get(id):
 
 # good methods
 
-def good_add(barcode=0, name="", life="", description="", prod_country_id="", type_id="", picture=""):
+def good_add(barcode=0, name="", life="", description="", prod_country_id="", type_id="", uri=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -478,7 +478,7 @@ def good_add(barcode=0, name="", life="", description="", prod_country_id="", ty
     session = Session()
     # /Creating database session
     status = True
-    rresponse = {
+    response = {
         "STATUS": "SUCCESS"
     }
 
@@ -488,9 +488,10 @@ def good_add(barcode=0, name="", life="", description="", prod_country_id="", ty
     result.close()
 
     if not rows:
-        newGood = costkeeper.Good(name, barcode, life, description, prod_country_id, type_id, picture)
+        newGood = costkeeper.Good(name, barcode, life, description, prod_country_id, type_id)
         try:
             session.add(newGood)
+
         except sqlalchemy.exc.OperationalError:
             status = False
             response = {
@@ -503,9 +504,40 @@ def good_add(barcode=0, name="", life="", description="", prod_country_id="", ty
         }
 
     session.commit()
+    if status:
+        picture_saver.save_url_picture(uri, config.goods_pictures_folder, barcode)
     session.close()
+
     return status, response
 
+def good_barcode_parse_from_another_service (barcode=0):
+    # Creating database session
+    engine = create_engine(dburi)
+    conn = engine.connect()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
+
+    import ean13parser, picture_saver
+    status,dataset = ean13parser.getGoodInfoByBarcode(barcode)
+    select_stmt = select(([costkeeper.Country.Country_ID]).where(costkeeper.Country.Country_Name == dataset["country"]))
+    rows = (conn.execute(select_stmt)).fetchall()
+    for row in rows:
+        country_id = row
+
+    select_stmt = select(([costkeeper.Type_of_good.Type_ID_ID]).where(costkeeper.Type_of_good.Name == dataset["category"]))
+    rows = (conn.execute(select_stmt)).fetchall()
+    for row in rows:
+        type_id = row
+
+    if status:
+        status,response = good_add(dataset["barcode"],dataset["name"],dataset["description"],country_id,type_id,dataset["picture_uri"])
+    else:
+        response = {
+            "STATUS": "ERROR_PARSE_HAS_BEEN_FAILED"
+        }
+
+    return status,response
 
 def good_alter(id="", name="", life="", description="", prod_country_id="", type_id="", picture=""):
     # Creating database session
@@ -970,7 +1002,6 @@ def basket_get(basket_id=""):
             "STATUS":"BASKET_DOES_NOT_EXIST"
         }
     else:
-        #Че тут БЛЯТЬ творится?
         select_stmt = select([costkeeper.Basket.Basket_ID, costkeeper.Basket.Name, costkeeper.Basket.Creation_date,
                               costkeeper.Basket.Modify_date]).where(costkeeper.Basket.Basket_ID == basket_id)
         result = conn.execute(select_stmt)
@@ -979,12 +1010,11 @@ def basket_get(basket_id=""):
         select_stmt = select([costkeeper.Good_in_basket.Good_ID, costkeeper.Good_in_basket.Number_of_goods]).where(
             costkeeper.Good_in_basket.Basket_ID == basket_id)
         result = conn.execute(select_stmt)
-        rows = result.fetchall()
-        rowcount = result.rowcount
+        new_rows = result.fetchall()
         result.close()
         goods = []
-        if rows:
-            for row in rows:
+        if new_rows:
+            for row in new_rows:
                 goods.append(
                     {
                         "good_id":str(row.Good_ID),

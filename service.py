@@ -154,6 +154,10 @@ class GoodHandler(tornado.web.RequestHandler):
                 picture = str(object['picture'])
                 status, response = api.good_add(barcode, name, life, description, prod_country_id, type_id, picture)
 
+            if (method == "good_barcode_parse_from_another_service"):
+                barcode = str(object['barcode'])
+                status, response = api.good_barcode_parse_from_another_service(barcode)
+
             if (method == "good_alter"):
                 id = str(object['id'])
                 name = str(object['name']).encode('utf-8')
