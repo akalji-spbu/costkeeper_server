@@ -137,7 +137,6 @@ def user_reg(nickname="", password="", email="", firstname="", lastname=""):
         User_Firstname = firstname
         User_Lastname = lastname
         Role_ID = 1
-    avatar = avatar
         password = passkey
 
         a = string.ascii_lowercase + string.digits
