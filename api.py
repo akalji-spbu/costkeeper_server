@@ -192,7 +192,7 @@ def user_alter(token="", nickname="", email="", firstname="", lastname="", avata
                 "STATUS": "ERROR_TOKEN_DOES_NOT_EXIST"
             }
         else:
-            if (rows[0].token_lifetime < datetime.today()):
+            if (rows[0].Token_Lifetime < datetime.today()):
                 response = {
                     "STATUS": "ERROR_TOKEN_EXSPIRED"
                 }
@@ -276,7 +276,7 @@ def user_alter_password(token="", password="", newpassword=""):
             response = {
                 "STATUS": "ERROR_TOKEN_DOES_NOT_EXIST"
             }
-        elif (rows[0].token_lifetime < datetime.today()):
+        elif (rows[0].Token_Lifetime < datetime.today()):
             response = {
                 "STATUS": "ERROR_TOKEN_EXSPIRED"
             }
@@ -324,7 +324,7 @@ def user_get(token="", ID="", secret=""):
             response = {
                 "STATUS": "ERROR_TOKEN_DOES_NOT_EXIST"
             }
-        if (rows[0].token_lifetime < datetime.today()):
+        if (rows[0].Token_Lifetime < datetime.today()):
             response = {
                 "STATUS": "ERROR_TOKEN_EXSPIRED"
             }
