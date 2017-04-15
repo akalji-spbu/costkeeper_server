@@ -15,7 +15,8 @@ class UserHandler(tornado.web.RequestHandler):
             token = self.get_argument('token', True)
             ID = self.get_argument('user_id', True)
             secret = self.get_argument('secret', True)
-            self.write(api.user_get(token, ID, secret))
+            status, response = api.user_get(token, ID, secret)
+            self.write(json.dumps(response))
 
     def post(self):
         json_sting = self.request.body
