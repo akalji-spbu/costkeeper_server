@@ -168,7 +168,7 @@ def user_reg(nickname="", password="", email="", firstname="", lastname=""):
     return status,response
 
 
-def user_alter(token="", nickname="", email="", firstname="", lastname="", avatar=""):
+def user_alter(token="", nickname="", email="", firstname="", lastname=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -206,8 +206,6 @@ def user_alter(token="", nickname="", email="", firstname="", lastname="", avata
                     ourUser.User_Firstname = firstname
                 if (len(lastname) != 0):
                     ourUser.User_Lastname = lastname
-                if (len(avatar) != 0):
-                    ourUser.avatar = avatar
                 session.commit()
                 response = {
                     "STATUS": "SUCCESS"
@@ -329,7 +327,7 @@ def user_get(token="", ID="", secret=""):
                 "STATUS": "ERROR_TOKEN_EXSPIRED"
             }
         select_stmt = select([costkeeper.User.User_ID, costkeeper.User.User_Nickname, costkeeper.User.User_Firstname,
-                              costkeeper.User.User_Lastname, costkeeper.User.avatar]).where(
+                              costkeeper.User.User_Lastname]).where(
             costkeeper.User.User_ID == ID)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
@@ -345,7 +343,6 @@ def user_get(token="", ID="", secret=""):
                 "Nickname": rows[0].User_Nickname,
                 "Firstname": rows[0].User_Firstname,
                 "Lastname": rows[0].User_Lastname,
-                "Avatar": rows[0].avatar
             }
             session.close()
             response = {
