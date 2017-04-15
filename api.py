@@ -324,7 +324,7 @@ def user_get(token="", ID="", secret=""):
             response = {
                 "STATUS": "ERROR_TOKEN_DOES_NOT_EXIST"
             }
-        if (rows[0].Token_Lifetime < datetime.today()):
+        elif (rows[0].Token_Lifetime < datetime.today()):
             response = {
                 "STATUS": "ERROR_TOKEN_EXSPIRED"
             }
