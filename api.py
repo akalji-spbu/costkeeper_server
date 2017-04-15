@@ -137,6 +137,7 @@ def user_reg(nickname="", password="", email="", firstname="", lastname=""):
         User_Firstname = firstname
         User_Lastname = lastname
         Role_ID = 1
+    avatar = avatar
         password = passkey
 
         a = string.ascii_lowercase + string.digits
@@ -144,12 +145,14 @@ def user_reg(nickname="", password="", email="", firstname="", lastname=""):
         token_lifetime = datetime.today() + timedelta(days=1)
 
         Creation_Date = datetime.today()
+
         NewUser = costkeeper.User(User_Nickname, User_Email, User_Firstname, User_Lastname, Role_ID, password,
                                   token, token_lifetime, Creation_Date)
         try:
             session.add(NewUser)
         except sqlalchemy.exc.OperationalError:
             pass
+
         session.commit()
         response["STATUS"] = "SUCCESS"
         response["token"] = token
