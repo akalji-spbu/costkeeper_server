@@ -105,7 +105,6 @@ class ShopHandler(tornado.web.RequestHandler):
 
 
 class GoodHandler(tornado.web.RequestHandler):
-
     def get(self):
         token = self.get_argument('token', True)
         method = self.get_argument('method', True)
