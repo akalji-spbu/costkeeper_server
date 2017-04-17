@@ -302,56 +302,35 @@ def user_alter_password(token="", password="", newpassword=""):
         return status, response
 
 
-def user_get(token="", ID="", secret=""):
+def user_get(ID=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
-    Session = sessionmaker(bind=engine)
-    session = Session()
     # /Creating database session
     status = False
-    if (len(token) == 0):
+    select_stmt = select([costkeeper.User.User_ID, costkeeper.User.User_Nickname, costkeeper.User.User_Firstname,
+                          costkeeper.User.User_Lastname]).where(
+        costkeeper.User.User_ID == ID)
+    result = conn.execute(select_stmt)
+    rows = result.fetchall()
+    result.close()
+    if not rows:
         response = {
-            "STATUS": "ERROR_TOKEN_DOES_NOT_EXIST"
+            "STATUS": "ERROR_USER_DOES_NOT_EXIST"
         }
     else:
-        select_stmt = select([costkeeper.User.Token_Lifetime]).where(costkeeper.User.Token == token)
-        result = conn.execute(select_stmt)
-        rows = result.fetchall()
-        result.close()
-        if not rows:
-            response = {
-                "STATUS": "ERROR_TOKEN_DOES_NOT_EXIST"
-            }
-        elif (rows[0].Token_Lifetime < datetime.today()):
-            response = {
-                "STATUS": "ERROR_TOKEN_EXSPIRED"
-            }
-        select_stmt = select([costkeeper.User.User_ID, costkeeper.User.User_Nickname, costkeeper.User.User_Firstname,
-                              costkeeper.User.User_Lastname]).where(
-            costkeeper.User.User_ID == ID)
-        result = conn.execute(select_stmt)
-        rows = result.fetchall()
-        result.close()
-        if not rows:
-            session.close()
-            response = {
-                "STATUS": "ERROR_USER_DOES_NOT_EXIST"
-            }
-        else:
-            object = {
-                "User_Id": str(rows[0].User_ID),
-                "Nickname": rows[0].User_Nickname,
-                "Firstname": rows[0].User_Firstname,
-                "Lastname": rows[0].User_Lastname,
-            }
-            session.close()
-            response = {
-                "STATUS": "SUCCESS",
-                "OBJECT": object
-            }
-            status = True
-        return status, response
+        object = {
+            "User_Id": str(rows[0].User_ID),
+            "Nickname": rows[0].User_Nickname,
+            "Firstname": rows[0].User_Firstname,
+            "Lastname": rows[0].User_Lastname,
+        }
+        response = {
+            "STATUS": "SUCCESS",
+            "OBJECT": object
+        }
+        status = True
+    return status, response
 
 
 def set_avatar(user_id, b64image):

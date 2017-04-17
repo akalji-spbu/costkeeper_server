@@ -11,12 +11,15 @@ import config
 class UserHandler(tornado.web.RequestHandler):
     def get(self):
         method = self.get_argument('method', True)
-        if (method == "user_get"):
-            token = self.get_argument('token', True)
-            ID = self.get_argument('user_id', True)
-            secret = self.get_argument('secret', True)
-            status, response = api.user_get(token, ID, secret)
-            self.write(json.dumps(response))
+        token = self.get_argument('token', True)
+        secret = self.get_argument('secret', True)
+        allowed, user_id, response = api.user_check_token(token)
+        if allowed:
+            if (method == "user_get"):
+                ID = self.get_argument('user_id', True)
+                status, response = api.user_get(ID)
+
+        self.write(json.dumps(response))
 
     def post(self):
         json_sting = self.request.body
