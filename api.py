@@ -113,6 +113,7 @@ def user_auth(email, password):
         response["STATUS"] = "SUCCESS"
         response["token"] = token
 
+    session.close()
     return status, response
 
 
@@ -154,7 +155,7 @@ def user_reg(nickname="", password="", email="", firstname="", lastname=""):
 
         session.commit()
         response["STATUS"] = "SUCCESS"
-        response["token"] = token
+        response["OBJECT"] = {"token":token}
     else:
         status = False;
         if email_exist == True:
@@ -346,8 +347,8 @@ def user_get(token="", ID="", secret=""):
             }
             session.close()
             response = {
-                "STATUS": "SUCCEESS",
-                "Object": object
+                "STATUS": "SUCCESS",
+                "OBJECT": object
             }
             status = True
         return status, response
@@ -492,7 +493,7 @@ def shop_get(id):
         }
         response = {
             "STATUS": "SUCCESS",
-            "Object": object
+            "OBJECT": object
         }
         status = True
     return status,response
@@ -661,7 +662,7 @@ def good_get(secret="", good_id=""):
                   }
         response = {
             "STATUS": "SUCCESS",
-            "Object": object
+            "OBJECT": object
         }
 
     return status, response
@@ -716,7 +717,7 @@ def good_get_cost(good_id=0, shop_id=0):
                 }
                 response = {
                     "STATUS": "SUCCEESS",
-                    "Object": object
+                    "OBJECT": object
                 }
     session.close()
     return status, response
@@ -758,7 +759,7 @@ def good_get_costs_in_all_shops(good_id=0):
             costs = []
             for row in rows:
                 status, r = good_get_cost(good_id, row.Shop_ID)
-                costs.append(r["Object"])
+                costs.append(r["OBJECT"])
 
             object = {
                 "Good_ID:str(good_id)"
@@ -767,7 +768,7 @@ def good_get_costs_in_all_shops(good_id=0):
 
             response = {
                 "STATUS": "SUCCESS",
-                "Object": object
+                "OBJECT": object
             }
 
     return status, response
@@ -809,7 +810,7 @@ def good_get_cost_history_in_shop(good_id="", shop_id=""):
 
         response = {
             "STATUS": "SUCCESS",
-            "Object": object
+            "OBJECT": object
         }
 
     return status, response
@@ -1069,7 +1070,7 @@ def basket_get(basket_id=""):
         }
         response = {
             "STATUS":"SUCCESS",
-            "Object":basket
+            "OBJECT":basket
         }
 
     return status, response
@@ -1241,7 +1242,7 @@ def basket_get_all(user_id):
 
         response = {
             "STATUS": "SUCCESS",
-            "Object": object
+            "OBJECT": object
         }
     return status, response
 
