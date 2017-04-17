@@ -107,8 +107,8 @@ def user_auth(email, password):
         a = string.ascii_lowercase + string.digits
         token = ''.join([random.choice(a) for i in range(20)])
         ourUser = session.query(costkeeper.User).filter_by(User_ID=User_ID).first()
-        ourUser.token = token
-        ourUser.token_lifetime = datetime.today() + timedelta(days=1)
+        ourUser.Token = token
+        ourUser.Token_Lifetime = datetime.today() + timedelta(days=1)
         session.commit()
         response["STATUS"] = "SUCCESS"
         response["token"] = token
