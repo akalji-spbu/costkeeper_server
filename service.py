@@ -51,7 +51,7 @@ class UserHandler(tornado.web.RequestHandler):
                 firstname   = str(object['firstname']).encode('utf-8')
                 lastname    = str(object['lastname']).encode('utf-8')
                 avatar      = str(object['avatar'])
-                status, response = api.user_alter(token,nickname,email,firstname,lastname,avatar)
+                status, response = api.user_alter(user_id,nickname,email,firstname,lastname,avatar)
 
 
             if (method == "user_alter_password"):

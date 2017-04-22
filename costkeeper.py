@@ -74,7 +74,8 @@ class Type_of_good(Base):
 
     def __init__(self, Name, Parent_Type_ID):
         self.Name           = Name
-        self.Parent_Type_ID = Parent_Type_ID
+        if Parent_Type_ID != None:
+            self.Parent_Type_ID = Parent_Type_ID
 
 
 class Manufacturer(Base):

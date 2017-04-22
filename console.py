@@ -92,8 +92,30 @@ def import_countries():
         session.commit()
     session.close()
 
+def import_categories():
+    DOMTree = xml.dom.minidom.parse("catalog.xml")
+    collection = DOMTree.documentElement
+    catalog = collection.getElementsByTagName('category')
+    engine = create_engine(dburi)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    for category in catalog:
+        catname = category.getAttribute("name")
+        parentcat = category.parentNode.getAttribute("name")
+        if category.parentNode.getAttribute("name") == "":
+            parentcat = None
+        print(catname, parentcat)
+        if parentcat != None:
+            parentType = ession.query(costkeeper.Type_of_good).filter(
+                costkeeper.Type_of_good.Name == parentcat).first()
+            parentcat = parentType.Type_ID
+
+
+        NewType = costkeeper.Type_of_good(catname, parentcat)
+        session.add(NewType)
+        session.commit()
+    session.close()
 
 
 
-
-import_countries()
+import_categories()

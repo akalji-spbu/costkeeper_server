@@ -169,7 +169,7 @@ def user_reg(nickname="", password="", email="", firstname="", lastname=""):
     return status,response
 
 
-def user_alter(token="", nickname="", email="", firstname="", lastname=""):
+def user_alter(User_ID,nickname="", email="", firstname="", lastname=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -178,46 +178,26 @@ def user_alter(token="", nickname="", email="", firstname="", lastname=""):
     # /Creating database session
 
     status = False
-
-    if (len(token) == 0):
-        response = {
-            "STATUS": "ERROR_TOKEN_DOES_NOT_EXIST"
-        }
-    else:
-        select_stmt = select([costkeeper.User.Token_Lifetime]).where(costkeeper.User.Token == token)
-        result = conn.execute(select_stmt)
-        rows = result.fetchall()
-        result.close()
-        if not rows:
-            response = {
-                "STATUS": "ERROR_TOKEN_DOES_NOT_EXIST"
-            }
-        else:
-            if (rows[0].Token_Lifetime < datetime.today()):
-                response = {
-                    "STATUS": "ERROR_TOKEN_EXSPIRED"
-                }
-            else:
-                ourUser = session.query(costkeeper.User).filter_by(token=token).first()
-                if (len(nickname) != 0):
-                    ourUser.User_Nickname = nickname
-                if (len(email) != 0):
-                    ourUser.User_Email = email
-                if (len(firstname) != 0):
-                    ourUser.User_Firstname = firstname
-                if (len(lastname) != 0):
-                    ourUser.User_Lastname = lastname
-                session.commit()
-                response = {
-                    "STATUS": "SUCCESS"
-                }
-                status = True
+    ourUser = session.query(costkeeper.User).filter_by(User_ID=User_ID).first()
+    if (len(nickname) != 0):
+        ourUser.User_Nickname = nickname
+    if (len(email) != 0):
+        ourUser.User_Email = email
+    if (len(firstname) != 0):
+        ourUser.User_Firstname = firstname
+    if (len(lastname) != 0):
+        ourUser.User_Lastname = lastname
+    session.commit()
+    response = {
+        "STATUS": "SUCCESS"
+    }
+    status = True
     session.close()
 
     return status, response
 
 
-def user_delete(user_id = 0,d_user_id=0):
+def user_delete(user_id,d_user_id):
     d_user_id = int(d_user_id)
     user_id = int(user_id)
     status = False
