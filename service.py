@@ -167,7 +167,7 @@ class GoodHandler(tornado.web.RequestHandler):
                 alcohol = str(object['alcohol'])
                 brand = str(object['brand'])
                 b64 = str(object['b64'])
-                status, response = api.good_alter(id, name, life, description, prod_country_id, type_id, picture)
+                status, response = api.good_alter(id, name, life, description, type_id, units_id, alcohol, brand, b64)
         self.write(json.dumps(response))
 
 
@@ -277,4 +277,5 @@ except:
 application = Application()
 http_server = tornado.httpserver.HTTPServer(application, xheaders=True)
 http_server.listen(port)
+print("Starting service on port "+str(port))
 tornado.ioloop.IOLoop.current().start()
