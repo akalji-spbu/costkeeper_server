@@ -462,7 +462,7 @@ def shop_get(id):
 
 # good methods
 
-def good_add(barcode=0, name="", life="", description="", type_id="", units_id="", alcohol="", brand="", b64=""):
+def good_add(barcode=0, name="", life="", description="", type_id="", units_id="", alcohol="", manufacturer_id="", b64=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -480,7 +480,7 @@ def good_add(barcode=0, name="", life="", description="", type_id="", units_id="
     result.close()
 
     if not rows:
-        newGood = costkeeper.Good(name, barcode, life, description, type_id, units_id, alcohol, brand)
+        newGood = costkeeper.Good(name, barcode, life, description, type_id, units_id, alcohol, manufacturer_id)
         try:
             session.add(newGood)
 
@@ -537,7 +537,7 @@ def good_barcode_parse_from_another_service (barcode=0):
     return status,response
 
 
-def good_alter(id="", name="", life="", description="", type_id="", units_id="", alcohol="", brand="", b64=""):
+def good_alter(id="", name="", life="", description="", type_id="", units_id="", alcohol="", manufacturer_id="", b64=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -574,10 +574,10 @@ def good_alter(id="", name="", life="", description="", type_id="", units_id="",
             ourGood.Type = type_id
         if (len(alcohol) != 0):
             ourGood.Alcohol = alcohol
-        if (len(brand) != 0):
-            ourGood.Brand = brand
+        if (len(manufacturer_id) != 0):
+            ourGood.Manufacturer_ID = manufacturer_id
         if (len(b64) != 0):
-            picture_saver.save_b64_picture(b64, config.goods_pictures_folder, barcode)
+            picture_saver.save_b64_picture(b64, config.goods_pictures_folder, ourGood.Barcode)
     session.commit()
     session.close()
     return status, response
@@ -606,15 +606,11 @@ def good_get(secret="", good_id=""):
     else:
         select_stmt = select(
             [costkeeper.Good.Good_ID, costkeeper.Good.Barcode, costkeeper.Good.Life, costkeeper.Good.Description,
-             costkeeper.Good.Name, costkeeper.Good.Type_ID, costkeeper.Good.Units_ID, costkeeper.Good.Alcohol, costkeeper.Good.Brand]).where(costkeeper.Good.Good_ID == good_id)
-        print("1")
+             costkeeper.Good.Name, costkeeper.Good.Type_ID, costkeeper.Good.Units_ID, costkeeper.Good.Alcohol, costkeeper.Good.Manufacturer_ID]).where(costkeeper.Good.Good_ID == good_id)
         result = conn.execute(select_stmt)
-        print("2")
         rows = result.fetchall()
-        print("3")
         result.close()
         encoded = rows[0].Description
-        print("4")
         print(encoded)
         object = {"Good_ID": str(rows[0].Good_ID),
                   "Barcode": rows[0].Barcode,
@@ -623,10 +619,9 @@ def good_get(secret="", good_id=""):
                   "Name": rows[0].Name,
                   "Type_ID": str(rows[0].Type_ID),
                   "Units_ID": str(rows[0].Units_ID),
-                  #"Alcohol": str(rows[0].Alcohol),
-                  "Brand": rows[0].Brand
+                  "Alcohol": str(rows[0].Alcohol),
+                  "Manufacturer_ID": str(rows[0].Manufacturer_ID)
                   }
-        print("Meow")
         response = {
             "STATUS": "SUCCESS",
             "OBJECT": object

@@ -53,9 +53,9 @@ class Good(Base):
     Type_ID     = Column (Integer)
     Units_ID    = Column (Integer)
     Alcohol     = Column (Boolean)
-    Brand       = Column (String(45))
+    Manufacturer_ID       = Column (Integer)
 
-    def __init__(self, Name, Barcode, Life, Description, Type_ID, Units_ID, Alcohol, Brand):
+    def __init__(self, Name, Barcode, Life, Description, Type_ID, Units_ID, Alcohol, Manufacturer_ID):
         self.Name        = Name
         self.Life        = Life
         self.Barcode     = Barcode
@@ -63,7 +63,7 @@ class Good(Base):
         self.Type_ID     = Type_ID
         self.Units_ID    = Units_ID
         self.Alcohol     = Alcohol
-        self.Brand       = Brand
+        self.Manufacturer_ID       = Manufacturer_ID
 
 class Type_of_good(Base):
     __tablename__ = 'types_of_goods'
