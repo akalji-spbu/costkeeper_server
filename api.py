@@ -617,9 +617,10 @@ def good_get(secret="", good_id=""):
                   "Life": rows[0].Life,
                   "Description": rows[0].Description,
                   "Name": rows[0].Name,
-                  "Picture": rows[0].Picture,
-                  "Prod_Country_ID": str(rows[0].Prod_country_ID),
-                  "Type_ID": str(rows[0].Type_ID)
+                  "Type_ID": str(rows[0].Type_ID),
+                  "Units_ID": rows[0].Units_ID,
+                  "Alcohol": rows[0].Alcohol,
+                  "Brand": rows[0].Brand
                   }
         response = {
             "STATUS": "SUCCESS",
