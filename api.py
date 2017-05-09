@@ -589,6 +589,7 @@ def manufacturer_add(country_id, manufacturer = ""):
     session = Session()
     # /Creating database session
     status = True
+    manufacturer_id = 0
 
     if(len(manufacturer)==0):
         manufacturer = "No manufacturer"
