@@ -607,6 +607,7 @@ def manufacturer_add(country_id, manufacturer = ""):
             status = False
     else:
         manufacturer_id = rows[0].Manufacturer_ID
+    session.commit()
 
     return manufacturer_id, status
 
