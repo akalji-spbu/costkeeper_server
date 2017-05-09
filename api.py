@@ -533,7 +533,7 @@ def good_add_ean13(barcode=0, name="", barcode_type="", country="", manufacturer
             return status, response
         prod_country_id = rows[0].Country_ID
 
-        manufacturer_id, status = manufacturer_add(manufacturer, prod_country_id)
+        manufacturer_id, status = manufacturer_add(prod_country_id, manufacturer)
 
         select_stmt = select([costkeeper.Type_of_good.Type_ID]).where(costkeeper.Type_of_good.Name == category)
         result = conn.execute(select_stmt)
