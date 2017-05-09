@@ -53,7 +53,7 @@ class Good(Base):
     Type_ID     = Column (Integer)
     Units_ID    = Column (Integer)
     Alcohol     = Column (Boolean)
-    Brand       = (String(45))
+    Brand       = Column (String(45))
 
     def __init__(self, Name, Barcode, Life, Description, Type_ID, Units_ID, Alcohol, Brand):
         self.Name        = Name
