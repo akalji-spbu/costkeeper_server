@@ -14,7 +14,7 @@ yum -y update
 yum -y upgrade
 yum install -y epel-release
 yum install -y nano mc make gcc nginx openssl-devel  supervisor wget
-yum install -y MariaDB-server MariaDB-client
+yum install -y MariaDB-client MariaDB-server 
 
 cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.back
 cp /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.back
