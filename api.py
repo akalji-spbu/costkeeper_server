@@ -618,8 +618,8 @@ def good_get(secret="", good_id=""):
                   "Description": rows[0].Description,
                   "Name": rows[0].Name,
                   "Type_ID": str(rows[0].Type_ID),
-                  "Units_ID": rows[0].Units_ID,
-                  "Alcohol": rows[0].Alcohol,
+                  "Units_ID": str(rows[0].Units_ID),
+                  "Alcohol": str(rows[0].Alcohol),
                   "Brand": rows[0].Brand
                   }
         response = {
