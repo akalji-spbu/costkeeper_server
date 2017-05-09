@@ -503,6 +503,17 @@ def good_add(barcode=0, name="", life="", description="", type_id="", units_id="
     return status, response
 
 
+def good_add_by_server(barcode):
+    status = True
+    response = {}
+    if config.parsing_from=="ean13info":
+        import ean13parser
+        dataset = ean13parser.getGoodInfoByBarcode(barcode)
+        if dataset["picture_uri"]!="":
+            picture_saver.save_url_picture(dataset["picture_uri"])
+        status, response = good_add_ean13(dataset["barcode"],dataset["name"],dataset["barcode_type"],dataset["country"],dataset["manufacturer"],"ready",dataset["brand"],dataset["description"],dataset["category"])
+    return status, response
+
 def good_barcode_parse_from_another_service (barcode=0):
     # Creating database session
     engine = create_engine(dburi)

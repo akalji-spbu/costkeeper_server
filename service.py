@@ -152,6 +152,9 @@ class GoodHandler(tornado.web.RequestHandler):
                 manufacturer_id = str(object['manufacturer_id'])
                 b64 = str(object['b64'])
                 status, response = api.good_add(barcode, name, life, description, type_id, units_id, alcohol, manufacturer_id, b64)
+            if (method == "good_add_by_server"):
+                barcode = str(object['barcode'])
+                status, response = api.good_add_by_server(barcode)
 
             if (method == "good_barcode_parse_from_another_service"):
                 barcode = str(object['barcode'])
