@@ -176,7 +176,7 @@ class Good_in_basket(Base):
 class Country(Base):
     __tablename__ = 'countries'
 
-    Сountry_ID   = Column(Integer, primary_key=True, unique=True)
+    Country_ID   = Column(Integer, primary_key=True, unique=True)
     Сountry_Name = Column(String(45))
 
     def __init__(self, Сountry_Name):
