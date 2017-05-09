@@ -177,7 +177,7 @@ class Country(Base):
     __tablename__ = 'countries'
 
     Country_ID   = Column(Integer, primary_key=True, unique=True)
-    Сountry_Name = Column(String(45))
+    Country_Name = Column(String(45))
 
     def __init__(self, Сountry_Name):
         self.Сountry_Name = Сountry_Name

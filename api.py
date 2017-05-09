@@ -521,7 +521,7 @@ def good_add_ean13(barcode=0, name="", barcode_type="", country="", manufacturer
     result.close()
 
     if not rows:
-        select_stmt = select([costkeeper.Country.Country_ID]).where(costkeeper.Country.Сountry_Name == country)
+        select_stmt = select([costkeeper.Country.Country_ID]).where(costkeeper.Country.Country_Name == country)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         result.close()
