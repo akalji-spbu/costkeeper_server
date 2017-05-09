@@ -5,13 +5,13 @@ import lxml.html
 import anticaptcha
 
 def getGoodInfoByBarcode(barcode):
-    url_of_good_page = "https://ean13.info/"+str(barcode)+".htm"
+    url_of_good_page = "http://ean13.info/"+str(barcode)+".htm"
     doc = load_page(url_of_good_page)
     captcha = doc.xpath('/html/body/div/div[2]/div[2]/form')
     attempts = 0
     while captcha:
         attempts = attempts + 1
-        anticaptcha.unlock_captcha("6LeCufASAAAAAPVfZ3N-Q6ZHxCx0h5y3s_gGUcYL", "https://ean13.info/tocaptcha.php")
+        anticaptcha.unlock_captcha("6LeCufASAAAAAPVfZ3N-Q6ZHxCx0h5y3s_gGUcYL", "http://ean13.info/tocaptcha.php")
         doc = load_page(url_of_good_page)
         captcha = doc.xpath('/html/body/div/div[2]/div[2]/form')
         if attempts >= 5:
@@ -45,7 +45,7 @@ def getGoodInfoByBarcode(barcode):
         #else:
         category = ""
         if doc.xpath(picture_uri_xpath):
-            picture_uri = "https://ean13.info/"+ doc.xpath(picture_uri_xpath)[0].get("href")
+            picture_uri = "http://ean13.info/"+ doc.xpath(picture_uri_xpath)[0].get("href")
         else:
             picture_uri = ""
         if doc.xpath(description_xpath):
