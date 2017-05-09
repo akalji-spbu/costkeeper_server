@@ -140,15 +140,18 @@ class GoodHandler(tornado.web.RequestHandler):
         allowed,user_id,response = api.user_check_token(token)
         if allowed == True :
             object = data_json['object']
+
             if (method == "good_add"):
                 barcode = str(object['barcode'])
                 name = str(object['name']).encode('utf-8')
                 life = str(object['life'])
                 description = str(object['description']).encode('utf-8')
-                prod_country_id = str(object['prod_country_id'])
                 type_id = str(object['type_id'])
-                picture = str(object['picture'])
-                status, response = api.good_add(barcode, name, life, description, prod_country_id, type_id, picture)
+                units_id = str(object['units_id'])
+                alcohol = str(object['alcohol'])
+                brand = str(object['brand'])
+                b64 = str(object['b64'])
+                status, response = api.good_add(barcode, name, life, description, type_id, units_id, alcohol, brand, b64)
 
             if (method == "good_barcode_parse_from_another_service"):
                 barcode = str(object['barcode'])

@@ -462,7 +462,7 @@ def shop_get(id):
 
 # good methods
 
-def good_add(barcode=0, name="", life="", description="", prod_country_id="", type_id="", uri=""):
+def good_add(barcode=0, name="", life="", description="", type_id="", units_id="", alcohol="", brand="", b64=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -480,7 +480,7 @@ def good_add(barcode=0, name="", life="", description="", prod_country_id="", ty
     result.close()
 
     if not rows:
-        newGood = costkeeper.Good(name, barcode, life, description, prod_country_id, type_id)
+        newGood = costkeeper.Good(name, barcode, life, description, type_id, units_id, alcohol, brand)
         try:
             session.add(newGood)
 
@@ -497,7 +497,7 @@ def good_add(barcode=0, name="", life="", description="", prod_country_id="", ty
 
     session.commit()
     if status:
-        picture_saver.save_url_picture(uri, config.goods_pictures_folder, barcode)
+        picture_saver.save_b64_picture(b64, config.goods_pictures_folder, barcode)
     session.close()
 
     return status, response
