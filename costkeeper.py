@@ -45,25 +45,29 @@ class Currency(Base):
 class Good(Base):
     __tablename__ = 'goods'
 
-    Good_ID     = Column (Integer, primary_key = True, unique=True)
-    Barcode     = Column (String(20), unique=True)
-    Name        = Column (String(45))
-    Life        = Column (String(45))
-    Description = Column (TEXT)
-    Type_ID     = Column (Integer)
-    Units_ID    = Column (Integer)
-    Alcohol     = Column (Boolean)
-    Manufacturer_ID       = Column (Integer)
+    Good_ID          = Column (Integer, primary_key = True, unique=True)
+    Barcode          = Column (String(20), unique=True)
+    Name             = Column (String(45))
+    Life             = Column (String(45))
+    Description      = Column (TEXT)
+    Type_ID          = Column (Integer)
+    Units_ID         = Column (Integer)
+    Alcohol          = Column (Boolean)
+    Manufacturer_ID  = Column (Integer)
+    Brand            = Column (String(45))
+    Prod_Country_ID  = Column (Integer)
 
-    def __init__(self, Name, Barcode, Life, Description, Type_ID, Units_ID, Alcohol, Manufacturer_ID):
-        self.Name        = Name
-        self.Life        = Life
-        self.Barcode     = Barcode
-        self.Description = Description
-        self.Type_ID     = Type_ID
-        self.Units_ID    = Units_ID
-        self.Alcohol     = Alcohol
-        self.Manufacturer_ID       = Manufacturer_ID
+    def __init__(self, Name, Barcode, Life, Description, Type_ID, Units_ID, Alcohol, Manufacturer_ID, Brand, Prod_Country_ID):
+        self.Name            = Name
+        self.Life            = Life
+        self.Barcode         = Barcode
+        self.Description     = Description
+        self.Type_ID         = Type_ID
+        self.Units_ID        = Units_ID
+        self.Alcohol         = Alcohol
+        self.Manufacturer_ID = Manufacturer_ID
+        self.Brand           = Brand
+        self.Prod_Country_ID = Prod_Country_ID
 
 class Type_of_good(Base):
     __tablename__ = 'types_of_goods'
@@ -86,8 +90,7 @@ class Manufacturer(Base):
     Manufacturer_Original_Name = Column (String(30))
     Country_ID                 = Column (Integer)
 
-    def __init__(self, Manufacturer_ID, Manufacturer_Name, Manufacturer_Original_Name, Country_ID):
-        self.Manufacturer_ID            = Manufacturer_ID
+    def __init__(self, Manufacturer_Name, Manufacturer_Original_Name, Country_ID):
         self.Manufacturer_Name          = Manufacturer_Name
         self.Manufacturer_Original_Name = Manufacturer_Original_Name
         self.Country_ID                 = Country_ID

@@ -462,7 +462,7 @@ def shop_get(id):
 
 # good methods
 
-def good_add(barcode=0, name="", life="", description="", type_id="", units_id="", alcohol="", manufacturer_id="", b64=""):
+def good_add(barcode=0, name="", life="", description="", type_id="", units_id="", alcohol="", manufacturer_id="", b64="", brand="", prod_country_id=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -480,7 +480,7 @@ def good_add(barcode=0, name="", life="", description="", type_id="", units_id="
     result.close()
 
     if not rows:
-        newGood = costkeeper.Good(name, barcode, life, description, type_id, units_id, alcohol, manufacturer_id)
+        newGood = costkeeper.Good(name, barcode, life, description, type_id, units_id, alcohol, manufacturer_id,brand,prod_country_id)
         try:
             session.add(newGood)
 
@@ -496,12 +496,79 @@ def good_add(barcode=0, name="", life="", description="", type_id="", units_id="
         }
 
     session.commit()
-    if status:
+    if ((status) and (len(b64)>0)):
         picture_saver.save_b64_picture(b64, config.goods_pictures_folder, barcode)
     session.close()
 
     return status, response
 
+
+def good_add_ean13(barcode=0, name="", barcode_type="", country="", manufacturer="", picture_b64="", brand="", description="", category=""):
+    # Creating database session
+    engine = create_engine(dburi)
+    conn = engine.connect()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
+    status = True
+    response = {
+        "STATUS": "SUCCESS"
+    }
+
+    select_stmt = select([costkeeper.Good.Good_ID]).where(costkeeper.Good.Barcode == barcode)
+    result = conn.execute(select_stmt)
+    rows = result.fetchall()
+    result.close()
+
+    if not rows:
+        select_stmt = select([costkeeper.Country.Сountry_ID]).where(costkeeper.Country.Сountry_Name == country)
+        result = conn.execute(select_stmt)
+        rows = result.fetchall()
+        result.close()
+        if not rows:
+            status = False
+            response = {
+                "STATUS":"ERROR_COUNTRY_IS_INCORRECT"
+            }
+            return status, response
+        prod_country_id = rows[0].Country_ID
+
+        manufacturer_id, status = manufacturer_add(manufacturer, prod_country_id)
+
+        select_stmt = select([costkeeper.Type_of_good.Type_ID]).where(costkeeper.Type_of_good.Name == category)
+        result = conn.execute(select_stmt)
+        rows = result.fetchall()
+        result.close()
+        type_id = rows[0].Type_ID
+
+        if int(type_id)<31:
+            alcohol= 1
+        else:
+            alcohol = 0
+
+        units_id = 1
+        life = ""
+        newGood = costkeeper.Good(name, barcode, life, description, type_id, units_id, alcohol, manufacturer_id, brand, prod_country_id)
+        try:
+            session.add(newGood)
+
+        except sqlalchemy.exc.OperationalError:
+            status = False
+            response = {
+                "STATUS": "ERROR_ADDING"
+            }
+    else:
+        status = False
+        response = {
+            "STATUS": "ERROR_GOOD_ALREADY_EXIST"
+        }
+
+    session.commit()
+    if ((status) and (picture_b64!="ready") and (len(picture_b64)>0)):
+        picture_saver.save_b64_picture(picture_b64, config.goods_pictures_folder, barcode)
+    session.close()
+
+    return status, response
 
 def good_add_by_server(barcode):
     status = True
@@ -513,6 +580,34 @@ def good_add_by_server(barcode):
             picture_saver.save_url_picture(dataset["picture_uri"])
         status, response = good_add_ean13(dataset["barcode"],dataset["name"],dataset["barcode_type"],dataset["country"],dataset["manufacturer"],"ready",dataset["brand"],dataset["description"],dataset["category"])
     return status, response
+
+def manufacturer_add(country_id, manufacturer = ""):
+    # Creating database session
+    engine = create_engine(dburi)
+    conn = engine.connect()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
+    status = True
+
+    if(len(manufacturer)==0):
+        manufacturer = "No manufacturer"
+
+    select_stmt = select([costkeeper.Manufacturer.Manufacturer_ID]).where(costkeeper.Manufacturer.Manufacturer_Name == manufacturer)
+    result = conn.execute(select_stmt)
+    rows = result.fetchall()
+    result.close()
+    if not rows:
+        newManufacturer = costkeeper.Manufacturer(manufacturer,"",country_id)
+        try:
+            session.add(newManufacturer)
+
+        except sqlalchemy.exc.OperationalError:
+            status = False
+    else:
+        manufacturer_id = rows[0].Manufacturer_ID
+
+    return manufacturer_id, status
 
 def good_barcode_parse_from_another_service (barcode=0):
     # Creating database session
@@ -548,7 +643,7 @@ def good_barcode_parse_from_another_service (barcode=0):
     return status,response
 
 
-def good_alter(id="", name="", life="", description="", type_id="", units_id="", alcohol="", manufacturer_id="", b64=""):
+def good_alter(id="", name="", life="", description="", type_id="", units_id="", alcohol="", manufacturer_id="", b64="", brand="", prod_country_id=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -587,6 +682,10 @@ def good_alter(id="", name="", life="", description="", type_id="", units_id="",
             ourGood.Alcohol = alcohol
         if (len(manufacturer_id) != 0):
             ourGood.Manufacturer_ID = manufacturer_id
+        if (len(brand) != 0):
+            ourGood.Brand = brand
+        if (len(prod_country_id) != 0):
+            ourGood.Prod_Country_ID = prod_country_id
         if (len(b64) != 0):
             picture_saver.save_b64_picture(b64, config.goods_pictures_folder, ourGood.Barcode)
     session.commit()

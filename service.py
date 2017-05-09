@@ -62,7 +62,7 @@ class UserHandler(tornado.web.RequestHandler):
 
             if (method == "user_delete"):
                 d_user_id = str(object['d_user_id'])
-                status, response = api.user_delete(token,d_user_id)
+                status, response = api.user_delete(user_id,d_user_id)
 
 
             if (method =="set_avatar"):
@@ -151,11 +151,26 @@ class GoodHandler(tornado.web.RequestHandler):
                 alcohol = str(object['alcohol'])
                 manufacturer_id = str(object['manufacturer_id'])
                 b64 = str(object['b64'])
-                status, response = api.good_add(barcode, name, life, description, type_id, units_id, alcohol, manufacturer_id, b64)
-            if (method == "good_add_by_server"):
+                brand = str(object['brand']).encode('utf-8')
+                prod_country_id = str(object['prod_country_id'])
+                status, response = api.good_add(barcode, name, life, description, type_id, units_id, alcohol, manufacturer_id, b64, brand, prod_country_id)
+
+            if (method == "good_add_ean13"):
+                barcode = str(object['barcode'])
+                name = str(object['name']).encode('utf-8')
+                barcode_type = str(object['barcode_type']).encode('utf-8')
+                description = str(object['description']).encode('utf-8')
+                country = str(object['country']).encode('utf-8')
+                manufacturer = str(object['manufacturer']).encode('utf-8')
+                picture_b64 = str(object['picture_b64'])
+                brand = str(object['brand']).encode('utf-8')
+                category = str(object['category']).encode('utf-8')
+                status, response = api.good_add_ean13(barcode, name, barcode_type, country, manufacturer, picture_b64, brand, description, category)
+
+			if (method == "good_add_by_server"):
                 barcode = str(object['barcode'])
                 status, response = api.good_add_by_server(barcode)
-
+                
             if (method == "good_barcode_parse_from_another_service"):
                 barcode = str(object['barcode'])
                 status, response = api.good_barcode_parse_from_another_service(barcode)
@@ -170,7 +185,9 @@ class GoodHandler(tornado.web.RequestHandler):
                 alcohol = str(object['alcohol'])
                 manufacturer_id = str(object['manufacturer_id'])
                 b64 = str(object['b64'])
-                status, response = api.good_alter(id, name, life, description, type_id, units_id, alcohol, manufacturer_id, b64)
+                brand = str(object['brand']).encode('utf-8')
+                prod_country_id = str(object['prod_country_id'])
+                status, response = api.good_alter(id, name, life, description, type_id, units_id, alcohol, manufacturer_id, b64, brand,prod_country_id)
         self.write(json.dumps(response))
 
 
