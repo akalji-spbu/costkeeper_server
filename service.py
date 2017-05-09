@@ -167,7 +167,7 @@ class GoodHandler(tornado.web.RequestHandler):
                 category = str(object['category']).encode('utf-8')
                 status, response = api.good_add_ean13(barcode, name, barcode_type, country, manufacturer, picture_b64, brand, description, category)
 
-			if (method == "good_add_by_server"):
+            if (method == "good_add_by_server"):
                 barcode = str(object['barcode'])
                 status, response = api.good_add_by_server(barcode)
                 
