@@ -606,7 +606,7 @@ def good_get(secret="", good_id=""):
     else:
         select_stmt = select(
             [costkeeper.Good.Good_ID, costkeeper.Good.Barcode, costkeeper.Good.Life, costkeeper.Good.Description,
-             costkeeper.Good.Name, costkeeper.Good.Brand, costkeeper.Good.Units_ID, costkeeper.Good.Type_ID]).where(costkeeper.Good.Good_ID == good_id)
+             costkeeper.Good.Name, costkeeper.Good.Brand, costkeeper.Good.Type_ID]).where(costkeeper.Good.Good_ID == good_id)
         print("1")
         result = conn.execute(select_stmt)
         print("2")
