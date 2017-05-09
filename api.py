@@ -577,7 +577,7 @@ def good_add_by_server(barcode):
         import ean13parser
         dataset = ean13parser.getGoodInfoByBarcode(barcode)
         if dataset["picture_uri"]!="":
-            picture_saver.save_url_picture(dataset["picture_uri"])
+            picture_saver.save_url_picture(dataset["picture_uri"],config.goods_pictures_folder, barcode)
         status, response = good_add_ean13(dataset["barcode"],dataset["name"],dataset["barcode_type"],dataset["country"],dataset["manufacturer"],"ready",dataset["brand"],dataset["description"],dataset["category"])
     return status, response
 
