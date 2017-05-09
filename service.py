@@ -134,7 +134,7 @@ class GoodHandler(tornado.web.RequestHandler):
     def post(self):
         json_sting = self.request.body
         data_json = tornado.escape.json_decode(json_sting)
-        method = str(data_json['type'])
+        method = str(data_json['method'])
         token = str(data_json['token'])
         secret = str(data_json['secret'])
         allowed,user_id,response = api.user_check_token(token)
