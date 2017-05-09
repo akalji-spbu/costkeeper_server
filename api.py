@@ -606,11 +606,16 @@ def good_get(secret="", good_id=""):
     else:
         select_stmt = select(
             [costkeeper.Good.Good_ID, costkeeper.Good.Barcode, costkeeper.Good.Life, costkeeper.Good.Description,
-             costkeeper.Good.Name, costkeeper.Good.Type_ID, costkeeper.Good.Units_ID, costkeeper.Good.Alcohol, costkeeper.Good.Brand]).where(costkeeper.Good.Good_ID == good_id)
+             costkeeper.Good.Name, costkeeper.Good.Type_ID, costkeeper.Good.Units_ID, costkeeper.Good.Alcohol,
+             costkeeper.Good.Brand]).where(costkeeper.Good.Good_ID == good_id)
+        print("1")
         result = conn.execute(select_stmt)
+        print("2")
         rows = result.fetchall()
+        print("3")
         result.close()
         encoded = rows[0].Description
+        print("4")
         print(encoded)
         object = {"Good_ID": str(rows[0].Good_ID),
                   "Barcode": rows[0].Barcode,
@@ -622,6 +627,7 @@ def good_get(secret="", good_id=""):
                   "Alcohol": str(rows[0].Alcohol),
                   "Brand": rows[0].Brand
                   }
+        print("Meow")
         response = {
             "STATUS": "SUCCESS",
             "OBJECT": object
