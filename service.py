@@ -162,9 +162,11 @@ class GoodHandler(tornado.web.RequestHandler):
                 name = str(object['name']).encode('utf-8')
                 life = str(object['life'])
                 description = str(object['description']).encode('utf-8')
-                prod_country_id = str(object['prod_country_id'])
                 type_id = str(object['type_id'])
-                picture = str(object['picture'])
+                units_id = str(object['units_id'])
+                alcohol = str(object['alcohol'])
+                brand = str(object['brand'])
+                b64 = str(object['b64'])
                 status, response = api.good_alter(id, name, life, description, prod_country_id, type_id, picture)
         self.write(json.dumps(response))
 

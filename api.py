@@ -537,7 +537,7 @@ def good_barcode_parse_from_another_service (barcode=0):
     return status,response
 
 
-def good_alter(id="", name="", life="", description="", prod_country_id="", type_id="", picture=""):
+def good_alter(id="", name="", life="", description="", type_id="", units_id="", alcohol="", brand="", b64=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -568,13 +568,16 @@ def good_alter(id="", name="", life="", description="", prod_country_id="", type
             ourGood.Life = life
         if (len(description) != 0):
             ourGood.Description = description
-        if (len(prod_country_id) != 0):
-            ourGood.Prod_country_ID = prod_country_id
+        if (len(units_id) != 0):
+            ourGood.Units_ID = units_id
         if (len(type_id) != 0):
             ourGood.Type = type_id
-        if (len(picture) != 0):
-            ourGood.Picture = picture
-
+        if (len(alcohol) != 0):
+            ourGood.Alcohol = alcohol
+        if (len(brand) != 0):
+            ourGood.Brand = brand
+        if (len(b64) != 0):
+            picture_saver.save_b64_picture(b64, config.goods_pictures_folder, barcode)
     session.commit()
     session.close()
     return status, response
