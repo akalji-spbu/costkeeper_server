@@ -6,12 +6,7 @@ def unlock_captcha(captcha_api_key, captcha_url):
     import antigateAPI
     import config
 
-    HEADERS = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101 Firefox/52.0'
-    }
-
     session = requests.session()
-    session.headers = HEADERS
     challenge_uri = "http://www.google.com/recaptcha/api/challenge?k=" + captcha_api_key
     challenge_text = session.get(challenge_uri).text
     regex = r"'([^']+)'"
@@ -26,9 +21,9 @@ def unlock_captcha(captcha_api_key, captcha_url):
     if config.anticaptha_mode == "ANTIGATE":
         print("ANTIGATE")
         CAPTCHA_ID = antigateAPI.send_captcha(captcha_image)
-        sleep(5)
         captcha_answer = antigateAPI.check_captcha(CAPTCHA_ID)
         while 'CAPCHA_NOT_READY' in captcha_answer:
+            sleep(5)
             captcha_answer = antigateAPI.check_captcha(CAPTCHA_ID)
         if captcha_answer[0:2] == "OK":
             captcha_answer = captcha_answer[3:]
@@ -47,3 +42,4 @@ def unlock_captcha(captcha_api_key, captcha_url):
             'recaptcha_challenge_field': challange_session_id
             }
     requests.post(captcha_url, data=data)
+

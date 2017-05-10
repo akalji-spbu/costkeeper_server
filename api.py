@@ -580,6 +580,7 @@ def good_add_by_server(barcode):
         if status:
             if dataset["picture_uri"]!="":
                 picture_saver.save_url_picture(dataset["picture_uri"],config.goods_pictures_folder, barcode)
+            print(dataset)
         status, response = good_add_ean13(dataset["barcode"],dataset["name"],dataset["barcode_type"],dataset["country"],dataset["manufacturer"],"ready",dataset["brand"],dataset["description"],dataset["category"])
     return status, response
 
@@ -612,39 +613,6 @@ def manufacturer_add(country_id, manufacturer = ""):
     session.commit()
 
     return manufacturer_id, status
-
-def good_barcode_parse_from_another_service (barcode=0):
-    # Creating database session
-    engine = create_engine(dburi)
-    conn = engine.connect()
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    # /Creating database session
-
-    import ean13parser, picture_saver
-    status,dataset = ean13parser.getGoodInfoByBarcode(barcode)
-    select_stmt = select([costkeeper.Country.Country_ID]).where(costkeeper.Country.Country_Name == dataset["country"])
-    rows = (conn.execute(select_stmt)).fetchall()
-    country_id =''
-    for row in rows:
-        country_id = row
-
-    select_stmt = select([costkeeper.Type_of_good.Type_ID_ID]).where(costkeeper.Type_of_good.Name == dataset["category"])
-    rows = (conn.execute(select_stmt)).fetchall()
-    type_id =''
-    for row in rows:
-        type_id = row
-
-    session.close()
-
-    if status:
-        status,response = good_add(dataset["barcode"],dataset["name"],dataset["description"],country_id,type_id,dataset["picture_uri"])
-    else:
-        response = {
-            "STATUS": "ERROR_PARSE_HAS_BEEN_FAILED"
-        }
-
-    return status,response
 
 
 def good_alter(id="", name="", life="", description="", type_id="", units_id="", alcohol="", manufacturer_id="", b64="", brand="", prod_country_id=""):

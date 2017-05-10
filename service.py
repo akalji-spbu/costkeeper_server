@@ -171,10 +171,6 @@ class GoodHandler(tornado.web.RequestHandler):
                 barcode = str(object['barcode'])
                 status, response = api.good_add_by_server(barcode)
                 
-            if (method == "good_barcode_parse_from_another_service"):
-                barcode = str(object['barcode'])
-                status, response = api.good_barcode_parse_from_another_service(barcode)
-
             if (method == "good_alter"):
                 id = str(object['id'])
                 name = str(object['name']).encode('utf-8')

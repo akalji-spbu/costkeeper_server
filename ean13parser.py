@@ -20,30 +20,36 @@ def getGoodInfoByBarcode(barcode):
             return STATUS, RESPONSE
 
 
-    barcode_xpath = "/html/body/div/div[3]/div/div/div[2]/div[1]/table/tbody/tr[1]/td[2]/small/strong"
-    name_xpath = "/html/body/div/div[3]/div/div/div[2]/h1"
-    barcode_type_xpath = "/html/body/div/div[3]/div/div/div[2]/div[1]/table/tbody/tr[2]/td[2]/span"
-    country_xpath = "/html/body/div/div[3]/div/div/div[2]/div[1]/table/tbody/tr[3]/td[2]/a"
-    manufacturer_xpath = "/html/body/div/div[3]/div/div/div[2]/div[1]/table/tbody/tr[4]/td[2]/a"
-    picture_uri_xpath = "/html/body/div/div[3]/div/div/div[1]/div/div[3]/p/a"
-    description_xpath = "/html/body/div/div[4]/div/div/div[1]/div"
-    brand_xpath = "/html/body/div/div[3]/div/div/div[2]/div[1]/table/tbody/tr[5]/td[2]/a"
-    category_xpath = "/html/body/div/div[3]/div/div/div[2]/div[1]/table/tbody/tr[7]/td[2]/a"
+    barcode_xpath =         "/html/body/div/div[3]/div/div/div[2]/div[1]/table/tbody/tr[1]/td[2]/small/strong"
+    barcode_type_xpath =    "/html/body/div/div[3]/div/div/div[2]/div[1]/table/tbody/tr[2]/td[2]/span"
+    country_xpath =         "/html/body/div/div[3]/div/div/div[2]/div[1]/table/tbody/tr[3]/td[2]/a"
+    manufacturer_xpath =    "/html/body/div/div[3]/div/div/div[2]/div[1]/table/tbody/tr[4]/td[2]/a"
+    brand_xpath =           "/html/body/div/div[3]/div/div/div[2]/div[1]/table/tbody/tr[5]/td[2]/a"
+
+    name_xpath =            "/html/body/div/div[3]/div/div/div[2]/h1"
+    picture_uri_xpath =     "/html/body/div/div[3]/div/div/div[1]/div/div[3]/p/a"
+    description_xpath =     "/html/body/div/div[4]/div/div/div[1]/div"
 
 
     name = doc.xpath(name_xpath)[0].text
     if name != "Товар не найден в базе данных":
-
         barcode = doc.xpath(barcode_xpath)[0].text
-
         barcode_type = doc.xpath(barcode_type_xpath)[0].text
         country = doc.xpath(country_xpath)[0].text
         manufacturer = doc.xpath(manufacturer_xpath)[0].text
         brand = doc.xpath(brand_xpath)[0].text
-        #if doc.xpath(doc.xpath(category_xpath)):
-        #    category = doc.xpath(category_xpath)[0].text
-        #else:
-        category = ""
+
+        category_opr_row6_xpath = "/html/body/div/div[3]/div/div/div[2]/div[1]/table/tbody/tr[6]/td[1]"
+        category_row6_xpath = "/html/body/div/div[3]/div/div/div[2]/div[1]/table/tbody/tr[6]/td[2]/a"
+        category_opr_row7_xpath = "/html/body/div/div[3]/div/div/div[2]/div[1]/table/tbody/tr[7]/td[1]"
+        category_row7_xpath = "/html/body/div/div[3]/div/div/div[2]/div[1]/table/tbody/tr[7]/td[2]/a"
+        if doc.xpath(category_opr_row6_xpath)[0].text=="Категория:":
+            category = doc.xpath(category_row6_xpath)[0].text
+        elif doc.xpath(category_opr_row7_xpath)[0].text=="Категория:":
+            category = doc.xpath(category_row7_xpath)[0].text
+        else:
+            category = ""
+
         if doc.xpath(picture_uri_xpath):
             picture_uri = "http://ean13.info/"+ doc.xpath(picture_uri_xpath)[0].get("href")
         else:
@@ -73,11 +79,7 @@ def getGoodInfoByBarcode(barcode):
     return STATUS, RESPONSE
 
 def load_page(url_of_good_page):
-    HEADERS = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:52.0) Gecko/20100101 Firefox/52.0'
-    }
     session = requests.session()
-    session.headers = HEADERS
     page = session.get(url_of_good_page)
     doc = lxml.html.document_fromstring(page.text)
     return doc
