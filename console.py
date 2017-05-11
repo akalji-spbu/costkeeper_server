@@ -106,7 +106,7 @@ def import_categories():
             parentcat = None
         print(catname, parentcat)
         if parentcat != None:
-            parentType = ession.query(costkeeper.Type_of_good).filter(
+            parentType = session.query(costkeeper.Type_of_good).filter(
                 costkeeper.Type_of_good.Name == parentcat).first()
             parentcat = parentType.Type_ID
 

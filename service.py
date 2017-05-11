@@ -19,7 +19,7 @@ class UserHandler(tornado.web.RequestHandler):
                 ID = self.get_argument('user_id', True)
                 status, response = api.user_get(ID)
 
-        self.write(json.dumps(response))
+        self.write(json.dumps(response, ensure_ascii=False).encode('utf8'))
 
     def post(self):
         json_sting = self.request.body
