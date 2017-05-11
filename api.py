@@ -665,7 +665,55 @@ def good_alter(id="", name="", life="", description="", type_id="", units_id="",
     return status, response
 
 
-def good_get(secret="", good_id=""):
+def good_find_by_barcode(barcode):
+    # Creating database session
+    engine = create_engine(dburi, encoding='utf-8')
+    conn = engine.connect()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    # /Creating database session
+
+    status = True
+
+    select_stmt = select([costkeeper.Good.Good_ID]).where(costkeeper.Good.Good_ID == good_id)
+    result = conn.execute(select_stmt)
+    rows = result.fetchall()
+    result.close()
+
+    if not rows:
+        status = False
+        response = {
+            "STATUS": "ERROR_GOOD_DOES_NOT_EXIST"
+        }
+    else:
+        select_stmt = select(
+            [costkeeper.Good.Good_ID, costkeeper.Good.Barcode, costkeeper.Good.Life, costkeeper.Good.Description,
+             costkeeper.Good.Name, costkeeper.Good.Type_ID, costkeeper.Good.Units_ID, costkeeper.Good.Alcohol,
+             costkeeper.Good.Manufacturer_ID]).where(costkeeper.Good.Barcode == barcode)
+        result = conn.execute(select_stmt)
+        rows = result.fetchall()
+        result.close()
+        encoded = rows[0].Description
+        print(encoded)
+        object = {"Good_ID": str(rows[0].Good_ID),
+                  "Barcode": rows[0].Barcode,
+                  "Life": rows[0].Life,
+                  "Description": rows[0].Description,
+                  "Name": rows[0].Name,
+                  "Type_ID": str(rows[0].Type_ID),
+                  "Units_ID": str(rows[0].Units_ID),
+                  "Alcohol": str(rows[0].Alcohol),
+                  "Manufacturer_ID": str(rows[0].Manufacturer_ID)
+                  }
+        response = {
+            "STATUS": "SUCCESS",
+            "OBJECT": object
+        }
+
+    return status, response
+
+
+def good_get(good_id=""):
     # Creating database session
     engine = create_engine(dburi, encoding='utf-8')
     conn = engine.connect()

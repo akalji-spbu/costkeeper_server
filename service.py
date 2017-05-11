@@ -113,7 +113,15 @@ class GoodHandler(tornado.web.RequestHandler):
         if allowed == True :
             if (method == "good_get"):
                 good_id = int(self.get_argument('good_id',True))
-                status, response = api.good_get(secret, good_id)
+                status, response = api.good_get(good_id)
+
+            if (method == "good_find"):
+                find_type = str(self.get_argument('type',True))
+                status = False
+                response = {"STATUS":"ERROR_WRONG_SEARCH_TYPE"}
+                if(find_type=="barcode"):
+                    barcode = str(self.get_argument('barcode', True))
+                    status, response = api.good_find_by_barcode(barcode)
 
             if (method == "good_get_cost"):
                 good_id = int(self.get_argument('good_id',True))
