@@ -606,9 +606,13 @@ def manufacturer_add(country_id, manufacturer = ""):
 
         except sqlalchemy.exc.OperationalError:
             status = False
-    else:
-        manufacturer_id = rows[0].Manufacturer_ID
     session.commit()
+
+    select_stmt = select([costkeeper.Manufacturer.Manufacturer_ID]).where(        costkeeper.Manufacturer.Manufacturer_Name == manufacturer)
+    result = conn.execute(select_stmt)
+    rows = result.fetchall()
+    result.close()
+    manufacturer_id = rows[0].Manufacturer_ID
 
     return manufacturer_id, status
 
