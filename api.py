@@ -534,7 +534,6 @@ def good_add_ean13(barcode=0, name="", barcode_type="", country="", manufacturer
         prod_country_id = rows[0].Country_ID
 
         manufacturer_id, status = manufacturer_add(prod_country_id, manufacturer)
-        print (manufacturer_id)
 
         select_stmt = select([costkeeper.Type_of_good.Type_ID]).where(costkeeper.Type_of_good.Name == category)
         result = conn.execute(select_stmt)
@@ -580,7 +579,6 @@ def good_add_by_server(barcode):
         if status:
             if dataset["picture_uri"]!="":
                 picture_saver.save_url_picture(dataset["picture_uri"],config.goods_pictures_folder, barcode)
-            print(dataset)
         status, response = good_add_ean13(dataset["barcode"],dataset["name"],dataset["barcode_type"],dataset["country"],dataset["manufacturer"],"ready",dataset["brand"],dataset["description"],dataset["category"])
     return status, response
 
@@ -693,8 +691,6 @@ def good_find_by_barcode(barcode):
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         result.close()
-        encoded = rows[0].Description
-        print(encoded)
         object = {"Good_ID": str(rows[0].Good_ID),
                   "Barcode": rows[0].Barcode,
                   "Life": rows[0].Life,
@@ -740,8 +736,7 @@ def good_get(good_id=""):
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         result.close()
-        encoded = rows[0].Description
-        print(encoded)
+
         object = {"Good_ID": str(rows[0].Good_ID),
                   "Barcode": rows[0].Barcode,
                   "Life": rows[0].Life,
