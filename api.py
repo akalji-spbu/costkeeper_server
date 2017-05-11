@@ -675,7 +675,7 @@ def good_find_by_barcode(barcode):
 
     status = True
 
-    select_stmt = select([costkeeper.Good.Good_ID]).where(costkeeper.Good.Good_ID == good_id)
+    select_stmt = select([costkeeper.Good.Good_ID]).where(costkeeper.Good.Barcode == barcode)
     result = conn.execute(select_stmt)
     rows = result.fetchall()
     result.close()
