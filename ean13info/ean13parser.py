@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-import requests
 import lxml.html
+import requests
 
-import anticaptcha
+from ean13info import anticaptcha
+
 
 def getGoodInfoByBarcode(barcode):
     url_of_good_page = "http://ean13.info/"+str(barcode)+".htm"

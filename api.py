@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 
+import datetime
+import random
+import string
+from datetime import datetime, timedelta
+from hashlib import md5
+
+import sqlalchemy.exc
+from sqlalchemy import create_engine, select
+from sqlalchemy.orm import sessionmaker
+
 import config
 import costkeeper
 import picture_saver
-
-import sqlalchemy.exc
-import random
-import string
-import datetime
-from datetime import datetime, timedelta
-from hashlib import md5
-from sqlalchemy import create_engine, select
-from sqlalchemy.orm import sessionmaker
 
 dburi = config.db_dialect + '://' + config.db_user + ':' + config.db_password + '@' + config.db_host + ':' + config.db_port + '/' + config.db_name + '?charset=utf8'
 
@@ -574,12 +575,12 @@ def good_add_by_server(barcode):
     status = True
     response = {}
     if config.parsing_from=="ean13info":
-        import ean13parser
+        from ean13info import ean13parser, ean13info_cat
         status, dataset = ean13parser.getGoodInfoByBarcode(barcode)
         if status:
             if dataset["picture_uri"]!="":
                 picture_saver.save_url_picture(dataset["picture_uri"],config.goods_pictures_folder, barcode)
-        status, response = good_add_ean13(dataset["barcode"],dataset["name"],dataset["barcode_type"],dataset["country"],dataset["manufacturer"],"ready",dataset["brand"],dataset["description"],dataset["category"])
+        status, response = good_add_ean13(dataset["barcode"],dataset["name"],dataset["barcode_type"],dataset["country"],dataset["manufacturer"],"ready",dataset["brand"],dataset["description"],ean13info_cat.categories[dataset["category"]])
     return status, response
 
 def manufacturer_add(country_id, manufacturer = ""):
