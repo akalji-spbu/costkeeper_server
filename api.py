@@ -133,7 +133,13 @@ def user_reg(nickname="", password="", email="", firstname="", lastname=""):
     status = True;
 
     username_exist, email_exist = check_username_and_email(nickname,email)
-    if (email_exist == False) and (username_exist == False):
+    if (email=="" or nickname==""):
+        status = False;
+        if email=="":
+            response["STATUS"] = "ERROR_EMAIL_EMPTY"
+        else:
+            response["STATUS"] = "ERROR_USERNAME_EMPTY"
+    elif (email_exist == False) and (username_exist == False):
         User_Nickname = nickname
         User_Email = email
         User_Firstname = firstname
@@ -580,7 +586,11 @@ def good_add_by_server(barcode):
         if status:
             if dataset["picture_uri"]!="":
                 picture_saver.save_url_picture(dataset["picture_uri"],config.goods_pictures_folder, barcode)
-        status, response = good_add_ean13(dataset["barcode"],dataset["name"],dataset["barcode_type"],dataset["country"],dataset["manufacturer"],"ready",dataset["brand"],dataset["description"],ean13info_cat.categories[dataset["category"]])
+        try:
+            cat = ean13info_cat.categories[dataset["category"]]
+        except:
+            cat = dataset["category"]
+        status, response = good_add_ean13(dataset["barcode"],dataset["name"],dataset["barcode_type"],dataset["country"],dataset["manufacturer"],"ready",dataset["brand"],dataset["description"],cat)
     return status, response
 
 def manufacturer_add(country_id, manufacturer = ""):
@@ -602,14 +612,17 @@ def manufacturer_add(country_id, manufacturer = ""):
     result.close()
     if not rows:
         newManufacturer = costkeeper.Manufacturer(manufacturer,"",country_id)
+
         try:
             session.add(newManufacturer)
+            manufacturer_id = newManufacturer.Manufacturer_ID
 
         except sqlalchemy.exc.OperationalError:
             status = False
     session.commit()
 
-    select_stmt = select([costkeeper.Manufacturer.Manufacturer_ID]).where(        costkeeper.Manufacturer.Manufacturer_Name == manufacturer)
+    select_stmt = select([costkeeper.Manufacturer.Manufacturer_ID]).where(
+        costkeeper.Manufacturer.Manufacturer_Name == manufacturer)
     result = conn.execute(select_stmt)
     rows = result.fetchall()
     result.close()
