@@ -6,7 +6,7 @@ from ean13info import anticaptcha
 
 
 def getGoodInfoByBarcode(barcode):
-    url_of_good_page = "http://ean13.info/"+str(barcode)+".htm"
+    url_of_good_page = "http://ean13.info/" + str(barcode) + ".htm"
     doc = load_page(url_of_good_page)
     captcha = doc.xpath('/html/body/div/div[2]/div[2]/form')
     attempts = 0
@@ -20,17 +20,15 @@ def getGoodInfoByBarcode(barcode):
             RESPONSE = "A LOT OF CAPTCHA ATTEMPTS"
             return STATUS, RESPONSE
 
+    barcode_xpath = "/html/body/div/div[3]/div/div/div[2]/div[1]/table/tbody/tr[1]/td[2]/small/strong"
+    barcode_type_xpath = "/html/body/div/div[3]/div/div/div[2]/div[1]/table/tbody/tr[2]/td[2]/span"
+    country_xpath = "/html/body/div/div[3]/div/div/div[2]/div[1]/table/tbody/tr[3]/td[2]/a"
+    manufacturer_xpath = "/html/body/div/div[3]/div/div/div[2]/div[1]/table/tbody/tr[4]/td[2]/a"
+    brand_xpath = "/html/body/div/div[3]/div/div/div[2]/div[1]/table/tbody/tr[5]/td[2]/a"
 
-    barcode_xpath =         "/html/body/div/div[3]/div/div/div[2]/div[1]/table/tbody/tr[1]/td[2]/small/strong"
-    barcode_type_xpath =    "/html/body/div/div[3]/div/div/div[2]/div[1]/table/tbody/tr[2]/td[2]/span"
-    country_xpath =         "/html/body/div/div[3]/div/div/div[2]/div[1]/table/tbody/tr[3]/td[2]/a"
-    manufacturer_xpath =    "/html/body/div/div[3]/div/div/div[2]/div[1]/table/tbody/tr[4]/td[2]/a"
-    brand_xpath =           "/html/body/div/div[3]/div/div/div[2]/div[1]/table/tbody/tr[5]/td[2]/a"
-
-    name_xpath =            "/html/body/div/div[3]/div/div/div[2]/h1"
-    picture_uri_xpath =     "/html/body/div/div[3]/div/div/div[1]/div/div[3]/p/a"
-    description_xpath =     "/html/body/div/div[4]/div/div/div[1]/div"
-
+    name_xpath = "/html/body/div/div[3]/div/div/div[2]/h1"
+    picture_uri_xpath = "/html/body/div/div[3]/div/div/div[1]/div/div[3]/p/a"
+    description_xpath = "/html/body/div/div[4]/div/div/div[1]/div"
 
     name = doc.xpath(name_xpath)[0].text
     if name != "Товар не найден в базе данных":
@@ -44,15 +42,15 @@ def getGoodInfoByBarcode(barcode):
         category_row6_xpath = "/html/body/div/div[3]/div/div/div[2]/div[1]/table/tbody/tr[6]/td[2]/a"
         category_opr_row7_xpath = "/html/body/div/div[3]/div/div/div[2]/div[1]/table/tbody/tr[7]/td[1]"
         category_row7_xpath = "/html/body/div/div[3]/div/div/div[2]/div[1]/table/tbody/tr[7]/td[2]/a"
-        if doc.xpath(category_opr_row6_xpath)[0].text=="Категория:":
+        if doc.xpath(category_opr_row6_xpath)[0].text == "Категория:":
             category = doc.xpath(category_row6_xpath)[0].text
-        elif doc.xpath(category_opr_row7_xpath)[0].text=="Категория:":
+        elif doc.xpath(category_opr_row7_xpath)[0].text == "Категория:":
             category = doc.xpath(category_row7_xpath)[0].text
         else:
             category = ""
 
         if doc.xpath(picture_uri_xpath):
-            picture_uri = "http://ean13.info/"+ doc.xpath(picture_uri_xpath)[0].get("href")
+            picture_uri = "http://ean13.info/" + doc.xpath(picture_uri_xpath)[0].get("href")
         else:
             picture_uri = ""
         if doc.xpath(description_xpath):
@@ -61,15 +59,15 @@ def getGoodInfoByBarcode(barcode):
             description = ""
 
         dataset = {
-            "barcode":barcode,
-            "name":name,
-            "barcode_type":barcode_type,
-            "country":country,
-            "manufacturer":manufacturer,
-            "picture_uri":picture_uri,
-            "brand":brand,
-            "description":description,
-            "category":category
+            "barcode": barcode,
+            "name": name,
+            "barcode_type": barcode_type,
+            "country": country,
+            "manufacturer": manufacturer,
+            "picture_uri": picture_uri,
+            "brand": brand,
+            "description": description,
+            "category": category
         }
         STATUS = True
         RESPONSE = dataset
@@ -78,6 +76,7 @@ def getGoodInfoByBarcode(barcode):
         STATUS = False
         RESPONSE = "GOOD_NOT_FOUND"
     return STATUS, RESPONSE
+
 
 def load_page(url_of_good_page):
     session = requests.session()

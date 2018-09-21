@@ -42,4 +42,3 @@ def unlock_captcha(captcha_api_key, captcha_url):
             'recaptcha_challenge_field': challange_session_id
             }
     requests.post(captcha_url, data=data)
-

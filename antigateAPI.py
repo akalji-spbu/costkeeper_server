@@ -6,21 +6,26 @@ import config
 antigate_generic_API_REQ_URL = config.antigate_generic_API_REQ_URL
 antigate_generic_API_RES_URL = config.antigate_generic_API_RES_URL
 
+
 def send_captcha(captcha_image):
     data = {
-        'method':'base64',
+        'method': 'base64',
         'key': config.antigate_generic_API_KEY,
-        'body' : base64.b64encode(captcha_image)
+        'body': base64.b64encode(captcha_image)
     }
     response = requests.post(antigate_generic_API_REQ_URL, data=data).text
-    if response[0:2]=="OK":
-        CAPTCHA_ID  = response[3:]
+    if response[0:2] == "OK":
+        CAPTCHA_ID = response[3:]
         return CAPTCHA_ID
+
 
 def check_captcha(CAPTCHA_ID):
     session = requests.session()
-    answer = session.get(antigate_generic_API_RES_URL+"?key={}&action=get&id={}".format(config.antigate_generic_API_KEY, CAPTCHA_ID)).text
+    answer = session.get(
+        antigate_generic_API_RES_URL + "?key={}&action=get&id={}".format(config.antigate_generic_API_KEY,
+                                                                         CAPTCHA_ID)).text
     return answer
+
 
 def check_post_exceptions(EXCEPTION):
     if EXCEPTION == "ERROR_WRONG_USER_KEY":
@@ -59,7 +64,5 @@ def check_post_exceptions(EXCEPTION):
     else:
         STATUS = False
         RESPONSE = "UNKNOWN ERROR"
-
-
 
     return STATUS, RESPONSE

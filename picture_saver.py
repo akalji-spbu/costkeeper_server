@@ -1,6 +1,7 @@
 from PIL import Image
 import io
 
+
 def save_b64_picture(b64image, folder, fname):
     import base64
     status = True
@@ -16,15 +17,16 @@ def save_b64_picture(b64image, folder, fname):
             file.write(byte_picture)
             file.close()
         else:
-            picture.save(folder + fname+".jpg")
+            picture.save(folder + fname + ".jpg")
     except OSError as e:
         if e.args[0][0:26] == "cannot identify image file":
             status = False
             response = {
-                "STATUS":"ERROR_NON_PICTURE_TYPE"
+                "STATUS": "ERROR_NON_PICTURE_TYPE"
             }
 
     return status, response
+
 
 def save_url_picture(url, folder, fname):
     import urllib.request
@@ -44,10 +46,10 @@ def save_url_picture(url, folder, fname):
             file.write(byte_picture)
             file.close()
         else:
-            picture.save(folder + fname+".jpg")
+            picture.save(folder + fname + ".jpg")
             picture.close()
     except OSError as e:
-        if e.args[0][0:26]=="cannot identify image file":
+        if e.args[0][0:26] == "cannot identify image file":
             status = False
             response = {
                 "STATUS": "ERROR_NON_PICTURE_TYPE"

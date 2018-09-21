@@ -4,20 +4,13 @@ import config
 import costkeeper
 from xml.dom.minidom import parse
 import xml.dom.minidom
-import sqlalchemy.exc
-import random
-import string
-import datetime
-from datetime import datetime, timedelta
-from hashlib import md5
-from sqlalchemy import create_engine, select, delete
-from sqlalchemy.sql import table, column
+from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import TEXT, INTEGER, String
 
-dburi = config.db_dialect + '://' + config.db_user + ':' + config.db_password + '@' + config.db_host + ':' +config.db_port+ '/'+ config.db_name +'?charset=utf8'
+dburi = config.db_dialect + '://' + config.db_user + ':' + config.db_password + '@' + config.db_host + ':' + config.db_port + '/' + config.db_name + '?charset=utf8'
 
 costkeeper.clrscr()
+
 
 def import_regions():
     PATH = "cities.xml"
@@ -40,11 +33,10 @@ def import_regions():
         rows = result.fetchall()
         result.close()
         if not rows:
-            NewRegion = costkeeper.Region(our_region,countryID)
+            NewRegion = costkeeper.Region(our_region, countryID)
             session.add(NewRegion)
             session.commit()
         session.close()
-
 
 
 def import_cities():
@@ -60,8 +52,8 @@ def import_cities():
         our_region = city.getAttribute("part")
         city.getElementsByTagName('city')
         our_city = city.childNodes[0].data
-        if(our_region==""):
-            our_region="без региона"
+        if (our_region == ""):
+            our_region = "без региона"
         select_stmt = select([costkeeper.Region.Region_ID]).where(costkeeper.Region.Region_Name == our_region)
         result = conn.execute(select_stmt)
         rowsregion = result.fetchall()
@@ -75,6 +67,7 @@ def import_cities():
             session.add(NewCity)
             session.commit()
         session.close()
+
 
 def import_countries():
     PATH = "cities.xml"
@@ -91,6 +84,7 @@ def import_countries():
         session.add(NewCountry)
         session.commit()
     session.close()
+
 
 def import_categories():
     DOMTree = xml.dom.minidom.parse("catalog.xml")
@@ -110,12 +104,10 @@ def import_categories():
                 costkeeper.Type_of_good.Name == parentcat).first()
             parentcat = parentType.Type_ID
 
-
         NewType = costkeeper.Type_of_good(catname, parentcat)
         session.add(NewType)
         session.commit()
     session.close()
-
 
 
 import_categories()

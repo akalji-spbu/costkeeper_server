@@ -132,10 +132,10 @@ def user_reg(nickname="", password="", email="", firstname="", lastname=""):
     }
     status = True;
 
-    username_exist, email_exist = check_username_and_email(nickname,email)
-    if (email=="" or nickname==""):
+    username_exist, email_exist = check_username_and_email(nickname, email)
+    if (email == "" or nickname == ""):
         status = False;
-        if email=="":
+        if email == "":
             response["STATUS"] = "ERROR_EMAIL_EMPTY"
         else:
             response["STATUS"] = "ERROR_USERNAME_EMPTY"
@@ -162,7 +162,7 @@ def user_reg(nickname="", password="", email="", firstname="", lastname=""):
 
         session.commit()
         response["STATUS"] = "SUCCESS"
-        response["OBJECT"] = {"token":token}
+        response["OBJECT"] = {"token": token}
     else:
         status = False;
         if email_exist == True:
@@ -170,13 +170,12 @@ def user_reg(nickname="", password="", email="", firstname="", lastname=""):
         else:
             response["STATUS"] = "ERROR_USERNAME_EXIST"
 
-
     session.close()
 
-    return status,response
+    return status, response
 
 
-def user_alter(User_ID,nickname="", email="", firstname="", lastname=""):
+def user_alter(User_ID, nickname="", email="", firstname="", lastname=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -204,11 +203,11 @@ def user_alter(User_ID,nickname="", email="", firstname="", lastname=""):
     return status, response
 
 
-def user_delete(user_id,d_user_id):
+def user_delete(user_id, d_user_id):
     d_user_id = int(d_user_id)
     user_id = int(user_id)
     status = False
-    response ={
+    response = {
         "STATUS": "ERROR_YOU_IS_NOT_GOD"
     }
     if (d_user_id == user_id or user_is_admin(user_id)):
@@ -462,14 +461,15 @@ def shop_get(id):
             "OBJECT": object
         }
         status = True
-    return status,response
+    return status, response
 
 
 # end shops methods
 
 # good methods
 
-def good_add(barcode=0, name="", life="", description="", type_id="", units_id="", alcohol="", manufacturer_id="", b64="", brand="", prod_country_id=""):
+def good_add(barcode=0, name="", life="", description="", type_id="", units_id="", alcohol="", manufacturer_id="",
+             b64="", brand="", prod_country_id=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -487,7 +487,8 @@ def good_add(barcode=0, name="", life="", description="", type_id="", units_id="
     result.close()
 
     if not rows:
-        newGood = costkeeper.Good(name, barcode, life, description, type_id, units_id, alcohol, manufacturer_id,brand,prod_country_id)
+        newGood = costkeeper.Good(name, barcode, life, description, type_id, units_id, alcohol, manufacturer_id, brand,
+                                  prod_country_id)
         try:
             session.add(newGood)
 
@@ -503,14 +504,15 @@ def good_add(barcode=0, name="", life="", description="", type_id="", units_id="
         }
 
     session.commit()
-    if ((status) and (len(b64)>0)):
+    if ((status) and (len(b64) > 0)):
         picture_saver.save_b64_picture(b64, config.goods_pictures_folder, barcode)
     session.close()
 
     return status, response
 
 
-def good_add_ean13(barcode=0, name="", barcode_type="", country="", manufacturer="", picture_b64="", brand="", description="", category=""):
+def good_add_ean13(barcode=0, name="", barcode_type="", country="", manufacturer="", picture_b64="", brand="",
+                   description="", category=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -535,13 +537,14 @@ def good_add_ean13(barcode=0, name="", barcode_type="", country="", manufacturer
         if not rows:
             status = False
             response = {
-                "STATUS":"ERROR_COUNTRY_IS_INCORRECT"
+                "STATUS": "ERROR_COUNTRY_IS_INCORRECT"
             }
             return status, response
         prod_country_id = rows[0].Country_ID
 
         status = manufacturer_add(prod_country_id, manufacturer)
-        select_stmt = select([costkeeper.Manufacturer.Manufacturer_ID]).where(costkeeper.Manufacturer.Manufacturer_Name == manufacturer)
+        select_stmt = select([costkeeper.Manufacturer.Manufacturer_ID]).where(
+            costkeeper.Manufacturer.Manufacturer_Name == manufacturer)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         result.close()
@@ -553,14 +556,15 @@ def good_add_ean13(barcode=0, name="", barcode_type="", country="", manufacturer
         result.close()
         type_id = rows[0].Type_ID
 
-        if int(type_id)<31:
-            alcohol= 1
+        if int(type_id) < 31:
+            alcohol = 1
         else:
             alcohol = 0
 
         units_id = 1
         life = ""
-        newGood = costkeeper.Good(name, barcode, life, description, type_id, units_id, alcohol, manufacturer_id, brand, prod_country_id)
+        newGood = costkeeper.Good(name, barcode, life, description, type_id, units_id, alcohol, manufacturer_id, brand,
+                                  prod_country_id)
         try:
             session.add(newGood)
 
@@ -576,29 +580,33 @@ def good_add_ean13(barcode=0, name="", barcode_type="", country="", manufacturer
         }
 
     session.commit()
-    if ((status) and (picture_b64!="ready") and (len(picture_b64)>0)):
+    if ((status) and (picture_b64 != "ready") and (len(picture_b64) > 0)):
         picture_saver.save_b64_picture(picture_b64, config.goods_pictures_folder, barcode)
     session.close()
 
     return status, response
 
+
 def good_add_by_server(barcode):
     status = True
     response = {}
-    if config.parsing_from=="ean13info":
+    if config.parsing_from == "ean13info":
         from ean13info import ean13parser, ean13info_cat
         status, dataset = ean13parser.getGoodInfoByBarcode(barcode)
         if status:
-            if dataset["picture_uri"]!="":
-                picture_saver.save_url_picture(dataset["picture_uri"],config.goods_pictures_folder, barcode)
+            if dataset["picture_uri"] != "":
+                picture_saver.save_url_picture(dataset["picture_uri"], config.goods_pictures_folder, barcode)
         try:
             cat = ean13info_cat.categories[dataset["category"]]
         except:
             cat = dataset["category"]
-        status, response = good_add_ean13(dataset["barcode"],dataset["name"],dataset["barcode_type"],dataset["country"],dataset["manufacturer"],"ready",dataset["brand"],dataset["description"],cat)
+        status, response = good_add_ean13(dataset["barcode"], dataset["name"], dataset["barcode_type"],
+                                          dataset["country"], dataset["manufacturer"], "ready", dataset["brand"],
+                                          dataset["description"], cat)
     return status, response
 
-def manufacturer_add(country_id, manufacturer = ""):
+
+def manufacturer_add(country_id, manufacturer=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -608,15 +616,16 @@ def manufacturer_add(country_id, manufacturer = ""):
     status = True
     manufacturer_id = 0
 
-    if(len(manufacturer)==0):
+    if (len(manufacturer) == 0):
         manufacturer = "No manufacturer"
 
-    select_stmt = select([costkeeper.Manufacturer.Manufacturer_ID]).where(costkeeper.Manufacturer.Manufacturer_Name == manufacturer)
+    select_stmt = select([costkeeper.Manufacturer.Manufacturer_ID]).where(
+        costkeeper.Manufacturer.Manufacturer_Name == manufacturer)
     result = conn.execute(select_stmt)
     rows = result.fetchall()
     result.close()
     if not rows:
-        newManufacturer = costkeeper.Manufacturer(manufacturer,"",country_id)
+        newManufacturer = costkeeper.Manufacturer(manufacturer, "", country_id)
 
         try:
             session.add(newManufacturer)
@@ -629,7 +638,8 @@ def manufacturer_add(country_id, manufacturer = ""):
     return status
 
 
-def good_alter(id="", name="", life="", description="", type_id="", units_id="", alcohol="", manufacturer_id="", b64="", brand="", prod_country_id=""):
+def good_alter(id="", name="", life="", description="", type_id="", units_id="", alcohol="", manufacturer_id="", b64="",
+               brand="", prod_country_id=""):
     # Creating database session
     engine = create_engine(dburi)
     conn = engine.connect()
@@ -748,7 +758,8 @@ def good_get(good_id=""):
     else:
         select_stmt = select(
             [costkeeper.Good.Good_ID, costkeeper.Good.Barcode, costkeeper.Good.Life, costkeeper.Good.Description,
-             costkeeper.Good.Name, costkeeper.Good.Type_ID, costkeeper.Good.Units_ID, costkeeper.Good.Alcohol, costkeeper.Good.Manufacturer_ID]).where(costkeeper.Good.Good_ID == good_id)
+             costkeeper.Good.Name, costkeeper.Good.Type_ID, costkeeper.Good.Units_ID, costkeeper.Good.Alcohol,
+             costkeeper.Good.Manufacturer_ID]).where(costkeeper.Good.Good_ID == good_id)
         result = conn.execute(select_stmt)
         rows = result.fetchall()
         result.close()
@@ -948,13 +959,13 @@ def cost_add(good_id='', shop_id='', currency_id='', value=''):
         session.add(NewCost)
         status = True
         response = {
-            "STATUS":"SUCCESS"
+            "STATUS": "SUCCESS"
         }
         session.commit()
         session.close()
     except sqlalchemy.exc.OperationalError:
         response = {
-            "STATUS":"ERROR_ADDING_COST"
+            "STATUS": "ERROR_ADDING_COST"
         }
         status = False
         session.close()
@@ -1026,13 +1037,13 @@ def basket_delete_item(user_id="", basket_id="", good_id=""):
     if (len(basket_id) == 0 and status == True):
         status = False
         response = {
-            "STATUS":"ERROR_NO_BASKET_ID"
+            "STATUS": "ERROR_NO_BASKET_ID"
         }
     else:
         if (len(good_id) == 0):
             status = False
             response = {
-                "STATUS":"ERROR_NO_GOOD_ID"
+                "STATUS": "ERROR_NO_GOOD_ID"
             }
         else:
             ourGoodInBasket = session.query(costkeeper.Good_in_basket).filter_by(Good_ID=good_id).filter_by(
@@ -1040,7 +1051,7 @@ def basket_delete_item(user_id="", basket_id="", good_id=""):
             if (ourGoodInBasket == None):
                 status = False
                 response = {
-                    "STATUS":"ERROR_GOOD_IN_BASKET_DOES_NOT_EXIST"
+                    "STATUS": "ERROR_GOOD_IN_BASKET_DOES_NOT_EXIST"
                 }
             else:
                 session.delete(ourGoodInBasket)
@@ -1059,7 +1070,7 @@ def basket_modify(basket_id, new_name):
 
     status = True
     response = {
-        "STATUS":"SUCCESS"
+        "STATUS": "SUCCESS"
     }
 
     select_stmt = select([costkeeper.Basket.Basket_ID]).where(costkeeper.Basket.Basket_ID == basket_id)
@@ -1070,7 +1081,7 @@ def basket_modify(basket_id, new_name):
     if not rows:
         status = False
         response = {
-            "STATUS":"ERROR_BASKET_DOES_NOT_EXIST"
+            "STATUS": "ERROR_BASKET_DOES_NOT_EXIST"
         }
     else:
         ourBasket = session.query(costkeeper.Basket).filter_by(Basket_ID=basket_id).first()
@@ -1094,7 +1105,7 @@ def basket_erase(user_id, basket_id=""):
 
     status = True
     response = {
-        "STATUS":"SUCCESS"
+        "STATUS": "SUCCESS"
     }
 
     select_stmt = select([costkeeper.Basket.User_ID]).where(costkeeper.Basket.Basket_ID == basket_id)
@@ -1104,14 +1115,14 @@ def basket_erase(user_id, basket_id=""):
     if not rows:
         status = False
         response = {
-            "STATUS":"ERROR_WRONG_BASKET_ID"
+            "STATUS": "ERROR_WRONG_BASKET_ID"
         }
         return status, response
     else:
         if rows[0].User_ID != user_id and user_is_admin(user_id) == False:
             status = False
             response = {
-                "STATUS":"ERROR_ACCESS"
+                "STATUS": "ERROR_ACCESS"
             }
             return status, response
 
@@ -1141,7 +1152,7 @@ def basket_get(basket_id=""):
     if not rows:
         status = False
         response = {
-            "STATUS":"ERROR_BASKET_DOES_NOT_EXIST"
+            "STATUS": "ERROR_BASKET_DOES_NOT_EXIST"
         }
     else:
         select_stmt = select([costkeeper.Basket.Basket_ID, costkeeper.Basket.Name, costkeeper.Basket.Creation_Date,
@@ -1159,21 +1170,21 @@ def basket_get(basket_id=""):
             for row in new_rows:
                 goods.append(
                     {
-                        "good_id":str(row.Good_ID),
-                        "number_of_goods":str(row.Number_Of_Goods)
+                        "good_id": str(row.Good_ID),
+                        "number_of_goods": str(row.Number_Of_Goods)
                     }
                 )
 
         basket = {
-            "basket_id":str(rows[0].Basket_ID),
-            "name":str(rows[0].Name),
-            "creation_date":str(rows[0].Creation_Date),
-            "modify_date":str(rows[0].Modify_Date),
-            "goods":goods
+            "basket_id": str(rows[0].Basket_ID),
+            "name": str(rows[0].Name),
+            "creation_date": str(rows[0].Creation_Date),
+            "modify_date": str(rows[0].Modify_Date),
+            "goods": goods
         }
         response = {
-            "STATUS":"SUCCESS",
-            "OBJECT":basket
+            "STATUS": "SUCCESS",
+            "OBJECT": basket
         }
 
     return status, response
@@ -1363,7 +1374,7 @@ def basket_get_lowest_cost(shops_list, basket_id):
 
     if not shops_list:
         status = False
-        response ={
+        response = {
             "STATUS": "ERROR_SHOPS_LIST_IS_EMPTY"
         }
     else:

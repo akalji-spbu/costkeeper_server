@@ -1,28 +1,27 @@
 # -*- coding: utf-8 -*-
 
-#database config
-db_dialect      = "mysql+pymysql"
-db_host         = "localhost"
-db_port         = "3306"
-db_name         = ""
-db_user         = ""
-db_password     = ""
+# database config
+db_dialect = "mysql+pymysql"
+db_host = "localhost"
+db_port = "3306"
+db_name = ""
+db_user = ""
+db_password = ""
 
-#system config
+# system config
 salt = ""
 
-#tornado config
+# tornado config
 port = 14001
 
-
-#anticaptcha config
+# anticaptcha config
 anticaptha_mode = "ANTIGATE"
 
 antigate_generic_API_KEY = ""
 antigate_generic_API_REQ_URL = "http://rucaptcha.com/in.php"
-antigate_generic_API_RES_URL ="http://rucaptcha.com/res.php"
+antigate_generic_API_RES_URL = "http://rucaptcha.com/res.php"
 
-#pictures storage
+# pictures storage
 goods_additional_pictures_folder = ""
 goods_pictures_folder = ""
 users_avatars_folder = ""
